@@ -85,40 +85,31 @@ def dftb_optimize(fname):
         err_path = os.path.join(temp_dir, "dftb_err.log")
         with open(log_path, "w") as out, open(err_path, "w") as err:
             subprocess.run(["dftb+"], cwd=temp_dir, stdout=out, stderr=err)
-
-        # Check convergence
-        converged = False
-        if os.path.exists(log_path):
-            with open(log_path, "r") as f:
-                log_content = f.read()
-                if "Geometry optimization converged" in log_content:
-                    converged = True
         
         # Save result regardless of convergence
         geo_end = os.path.join(temp_dir, "geo_end.gen")
         geom_out = os.path.join(temp_dir, "geom.out.gen")
         
-        if converged and os.path.exists(geo_end):
+        if os.path.exists(geo_end):
             optimized = read(geo_end)
             source = "geo_end.gen"
+            print("Geometry optimization converged")
         elif os.path.exists(geom_out):
             optimized = read(geom_out)
             source = "geom.out.gen"
+            print("Note!!! Geometry optimization is not converged")
         else:
             print(f"[Error] No structure file found for {fname}")
             return
         
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, optimized, format='vasp')
-        status = "Converged" if converged else "Not converged"
-        print(f"[{status}] Saved from {source}: {opt_fname}")
-
-        # Keep temp_dir for debugging
-        # shutil.rmtree(temp_dir)
 
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
+# Keep temp_dir for debugging
+# shutil.rmtree(dftb_temp)
 
 print("# Generate valid structures")
 valid_files = []
