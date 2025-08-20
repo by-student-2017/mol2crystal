@@ -18,7 +18,6 @@ from scipy.spatial.distance import pdist
 import subprocess
 import shutil
 import psutil
-from concurrent.futures import ProcessPoolExecutor
 import uuid
 
 import warnings
@@ -87,14 +86,27 @@ def xtb_optimize(fname):
 
         # run xtb
         xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
-        subprocess.run(xtb_cmd, cwd=temp_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        # save result
+        # check convergence
+        log_file = os.path.join(temp_dir, "xtbopt.log")
+        converged = False
+        if os.path.exists(log_file):
+            with open(log_file, "r") as f:
+                log_content = f.read()
+                if "GEOMETRY OPTIMIZATION CONVERGED" in log_content:
+                    converged = True
+
+        # save result regardless of convergence
         opt_xyz = os.path.join(temp_dir, "xtbopt.xyz")
         if os.path.exists(opt_xyz):
             optimized = read(opt_xyz)
             opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
             write(opt_fname, optimized, format='vasp')
+            status = "Converged" if converged else "Not converged"
+            print(f"[{status}] Saved: {opt_fname}")
+        else:
+            print(f"[Error] Optimization failed: {fname}")
 
         # delete old file
         delete_patterns = [
