@@ -4,6 +4,9 @@
 # pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 # pip install "numpy<2.0"
 
+# Usage
+# pyton3 mol2crystal_gpaw.py
+
 import os
 import numpy as np
 from ase.io import read, write
