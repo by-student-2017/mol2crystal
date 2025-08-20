@@ -50,5 +50,10 @@ pyton3 mol2crystal_dftb.py
 pyton3 mol2crystal_gpaw.py
 ```
 
+## lammps_reaxff_md_windows11
+- This calculation is inefficient because it uses packmol to randomly arrange the particles and then apply high pressure.
+- It is better to apply the calculation to the crystal structure obtained with mol2crystal.py.
+- The calculation includes dielectric constant. In other words, this is an example that takes the solvent into account.
+
 ## Test
 - Ubuntu 22.04 LTS (WSL2, Windows 11)
