@@ -82,8 +82,8 @@ def xtb_optimize(fname):
         write(temp_xyz, atoms, format='extxyz')
 
         # generate xtb.inp
-        with open(os.path.join(temp_dir, "xtb.inp"), "w") as f:
-            f.write("$xtb\n   periodic = true\n$end\n")
+        #with open(os.path.join(temp_dir, "xtb.inp"), "w") as f:
+        #    f.write("$xtb\n   periodic = true\n$end\n")
 
         # run xtb
         xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
