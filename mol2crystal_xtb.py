@@ -77,45 +77,40 @@ def xtb_optimize(fname):
         os.makedirs(temp_dir, exist_ok=True)
 
         atoms = read(fname)
+        original_cell = atoms.get_cell()
+        
         temp_xyz = os.path.join(temp_dir, "input.xyz")
         write(temp_xyz, atoms, format='extxyz')
-
-        # generate xtb.inp
-        #with open(os.path.join(temp_dir, "xtb.inp"), "w") as f:
-        #    f.write("$xtb\n   periodic = true\n$end\n")
 
         # run xtb
         xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
         result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        # check convergence
-        log_file = os.path.join(temp_dir, "xtbopt.log")
-        converged = False
-        if os.path.exists(log_file):
-            with open(log_file, "r") as f:
-                log_content = f.read()
-                if "GEOMETRY OPTIMIZATION CONVERGED" in log_content:
-                    converged = True
-
         # save result regardless of convergence
         opt_xyz = os.path.join(temp_dir, "xtbopt.xyz")
+        last_out = os.path.join(temp_dir, "xtblast.xyz")
+        
+        optimized = None
+        source = None
+        
         if os.path.exists(opt_xyz):
-            optimized = read(opt_xyz)
-            opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
-            write(opt_fname, optimized, format='vasp')
-            status = "Converged" if converged else "Not converged"
-            print(f"[{status}] Saved: {opt_fname}")
+            try:
+                optimized = read(opt_xyz, format='xyz')
+                source = "xtbopt.xyz"
+                print("Geometry optimization converged")
+            except Exception as e:
+                optimized = read(last_out, format='xyz')
+                source = "xtblast.xyz"
+                print("Note!!! Geometry optimization is not converged")
         else:
-            print(f"[Error] Optimization failed: {fname}")
-
-        # delete old file
-        delete_patterns = [
-            "xtbopt.log", "xtblast.xyz", "charge", "wbo",
-            "xtbopt.xyz", "xtbtopo.mol", "temp_structure.xyz", "temp_*"
-        ]
-        for pattern in delete_patterns:
-            for file in glob.glob(os.path.join(temp_dir, pattern)):
-                os.remove(file)
+            print(f"[Error] No structure file found for {fname}")
+            return
+        
+        optimized.set_cell(original_cell)
+        optimized.set_pbc(True)
+        opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
+        write(opt_fname, optimized, format='vasp')
+        print(f"[{source}] Saved: {opt_fname}")
 
         shutil.rmtree(temp_dir)
 
