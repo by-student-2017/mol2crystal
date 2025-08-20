@@ -1,0 +1,8 @@
+tolerance 2.0
+filetype xyz
+output output.pdb
+
+structure molecular_files_atc/a.xyz
+  number 4
+  inside box 0. 0. 0. 100. 100. 100.
+end structure

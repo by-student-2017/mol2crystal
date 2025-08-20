@@ -1,0 +1,91 @@
+units real
+dimension 3
+boundary p p p
+atom_style charge
+
+#---------------------------------------------
+variable elem string "C Ni S O H"
+
+variable Tini equal 273+100  # [K] (N2 77 K)
+variable Tobj equal 273+25   # [K]
+
+variable Pini equal 10.0     # 1 MPa (1 bar = 0.1 MPa)
+
+variable Nout equal 1000     #
+
+variable epsilon equal 78.5  # Toluene:2.38, Chlorobenzene:5.69, water:78.5
+#---------------------------------------------
+
+read_data output.data
+
+replicate 1 1 1
+
+#pair_style reaxff NULL safezone 1.6 mincap 100 checkqeq no
+#pair_coeff * * ffield.reax.032.CHONSSiPtZrNiCuCoHeArKrXe ${elem}
+#pair_coeff * * ffield.reax.101.CHOSMoNiLiBFPN ${elem}
+
+#---------------------------------------------
+pair_style hybrid/overlay reaxff NULL safezone 1.6 mincap 100 coul/diel 3.5
+#---------------------------------------------
+pair_coeff * * reaxff ffield.reax.101.CHOSMoNiLiBFPN ${elem}
+pair_coeff * * coul/diel ${epsilon} 1.375 0.112 # Toluene:2.38, Chlorobenzene:5.69, water:78.5
+#---------------------------------------------
+
+fix q0 all qeq/reaxff 1 0.0 10.0 1.0e-6 reaxff
+
+neighbor 2 bin
+neigh_modify every 10 delay 0 check no
+
+minimize 1.0e-6 1.0e-8 1000 10000
+
+reset_timestep 0
+
+timestep 0.1 # 0.1 fs
+
+velocity all create ${Tini} 4928459 rot yes dist gaussian
+
+thermo ${Nout}
+thermo_style custom step etotal temp lx ly lz vol press vol density
+
+dump d1 all cfg ${Nout} cfg/run.*.cfg mass type xs ys zs id type q
+dump_modify d1 element ${elem}
+
+fix 1 all npt temp ${Tini} ${Tini} $(100*dt) y ${Pini} ${Pini} $(1000*dt)
+
+run 400000 # 40 ps
+
+unfix 1
+fix 2 all npt temp ${Tini} ${Tobj} $(100*dt) y ${Pini} 1.0 $(1000*dt)
+
+restart 400000 restart_file.*.restart
+
+run 400000 # 40 ps
+
+write_data output_data_file.data
+
+run 1
+variable  natoms equal "count(all)" 
+variable      x0 equal "lx"
+variable      y0 equal "ly"
+variable      z0 equal "lz"
+variable      v0 equal "vol"
+variable   etot0 equal "etotal"
+variable   ecoh0 equal "pe/v_natoms"
+
+variable density_v1 equal "v_density"
+variable mass_total equal mass(all)
+variable density_v2 equal ${mass_total}/(0.6022*${v0})  # g/cm^3
+
+print "-------------------------------------------------------------"
+print "Show results of 1st step (Running Minimization)"
+print "The number of atoms = ${natoms};"
+print "The lattice constant, x (Angstoms) = ${x0};"
+print "The lattice constant, y (Angstoms) = ${y0};"
+print "The lattice constant, z (Angstoms) = ${z0};"
+print "The volume (Angstoms^3) = ${v0};"
+print "The total energy (eV) = ${etot0};"
+print "The cohesive energy (eV/atom) = ${ecoh0};"
+print "The density (g/cm^dim) = ${density_v1};"
+print "The density (g/cm^3) = ${density_v2};"
+print "-------------------------------------------------------------"
+print "Simulations completed !"
