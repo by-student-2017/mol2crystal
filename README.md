@@ -40,23 +40,23 @@ pip install openbabel-wheel==3.1.1.22
 3. Put the mol file in molecular_files.
 4. Make sure the Python code and molecular_files are in the same directory.
 5. Execute the following command:
-- mol2crystal.py
+- mol2crystal.py: Apply space group to molecule. Since no other calculations are performed, interatomic and cell optimizations are not performed. A separate code is required for geometry optimization.
 ```
 pyton3 mol2crystal.py
 ```
-- xTB version
+- xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations. Cell optimization is not possible.
 ```
 pyton3 mol2crystal_xtb.py
 ```
-- DFTB+ version
+- DFTB+ version: Intermediate accuracy and computational cost between classical MD and first-principles calculations.
 ```
 pyton3 mol2crystal_dftb.py
 ```
-- GPAW version
+- GPAW version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
 pyton3 mol2crystal_gpaw.py
 ```
-- OpenBabel & UFF version
+- OpenBabel & UFF version: It is fast because it is classical MD, but cells cannot be optimized.
 ```
 pyton3 mol2crystal_uff.py
 ```
