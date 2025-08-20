@@ -23,6 +23,11 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 ```
 
 ## Usage
+1. Draw a molecule with the free version of ChemSketch and output it in mol format.
+2. Add hydrogens using Avogadro and save the molecule in mol format. Name the molecule "precursor.mol."
+3. Put the mol file in molecular_files.
+4. Make sure the Python code and molecular_files are in the same directory.
+5. Execute the following command:
 - mol2crystal.py
 ```
 pyton3 mol2crystal.py
