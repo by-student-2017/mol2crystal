@@ -94,14 +94,13 @@ def xtb_optimize(fname):
         source = None
         
         if os.path.exists(opt_xyz):
-            try:
-                optimized = read(opt_xyz, format='xyz')
-                source = "xtbopt.xyz"
-                print("Geometry optimization converged")
-            except Exception as e:
-                optimized = read(last_out, format='xyz')
-                source = "xtblast.xyz"
-                print("Note!!! Geometry optimization is not converged")
+            optimized = read(opt_xyz, format='xyz')
+            source = "xtbopt.xyz"
+            print("Geometry optimization converged")
+        elif os.path.exists(last_out):
+            optimized = read(last_out, format='xyz')
+            source = "xtblast.xyz"
+            print("Note!!! Geometry optimization is not converged")
         else:
             print(f"[Error] No structure file found for {fname}")
             return
