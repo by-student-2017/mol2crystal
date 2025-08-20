@@ -26,7 +26,7 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install "numpy<2.0"
 ```
-- OpenBabel & UFF version
+- UFF version (using OpenBabel)
 ```
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 
 sudo apt update
@@ -56,7 +56,7 @@ pyton3 mol2crystal_dftb.py
 ```
 pyton3 mol2crystal_gpaw.py
 ```
-- OpenBabel & UFF version: It is fast because it is classical MD, but cells cannot be optimized.
+- UFF version (using OpenBabel): It is fast because it is classical MD, but cells cannot be optimized.
 ```
 pyton3 mol2crystal_uff.py
 ```
