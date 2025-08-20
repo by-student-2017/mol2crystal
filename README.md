@@ -26,13 +26,6 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install "numpy<2.0"
 ```
-- UFF version (using OpenBabel)
-```
-pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 
-sudo apt update
-sudo apt install openbabel libopenbabel-dev
-pip install openbabel-wheel==3.1.1.22
-```
 
 ## Usage
 1. Draw a molecule with the free version of ChemSketch and output it in mol format.
@@ -55,10 +48,6 @@ pyton3 mol2crystal_dftb.py
 - GPAW version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
 pyton3 mol2crystal_gpaw.py
-```
-- UFF version (using OpenBabel): It is fast because it is classical MD, but cells cannot be optimized.
-```
-pyton3 mol2crystal_uff.py
 ```
 
 ## lammps_reaxff_md_windows11
