@@ -69,6 +69,7 @@ def rotate_molecule(positions, theta, phi):
     ])
     return positions @ Rz.T @ Ry.T
 
+
 # GPAW optimization
 def gpaw_optimize(fname):
     try:
@@ -95,14 +96,15 @@ def gpaw_optimize(fname):
         write(opt_fname, atoms, format='vasp')
         print(f"[GPAW] Saved: {opt_fname}")
 
-        # Delete the temporary directory
-        shutil.rmtree(temp_dir)
-
     except Exception as e:
         import traceback
         traceback.print_exc()
         print(f"Error optimizing {fname}: {e}")
 
+
+# delete old files
+temp_dir = "xtb_temp"
+shutil.rmtree(temp_dir)
 
 # Generate structures
 print("# Generate valid structures")
