@@ -77,22 +77,36 @@ def dftb_optimize(fname):
         vasp_path = os.path.join(temp_dir, "POSCAR")
         write(vasp_path, atoms, format='vasp')
 
-        # Copy the dftb_in.hsd you prepared in advance.
+        # Copy input file
         shutil.copy("dftb_in.hsd", os.path.join(temp_dir, "dftb_in.hsd"))
 
-        # Log Output
-        with open(os.path.join(temp_dir, "dftb_out.log"), "w") as out, \
-             open(os.path.join(temp_dir, "dftb_err.log"), "w") as err:
+        # Run DFTB+
+        log_path = os.path.join(temp_dir, "dftb_out.log")
+        err_path = os.path.join(temp_dir, "dftb_err.log")
+        with open(log_path, "w") as out, open(err_path, "w") as err:
             subprocess.run(["dftb+"], cwd=temp_dir, stdout=out, stderr=err)
 
+        # Check convergence
+        converged = False
+        if os.path.exists(log_path):
+            with open(log_path, "r") as f:
+                log_content = f.read()
+                if "Geometry optimization converged" in log_content:
+                    converged = True
+
+        # Save result regardless of convergence
         geo_end = os.path.join(temp_dir, "geo_end.gen")
         if os.path.exists(geo_end):
             optimized = read(geo_end)
             print("Optimized cell:\n", optimized.get_cell())
             opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
             write(opt_fname, optimized, format='vasp')
+            status = "Converged" if converged else "Not converged"
+            print(f"[{status}] Saved: {opt_fname}")
+        else:
+            print(f"[Error] geo_end.gen not found for {fname}")
 
-        # Do not delete while debugging
+        # Keep temp_dir for debugging
         # shutil.rmtree(temp_dir)
 
     except Exception as e:
