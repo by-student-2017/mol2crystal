@@ -2,12 +2,12 @@
 
 # Install libraries
 # pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 
-# pip install openbabel-wheel==3.1.1.22
 # sudo apt update
 # sudo apt install openbabel libopenbabel-dev
+# pip install openbabel-wheel==3.1.1.22
 
 # Usage
-# pyton3 mol2crystal_gpaw.py
+# pyton3 mol2crystal_uff.py
 
 import os
 import numpy as np
