@@ -108,8 +108,10 @@ def dftb_optimize(fname):
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
-# Keep temp_dir for debugging
-# shutil.rmtree(dftb_temp)
+
+# delete old files
+temp_dir = "xtb_temp"
+shutil.rmtree(temp_dir)
 
 print("# Generate valid structures")
 valid_files = []

@@ -20,6 +20,9 @@ import shutil
 import psutil
 import uuid
 
+# xTB optimization function
+import glob
+
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 
@@ -66,8 +69,6 @@ def rotate_molecule(positions, theta, phi):
     ])
     return positions @ Rz.T @ Ry.T
 
-# xTB optimization function
-import glob
 
 def xtb_optimize(fname):
     try:
@@ -111,10 +112,13 @@ def xtb_optimize(fname):
         write(opt_fname, optimized, format='vasp')
         print(f"[{source}] Saved: {opt_fname}")
 
-        shutil.rmtree(temp_dir)
-
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
+
+
+# delete old files
+temp_dir = "xtb_temp"
+shutil.rmtree(temp_dir)
 
 print("# Generate valid structures")
 valid_files = []
