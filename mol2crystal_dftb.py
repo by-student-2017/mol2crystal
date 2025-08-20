@@ -93,18 +93,25 @@ def dftb_optimize(fname):
                 log_content = f.read()
                 if "Geometry optimization converged" in log_content:
                     converged = True
-
+        
         # Save result regardless of convergence
         geo_end = os.path.join(temp_dir, "geo_end.gen")
-        if os.path.exists(geo_end):
+        geom_out = os.path.join(temp_dir, "geom.out.gen")
+        
+        if converged and os.path.exists(geo_end):
             optimized = read(geo_end)
-            print("Optimized cell:\n", optimized.get_cell())
-            opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
-            write(opt_fname, optimized, format='vasp')
-            status = "Converged" if converged else "Not converged"
-            print(f"[{status}] Saved: {opt_fname}")
+            source = "geo_end.gen"
+        elif os.path.exists(geom_out):
+            optimized = read(geom_out)
+            source = "geom.out.gen"
         else:
-            print(f"[Error] geo_end.gen not found for {fname}")
+            print(f"[Error] No structure file found for {fname}")
+            return
+        
+        opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
+        write(opt_fname, optimized, format='vasp')
+        status = "Converged" if converged else "Not converged"
+        print(f"[{status}] Saved from {source}: {opt_fname}")
 
         # Keep temp_dir for debugging
         # shutil.rmtree(temp_dir)
