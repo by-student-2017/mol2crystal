@@ -130,6 +130,7 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
         if energy_value is not None:
             num_atoms = len(atoms) # or num_atoms = atoms.get_global_number_of_atoms()
             energy_per_atom = energy_value / num_atoms * 27.2114
+            relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
             
             # --- density calculation ---
             total_mass_amu = sum(optimized.get_masses())
@@ -137,7 +138,6 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
             volume = optimized.get_volume()
             volume_cm3 = volume * 1e-24
             density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
-            relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
             
             print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
             print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")

@@ -63,7 +63,7 @@
     !
     &MGRID
       NGRIDS 4
-      CUTOFF 400
+      CUTOFF 300
       REL_CUTOFF 60
     &END MGRID
     !
@@ -72,27 +72,27 @@
       EPS_SCF 1.0E-6
       SCF_GUESS ATOMIC
       !
-      &OT
-        MINIMIZER DIIS
-        PRECONDITIONER FULL_ALL
-        STEPSIZE 1.5E-01
-      &END OT
+      !&OT
+      !  MINIMIZER DIIS
+      !  PRECONDITIONER FULL_ALL
+      !  STEPSIZE 1.5E-01
+      !&END OT
       !
-      !&DIAGONALIZATION  ON
-      !  ALGORITHM STANDARD
-      !&END DIAGONALIZATION
+      &DIAGONALIZATION  ON
+        ALGORITHM STANDARD
+      &END DIAGONALIZATION
       !
-      !&MIXING  T
-      !  METHOD BROYDEN_MIXING
-      !  ALPHA 0.4
-      !  NBROYDEN 8
-      !&END MIXING
+      &MIXING  T
+        METHOD BROYDEN_MIXING
+        ALPHA 0.4
+        NBROYDEN 8
+      &END MIXING
       !
-      !ADDED_MOS 10
-      !&SMEAR ON
-      !  METHOD FERMI_DIRAC
-      !  ELECTRONIC_TEMPERATURE [K] 300
-      !&END SMEAR
+      ADDED_MOS 10
+      &SMEAR ON
+        METHOD FERMI_DIRAC
+        ELECTRONIC_TEMPERATURE [K] 300
+      &END SMEAR
     &END SCF
     !
   &END DFT
