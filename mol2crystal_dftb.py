@@ -109,10 +109,6 @@ def dftb_optimize(fname):
         print(f"Error optimizing {fname}: {e}")
 
 
-# delete old files
-temp_dir = "xtb_temp"
-shutil.rmtree(temp_dir)
-
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, 3)):
@@ -137,5 +133,9 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, 3)):
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
             except Exception:
                 continue
+
+# delete old files
+temp_dir = "dftb_temp"
+shutil.rmtree(temp_dir)
 
 print("Finished space group search and DFTB+ optimization.")
