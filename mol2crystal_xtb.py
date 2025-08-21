@@ -40,7 +40,7 @@ print("# Bounding box and cell")
 min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
-margin = 5.0
+margin = 15.0
 cellpar = list(extent + margin) + [90, 90, 90]
 cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
 inv_cell = np.linalg.inv(cell)
@@ -81,17 +81,11 @@ def xtb_optimize(fname):
         atoms = read(fname)
         original_cell = atoms.get_cell()
         
-        # old version. read xyz file and run xtb
-        #temp_xyz = os.path.join(temp_dir, "input.xyz")
-        #write(temp_xyz, atoms, format='extxyz')
-        #xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
-        
-        # Copy POSCAR to temp_dir
-        temp_poscar = os.path.join(temp_dir, "POSCAR")
-        write(temp_poscar, atoms, format='vasp')
+        # xyz file
+        temp_xyz = os.path.join(temp_dir, "input.xyz")
+        write(temp_xyz, atoms, format='extxyz')
+        xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
 
-        # run xtb
-        xtb_cmd = ["xtb", "POSCAR", "--opt", "--gfn", "1"]
         with open(os.path.join(temp_dir, "xtb_output.log"), "w") as log_file:
             result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=log_file, stderr=subprocess.STDOUT)
 
@@ -148,7 +142,7 @@ def xtb_optimize(fname):
             print(f"Volume: {volume:.6f} [A3]")
             print(f"Density: {density:.3f} [g/cm^3]")
         
-            with open("optimized_structures_vasp/structure_vs_energy.txt", "a") as out:
+            with open("structure_vs_energy.txt", "a") as out:
                 out.write(f"{fname} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f} \n")
         else:
             print("Energy value not found in xtbopt.log.")
@@ -156,11 +150,11 @@ def xtb_optimize(fname):
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
-
+nmesh = 3 # 0 - 45 degree devided nmesh
 print("# Generate valid structures")
 valid_files = []
-for i, theta in enumerate(np.linspace(0, np.pi/4, 3)):
-    for j, phi in enumerate(np.linspace(0, np.pi/4, 3)):
+for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
+    for j, phi in enumerate(np.linspace(0, np.pi/4, nmesh)):
         print("theta", theta, ", phi", phi, ", space group: 2 - 230")
         rotated_positions = rotate_molecule(positions, theta, phi)
         shifted_positions = rotated_positions - rotated_positions.min(axis=0)
