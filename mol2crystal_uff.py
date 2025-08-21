@@ -2,12 +2,14 @@
 
 # Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+#sudo apt update
+#sudo apt install openbabel
+#sudo apt install libopenbabel-dev
 
 # Usage
-# pyton3 mol2crystal.py
+# pyton3 mol2crystal_uff.py
 
 import os
-import glob
 import shutil
 import numpy as np
 from ase.io import read, write
@@ -15,6 +17,7 @@ from ase.spacegroup import crystal
 from scipy.spatial.distance import pdist
 import subprocess
 import psutil
+import re
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -61,6 +64,7 @@ def rotate_molecule(positions, theta, phi):
     ])
     return positions @ Rz.T @ Ry.T
 
+
 def density(fname):
     temp_dir = "temp"
     if os.path.exists(temp_dir):
@@ -68,26 +72,45 @@ def density(fname):
     os.makedirs(temp_dir, exist_ok=True)
 
     atoms = read(fname)
-    
-    num_atoms = optimized.get_number_of_atoms()
-    energy_per_atom = 0.0 / num_atoms * 27.2114
-    
-    # --- density calculation ---
-    total_mass_amu = sum(optimized.get_masses())
-    total_mass_g = total_mass_amu * 1.66053906660e-24
-    volume = optimized.get_volume()
-    volume_cm3 = volume * 1e-24
-    density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+    atoms.set_pbc(False)
 
-    print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
+    temp_xyz = os.path.join(temp_dir, "input.xyz")
+    write(temp_xyz, atoms, format='xyz')
+
+    # Run Open Babel to calculate energy
+    xtb_cmd = ["obenergy", "-ff", "UFF", temp_xyz]
+    try:
+        result = subprocess.run(xtb_cmd, capture_output=True, text=True, check=True)
+        output = result.stdout
+        match = re.search(r"TOTAL ENERGY =\s*(-?\d+\.\d+)", output)
+        if match:
+            energy = float(match.group(1))
+        else:
+            print("Energy value not found in Open Babel output.")
+            energy = 0.0
+    except subprocess.CalledProcessError as e:
+        print("Error running Open Babel:", e)
+        energy = 0.0
+
+    num_atoms = atoms.get_number_of_atoms()
+    energy_per_atom = energy / num_atoms if num_atoms > 0 else 0.0
+
+    total_mass_amu = sum(atoms.get_masses())
+    total_mass_g = total_mass_amu * 1.66053906660e-24
+    volume = atoms.get_volume()
+    volume_cm3 = volume * 1e-24
+    density_val = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+
+    print(f"Final energy per atom: {energy_per_atom:.6f} [kJ/mol/atom]")
     print(f"Number of atoms: {num_atoms}")
     print(f"Volume: {volume:.6f} [A3]")
-    print(f"Density: {density:.3f} [g/cm^3]")
-    
-    with open("structure_vs_energy.txt", "a") as out:
-        out.write(f"{fname} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f} \n")
+    print(f"Density: {density_val:.3f} [g/cm^3]")
 
-nmesh = 3 # 0 - 45 degree devided nmesh
+    with open("structure_vs_energy.txt", "a") as out:
+        out.write(f"{fname} {energy_per_atom:.6f} {density_val:.3f} {num_atoms} {volume:.6f}\n")
+
+
+nmesh = 3
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
@@ -113,4 +136,4 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
             except Exception:
                 continue
 
-print(f"Finished checking space groups. valid structures written.")
+print("Finished checking space groups. valid structures written.")
