@@ -27,6 +27,17 @@ import glob
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 
+if (os.path.exists('valid_structures_old')):
+    shutil.rmtree( 'valid_structures_old')   
+
+if (os.path.exists('valid_structures')):
+    os.rename(     'valid_structures','valid_structures_old')
+
+dirs_to_remove = ['temp', 'xtb_temp', 'dftb_temp', 'gpaw_temp']
+for dir_name in dirs_to_remove:
+    if os.path.exists(dir_name):
+        shutil.rmtree(dir_name)
+
 # Parallerization for xTB calculation
 cpu_count = psutil.cpu_count(logical=False)
 os.environ["OMP_NUM_THREADS"] = str(cpu_count)
@@ -35,14 +46,20 @@ print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
 symbols = mol.get_chemical_symbols()
 positions = mol.get_positions()
+com = mol.get_center_of_mass()
+mol.translate(-com)
 
 print("# Bounding box and cell")
 min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
-margin = 15.0
-cellpar = list(extent + margin) + [90, 90, 90]
-cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
+extent[extent < 1.0] = 1.0  # avoid zero-length cell
+margin = 3.0
+max_extent = extent.max() + margin
+cellpar = [max_extent, max_extent, max_extent, 90, 90, 90]
+cell = np.array([[max_extent, 0, 0],
+                 [0, max_extent, 0],
+                 [0, 0, max_extent]])
 inv_cell = np.linalg.inv(cell)
 print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
 print("Cell matrix:\n", cell)
@@ -71,7 +88,7 @@ def rotate_molecule(positions, theta, phi):
     return positions @ Rz.T @ Ry.T
 
 
-def xtb_optimize(fname):
+def xtb_optimize(fname, precursor_energy_per_atom):
     try:
         temp_dir = "xtb_temp"
         if os.path.exists(temp_dir):
@@ -127,7 +144,7 @@ def xtb_optimize(fname):
                         break
         
         if energy_value is not None:
-            num_atoms = optimized.get_number_of_atoms()
+            num_atoms = len(atoms) # or num_atoms = atoms.get_global_number_of_atoms()
             energy_per_atom = energy_value / num_atoms * 27.2114
         
             # --- density calculation ---
@@ -135,22 +152,29 @@ def xtb_optimize(fname):
             total_mass_g = total_mass_amu * 1.66053906660e-24
             volume = optimized.get_volume()
             volume_cm3 = volume * 1e-24
-            density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+            density_val = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+            relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
         
             print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
+            print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
             print(f"Number of atoms: {num_atoms}")
             print(f"Volume: {volume:.6f} [A3]")
             print(f"Density: {density:.3f} [g/cm^3]")
+            print(f"------------------------------------------------------")
         
             with open("structure_vs_energy.txt", "a") as out:
-                out.write(f"{fname} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f} \n")
+                out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density_val:.3f} {num_atoms} {volume:.6f}\n")
         else:
             print("Energy value not found in xtbopt.log.")
         
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
-nmesh = 3 # 0 - 45 degree devided nmesh
+# Reference energy from original molecule
+with open("structure_vs_energy.txt", "w") as f:
+    print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
+
+nmesh = 1 # 0 - 45 degree devided nmesh
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
@@ -171,13 +195,9 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
-                    xtb_optimize(fname)
+                    xtb_optimize(fname, precursor_energy_per_atom=0.0)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
             except Exception:
                 continue
-
-# delete old files
-#temp_dir = "xtb_temp"
-#shutil.rmtree(temp_dir)
 
 print("Finished space group search and xTB optimization.")
