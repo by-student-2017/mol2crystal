@@ -22,6 +22,17 @@ import re
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 
+if (os.path.exists('valid_structures_old')):
+    shutil.rmtree( 'valid_structures_old')   
+
+if (os.path.exists('valid_structures')):
+    os.rename(     'valid_structures','valid_structures_old')
+
+dirs_to_remove = ['temp', 'xtb_temp', 'dftb_temp', 'gpaw_temp']
+for dir_name in dirs_to_remove:
+    if os.path.exists(dir_name):
+        shutil.rmtree(dir_name)
+
 cpu_count = psutil.cpu_count(logical=False)
 os.environ["OMP_NUM_THREADS"] = str(cpu_count)
 
@@ -29,15 +40,20 @@ print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
 symbols = mol.get_chemical_symbols()
 positions = mol.get_positions()
+com = mol.get_center_of_mass()
+mol.translate(-com)
 
 print("# Bounding box and cell")
 min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
 extent[extent < 1.0] = 1.0  # avoid zero-length cell
-margin = 15.0
-cellpar = list(extent + margin) + [90, 90, 90]
-cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
+margin = 3.0
+max_extent = extent.max() + margin
+cellpar = [max_extent, max_extent, max_extent, 90, 90, 90]
+cell = np.array([[max_extent, 0, 0],
+                 [0, max_extent, 0],
+                 [0, 0, max_extent]])
 inv_cell = np.linalg.inv(cell)
 print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
 print("Cell matrix:\n", cell)
@@ -46,9 +62,9 @@ os.makedirs("valid_structures", exist_ok=True)
 #os.makedirs("optimized_structures_vasp", exist_ok=True)
 
 
-def has_overlap(atoms, threshold=0.85):
+def has_overlap(atoms, min_threshold=0.1, max_threshold=0.85):
     dists = pdist(atoms.get_positions())
-    return np.any(dists < threshold)
+    return np.any((dists > min_threshold) & (dists < max_threshold))
 
 
 def rotate_molecule(positions, theta, phi):
@@ -124,7 +140,7 @@ if match:
 with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
-nmesh = 3
+nmesh = 1 # 0 - 45 degree devided by nmesh
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
