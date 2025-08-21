@@ -19,6 +19,7 @@ import subprocess
 import shutil
 import psutil
 import uuid
+import re
 
 # xTB optimization function
 import glob
@@ -85,7 +86,8 @@ def xtb_optimize(fname):
 
         # run xtb
         xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
-        result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        with open(os.path.join(temp_dir, "xtb_output.log"), "w") as log_file:
+            result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=log_file, stderr=subprocess.STDOUT)
 
         # save result regardless of convergence
         opt_xyz = os.path.join(temp_dir, "xtbopt.xyz")
@@ -111,7 +113,40 @@ def xtb_optimize(fname):
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, optimized, format='vasp')
         print(f"[{source}] Saved: {opt_fname}")
-
+        
+        # --- Extract only the last energy value ---
+        log_path = os.path.join(temp_dir, "xtbopt.log")
+        energy_value = None
+        
+        if os.path.exists(log_path):
+            with open(log_path, "r") as f:
+                for line in reversed(f.readlines()):
+                    match = re.search(r"energy:\s*(-?\d+\.\d+)", line)
+                    if match:
+                        energy_value = float(match.group(1))
+                        break
+        
+        if energy_value is not None:
+            num_atoms = optimized.get_number_of_atoms()
+            energy_per_atom = energy_value / num_atoms * 27.2114
+        
+            # --- density calculation ---
+            total_mass_amu = sum(optimized.get_masses())
+            total_mass_g = total_mass_amu * 1.66053906660e-24
+            volume = optimized.get_volume()
+            volume_cm3 = volume * 1e-24
+            density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+        
+            print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
+            print(f"Number of atoms: {num_atoms}")
+            print(f"Volume: {volume:.6f} [A3]")
+            print(f"Density: {density:.3f} [g/cm^3]")
+        
+            with open("optimized_structures_vasp/structure_vs_energy.txt", "a") as out:
+                out.write(f"{fname} {energy_per_atom:.6f} {density:.3f}\n")
+        else:
+            print("Energy value not found in xtbopt.log.")
+        
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
@@ -142,7 +177,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, 3)):
                 continue
 
 # delete old files
-temp_dir = "xtb_temp"
-shutil.rmtree(temp_dir)
+#temp_dir = "xtb_temp"
+#shutil.rmtree(temp_dir)
 
 print("Finished space group search and xTB optimization.")
