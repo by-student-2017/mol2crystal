@@ -8,12 +8,13 @@ y_energy = []
 labels = []
 
 with open("structure_vs_energy.txt", "r") as file:
-    for line in file:
+    for line in file.readlines()[1:]:
         parts = line.strip().split()
-        if len(parts) >= 3:
-            label = parts[0].split("/")[-1]
+        if len(parts) >= 4:
+            #label = parts[0].split("/")[-1]
+            label = parts[0].split("/")[-1].replace("POSCAR_", "")
             energy = float(parts[1])
-            density = float(parts[2])
+            density = float(parts[3])
             x_density.append(density)
             y_energy.append(energy)
             labels.append(label)
@@ -22,7 +23,7 @@ with open("structure_vs_energy.txt", "r") as file:
 fig, ax = plt.subplots(figsize=(10, 7))
 sc = ax.scatter(x_density, y_energy, c=y_energy, cmap='viridis', alpha=0.8, edgecolors='k')
 ax.set_xlabel("Density [g/cm^3]")
-ax.set_ylabel("Energy [KJ/mol/atom]")
+ax.set_ylabel("Relative Energy [eV/atom]")
 ax.set_title("Energy vs Density of Valid Structures")
 ax.grid(True)
 
