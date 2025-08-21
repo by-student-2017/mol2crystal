@@ -81,11 +81,17 @@ def xtb_optimize(fname):
         atoms = read(fname)
         original_cell = atoms.get_cell()
         
-        temp_xyz = os.path.join(temp_dir, "input.xyz")
-        write(temp_xyz, atoms, format='extxyz')
+        # old version. read xyz file and run xtb
+        #temp_xyz = os.path.join(temp_dir, "input.xyz")
+        #write(temp_xyz, atoms, format='extxyz')
+        #xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
+        
+        # Copy POSCAR to temp_dir
+        temp_poscar = os.path.join(temp_dir, "POSCAR")
+        write(temp_poscar, atoms, format='vasp')
 
         # run xtb
-        xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
+        xtb_cmd = ["xtb", "POSCAR", "--opt", "--gfn", "1"]
         with open(os.path.join(temp_dir, "xtb_output.log"), "w") as log_file:
             result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=log_file, stderr=subprocess.STDOUT)
 
