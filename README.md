@@ -58,7 +58,7 @@ pyton3 mol2crystal_gpaw.py
 ```
 - OpenBabel version
 ```
-pyton3 mol2crystal_uff.py
+pyton3 mol2crystal_gaff.py
 ```
 
 ## plot
