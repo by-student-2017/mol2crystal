@@ -5,6 +5,13 @@
 ```
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 ```
+- OpenBabel version (GAFF or UFF)
+```
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+sudo apt update
+sudo apt install openbabel
+sudo apt install libopenbabel-dev
+```
 - xTB version
 ```
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
@@ -26,13 +33,6 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install "numpy<2.0"
 ```
-- OpenBabel version
-```
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-sudo apt update
-sudo apt install openbabel
-sudo apt install libopenbabel-dev
-```
 
 ## Usage
 1. Draw a molecule with the free version of ChemSketch and output it in mol format.
@@ -43,6 +43,10 @@ sudo apt install libopenbabel-dev
 - mol2crystal.py: Apply space group to molecule. Since no other calculations are performed, interatomic and cell optimizations are not performed. A separate code is required for geometry optimization.
 ```
 pyton3 mol2crystal.py
+```
+- OpenBabel version (GAFF or UFF): Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. The computational cost is very low.
+```
+pyton3 mol2crystal_gaff.py
 ```
 - xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations. Cell optimization is not possible.
 ```
@@ -55,10 +59,6 @@ pyton3 mol2crystal_dftb.py
 - GPAW version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
 pyton3 mol2crystal_gpaw.py
-```
-- OpenBabel version
-```
-pyton3 mol2crystal_gaff.py
 ```
 
 ## plot
