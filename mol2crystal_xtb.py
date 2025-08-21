@@ -143,7 +143,7 @@ def xtb_optimize(fname):
             print(f"Density: {density:.3f} [g/cm^3]")
         
             with open("optimized_structures_vasp/structure_vs_energy.txt", "a") as out:
-                out.write(f"{fname} {energy_per_atom:.6f} {density:.3f}\n")
+                out.write(f"{fname} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f} \n")
         else:
             print("Energy value not found in xtbopt.log.")
         
