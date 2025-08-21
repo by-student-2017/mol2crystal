@@ -33,6 +33,12 @@ if (os.path.exists('valid_structures_old')):
 if (os.path.exists('valid_structures')):
     os.rename(     'valid_structures','valid_structures_old')
 
+if (os.path.exists('optimized_structures_vasp_old')):
+    shutil.rmtree( 'optimized_structures_vasp_old')   
+
+if (os.path.exists('optimized_structures_vasp')):
+    os.rename(     'optimized_structures_vasp','optimized_structures_vasp_old')
+
 dirs_to_remove = ['temp', 'xtb_temp', 'dftb_temp', 'gpaw_temp']
 for dir_name in dirs_to_remove:
     if os.path.exists(dir_name):
@@ -146,14 +152,14 @@ def xtb_optimize(fname, precursor_energy_per_atom):
         if energy_value is not None:
             num_atoms = len(atoms) # or num_atoms = atoms.get_global_number_of_atoms()
             energy_per_atom = energy_value / num_atoms * 27.2114
+            relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
         
             # --- density calculation ---
             total_mass_amu = sum(optimized.get_masses())
             total_mass_g = total_mass_amu * 1.66053906660e-24
             volume = optimized.get_volume()
             volume_cm3 = volume * 1e-24
-            density_val = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
-            relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
+            density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
         
             print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
             print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
@@ -163,7 +169,7 @@ def xtb_optimize(fname, precursor_energy_per_atom):
             print(f"------------------------------------------------------")
         
             with open("structure_vs_energy.txt", "a") as out:
-                out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density_val:.3f} {num_atoms} {volume:.6f}\n")
+                out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
         else:
             print("Energy value not found in xtbopt.log.")
         

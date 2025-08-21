@@ -108,7 +108,7 @@ def obenergy_calc(fname, precursor_energy_per_atom):
         print("Error running Open Babel:", e)
         energy = 0.0
 
-    num_atoms = len(mol) # or num_atoms = mol.get_global_number_of_atoms()
+    num_atoms = len(atoms) # or num_atoms = atoms.get_global_number_of_atoms()
     energy_per_atom = energy * 0.0103636 / num_atoms if num_atoms > 0 else 0.0
     relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
 
@@ -116,23 +116,23 @@ def obenergy_calc(fname, precursor_energy_per_atom):
     total_mass_g = total_mass_amu * 1.66053906660e-24
     volume = atoms.get_volume()
     volume_cm3 = volume * 1e-24
-    density_val = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+    density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
 
     print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
     print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
     print(f"Number of atoms: {num_atoms}")
     print(f"Volume: {volume:.6f} [A3]")
-    print(f"Density: {density_val:.3f} [g/cm^3]")
+    print(f"Density: {density:.3f} [g/cm^3]")
     print(f"------------------------------------------------------")
 
     with open("structure_vs_energy.txt", "a") as out:
-        out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density_val:.3f} {num_atoms} {volume:.6f}\n")
+        out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
 
 # Reference energy from original molecule
 temp_mol = os.path.join('molecular_files/precursor.mol')
 write("precursor.xyz", mol, format="xyz")
-xtb_cmd = ["obenergy", "-ff", "GAFF", "precursor.xyz"]
-result = subprocess.run(xtb_cmd, capture_output=True, text=True, check=True)
+obenergy_cmd = ["obenergy", "-ff", "GAFF", "precursor.xyz"]
+result = subprocess.run(obenergy_cmd, capture_output=True, text=True, check=True)
 output = result.stdout
 match = re.search(r"TOTAL ENERGY =\s*(-?\d+\.\d+)", output)
 if match:

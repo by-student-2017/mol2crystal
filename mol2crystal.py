@@ -86,7 +86,7 @@ def density_calc(fname):
 
     atoms = read(fname)
     
-    num_atoms = atoms.get_number_of_atoms()
+    num_atoms = len(mol) # or num_atoms = mol.get_global_number_of_atoms()
     energy_per_atom = 0.0 / num_atoms * 27.2114  # Temporary energy (can be substituted into calculations later)
 
     # --- density calculation ---
