@@ -16,33 +16,52 @@ import shutil
 import psutil
 
 from gpaw import GPAW, PW
-from ase.constraints import UnitCellFilter
+from ase.filters import UnitCellFilter
 from ase.optimize import LBFGS
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 
+if (os.path.exists('valid_structures_old')):
+    shutil.rmtree( 'valid_structures_old')   
+
+if (os.path.exists('valid_structures')):
+    os.rename(     'valid_structures','valid_structures_old')
+
+if (os.path.exists('optimized_structures_vasp_old')):
+    shutil.rmtree( 'optimized_structures_vasp_old')   
+
+if (os.path.exists('optimized_structures_vasp')):
+    os.rename(     'optimized_structures_vasp','optimized_structures_vasp_old')
+
+dirs_to_remove = ['temp', 'xtb_temp', 'dftb_temp', 'gpaw_temp']
+for dir_name in dirs_to_remove:
+    if os.path.exists(dir_name):
+        shutil.rmtree(dir_name)
+
 # Set CPU threads
 cpu_count = psutil.cpu_count(logical=False)
 os.environ["OMP_NUM_THREADS"] = str(cpu_count)
 
-# Read molecule
 print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
 symbols = mol.get_chemical_symbols()
 positions = mol.get_positions()
+com = mol.get_center_of_mass()
+mol.translate(-com)
 
-# Define cell
 print("# Bounding box and cell")
 min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
 extent[extent < 1.0] = 1.0  # avoid zero-length cell
-margin = 5.0
-cellpar = list(extent + margin) + [90, 90, 90]
-cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
+margin = 3.0
+max_extent = extent.max() + margin
+cellpar = [max_extent, max_extent, max_extent, 90, 90, 90]
+cell = np.array([[max_extent, 0, 0],
+                 [0, max_extent, 0],
+                 [0, 0, max_extent]])
 inv_cell = np.linalg.inv(cell)
-
 print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
 print("Cell matrix:\n", cell)
 
@@ -71,7 +90,7 @@ def rotate_molecule(positions, theta, phi):
 
 
 # GPAW optimization
-def gpaw_optimize(fname):
+def gpaw_optimize(fname, precursor_energy_per_atom):
     try:
         temp_dir = "gpaw_temp"
         if os.path.exists(temp_dir):
@@ -94,19 +113,59 @@ def gpaw_optimize(fname):
         # Save the final structure
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, atoms, format='vasp')
-        print(f"[GPAW] Saved: {opt_fname}")
+        
+        # --- Extract only the last energy value ---
+        #energy_value = atoms.get_potential_energy()
+        log_path = os.path.join(temp_dir, "gpaw_out.txt")
+        energy_value = None
+        
+        if os.path.exists(log_path):
+            with open(log_path, "r") as f:
+                for line in reversed(f.readlines()):
+                    match = re.search(r"iter:\s+\d+\s+\d{2}:\d{2}:\d{2}\s+(-?\d+\.\d+)", line)
+                    if match:
+                        energy_value = float(match.group(1))
+                        break
+        
+        if energy_value is not None:
+            num_atoms = len(atoms) # or num_atoms = atoms.get_global_number_of_atoms()
+            energy_per_atom = energy_value / num_atoms * 27.2114
+            
+            # --- density calculation ---
+            total_mass_amu = sum(optimized.get_masses())
+            total_mass_g = total_mass_amu * 1.66053906660e-24
+            volume = optimized.get_volume()
+            volume_cm3 = volume * 1e-24
+            density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+            relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
+            
+            print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
+            print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
+            print(f"Number of atoms: {num_atoms}")
+            print(f"Volume: {volume:.6f} [A3]")
+            print(f"Density: {density:.3f} [g/cm^3]")
+            print(f"------------------------------------------------------")
+            
+            with open("structure_vs_energy.txt", "a") as out:
+                out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
+        else:
+            print("Energy value not found in xtbopt.log.")
 
     except Exception as e:
         import traceback
         traceback.print_exc()
         print(f"Error optimizing {fname}: {e}")
 
+# Reference energy from original molecule
+with open("structure_vs_energy.txt", "w") as f:
+    print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
+nmesh = 1 # 0 - 45 degree devided nmesh
 # Generate structures
 print("# Generate valid structures")
 valid_files = []
-for i, theta in enumerate(np.linspace(0, np.pi/4, 3)):
-    for j, phi in enumerate(np.linspace(0, np.pi/4, 3)):
+for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
+    for j, phi in enumerate(np.linspace(0, np.pi/4, nmesh)):
         print(f"theta={theta:.2f}, phi={phi:.2f}, space group: 2 - 230")
         rotated_positions = rotate_molecule(positions, theta, phi)
         shifted_positions = rotated_positions - rotated_positions.min(axis=0)
@@ -123,13 +182,9 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, 3)):
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
-                    gpaw_optimize(fname)
+                    gpaw_optimize(fname, precursor_energy_per_atom=0.0)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
             except Exception:
                 continue
-
-# delete old files
-temp_dir = "gpaw_temp"
-shutil.rmtree(temp_dir)
 
 print("Finished space group search and GPAW optimization.")

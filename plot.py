@@ -23,7 +23,7 @@ with open("structure_vs_energy.txt", "r") as file:
 fig, ax = plt.subplots(figsize=(10, 7))
 sc = ax.scatter(x_density, y_energy, c=y_energy, cmap='viridis', alpha=0.8, edgecolors='k')
 ax.set_xlabel("Density [g/cm^3]")
-ax.set_ylabel("Relative Energy [eV/atom]")
+ax.set_ylabel("Energy [eV/atom]") # ax.set_ylabel("Relative Energy [eV/atom]")
 ax.set_title("Energy vs Density of Valid Structures")
 ax.grid(True)
 
