@@ -42,7 +42,7 @@ for dir_name in dirs_to_remove:
         shutil.rmtree(dir_name)
 
 cpu_count = psutil.cpu_count(logical=False)
-os.environ["OMP_NUM_THREADS"] = str(cpu_count)
+os.environ["OMP_NUM_THREADS"] = '1'
 
 print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
@@ -125,7 +125,7 @@ def mopac_optimize(fname, precursor_energy_per_atom):
         # Run MOPAC
         log_path = os.path.join(temp_dir, "input.out")
         with open(log_path, "w") as out:
-            subprocess.run(["mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
+            subprocess.run(["mpirun", "-np", str(cpu_count), "mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
 
         # Parse output for final energy
         energy_value = None
