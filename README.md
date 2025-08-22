@@ -1,4 +1,6 @@
 # mol2crystal
+
+## Feature
 - A crystal structure is created by applying a space group to one precursor.
 - The energy of the created crystal structure can be calculated using various codes, and a density and energy diagram can be displayed.
 - Crystal structures with high density and low energy as shown in the diagram are considered candidates.
