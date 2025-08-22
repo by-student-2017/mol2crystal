@@ -40,7 +40,13 @@ def update_annot(ind):
     idx = ind["ind"][0]
     pos = sc.get_offsets()[idx]
     annot.xy = pos
-    text = f"{labels[idx]}\nDensity: {pos[0]:.3f}\nEnergy: {pos[1]:.3f}"
+    #text = f"{labels[idx]}\nDensity: {pos[0]:.3f}\nEnergy: {pos[1]:.3f}"
+    label_parts = labels[idx].split("_")
+    if len(label_parts) == 6:
+        label_text = f"theta: {label_parts[1]}\nphi: {label_parts[3]}\nsg: {label_parts[5]}"
+    else:
+        label_text = labels[idx]
+    text = f"{label_text}\nDensity: {pos[0]:.3f}\nEnergy: {pos[1]:.3f}"
     annot.set_text(text)
     annot.get_bbox_patch().set_facecolor('lightyellow')
     annot.get_bbox_patch().set_alpha(0.9)
