@@ -6,6 +6,7 @@
 # wget https://github.com/grimme-lab/xtb/releases/download/v6.7.1/xtb-6.7.1-linux-x86_64.tar.xz
 # tar xvf xtb-6.7.1-linux-x86_64.tar.xz
 # echo 'export PATH=$PATH:$HOME/xtb-dist/bin' >> ~/.bashrc
+# source ~/.bashrc
 
 # Usage
 # pyton3 mol2crystal_xtb.py
