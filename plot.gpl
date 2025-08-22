@@ -1,0 +1,28 @@
+#!/usr/bin/gnuplot
+
+# === Save as PNG for publication ===
+set terminal pngcairo size 800,600 font "Times New Roman,12"
+set output "density_vs_energy.png"
+
+set xlabel "Density (g/cm^{3})
+set ylabel "Energy (eV)"
+
+set xrange [0:*]
+#set format y "%.2f"
+
+set grid
+
+# Add minor ticks
+#set xtics 1.0
+#set ytics 1.0
+
+set mxtics 5
+set mytics 5
+
+# --- Display preview on screen ---
+plot "structure_vs_energy.txt" using 4:2 w p pt 7 ps 1.2 lc rgb "green" title ""
+
+# === Display on screen ===
+set terminal win font "Arial,12"
+replot
+unset output
