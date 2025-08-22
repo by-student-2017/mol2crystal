@@ -6,7 +6,7 @@
 - Classical MD (GAFF and UFF in OpenBabel, and Reaxff in Lammps) is being developed. GAFF and UFF using OpenBabel cannot optimize structures at the cell level, so they are suitable for rough screening. On the other hand, Lammps is limited to elements handled by Reaxff, but is expected to be a promising candidate search method.
 - Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) are being developed. MOPAC and xTB are not currently recommended due to their lack of cell optimization functionality. DFTB+ is expected to be a promising candidate search method.
 - First-principles calculation codes (GPAW, CP2k, Siesta, QE, Abinit, Elk, etc.) are available, but are not recommended due to their high computational costs. They may work well on medium- to large-scale computers.
-- Not yet developed: Lammps, QE, Abinit, Elk
+- Not yet developed: Lammps (or lammps + moltemplate), QE, Abinit, Elk
 
 ## Install libraries
 - mol2crystal.py
