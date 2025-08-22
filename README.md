@@ -40,7 +40,7 @@ sudo apt -y install cmake gfortran gcc libopenmpi-dev
 git clone -b stable https://github.com/lammps/lammps.git
 cd lammps
 mkdir build && cd build
-cmake -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
+cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
 make -j$(nproc)
 sudo make install
 ```
