@@ -82,8 +82,13 @@ pyton3 mol2crystal_cp2k.py
 ```
 
 ## plot
+- matplotlib version
 ```
 python3 plot.py
+```
+- gnuplot version
+```
+gnuplot plot.gpl
 ```
 
 ## lammps_reaxff_md_windows11
