@@ -57,15 +57,16 @@ min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
 extent[extent < 1.0] = 1.0  # avoid zero-length cell
-margin = 3.0
+margin = 3.0 # General vdW radius
 #cellpar = list(extent + margin) + [90, 90, 90]
 #cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
-max_extent = extent.max() + margin
+max_extent = extent.max() + 2 * margin  # Ensure margin on both sides
 cellpar = [max_extent, max_extent, max_extent, 90, 90, 90]
 cell = np.array([[max_extent, 0, 0],
                  [0, max_extent, 0],
                  [0, 0, max_extent]])
 inv_cell = np.linalg.inv(cell)
+mol.translate(0.5 * max_extent) # Move to the center of the cell
 print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
 print("Cell matrix:\n", cell)
 
