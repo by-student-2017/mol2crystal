@@ -158,8 +158,11 @@ gnuplot plot.gpl
 - It is better to apply the calculation to the crystal structure obtained with mol2crystal.py.
 - The calculation includes dielectric constant. In other words, this is an example that takes the solvent into account.
 
-## Test
-- Ubuntu 22.04 LTS (WSL2, Windows 11)
+## Tested Environment
+- Ubuntu: 22.04 LTS (WSL2, Windows 11)
+- Python: 3.10
+- ASE: 3.22.1
+- LAMMPS version: stable_22Jul2025
 
 ## References
 - [1] S. OBATA et al., Nihon Kessho Gakkaishi 62 (2020) 260-268. (Japanese): https://doi.org/10.5940/jcrsj.62.260
