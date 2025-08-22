@@ -1,25 +1,37 @@
 include   'system.in.init'
-
 read_data 'system.data'
-
 include   'system.in.settings'
 
+Stabilize communication and connections (optional)
+comm_modify cutoff 20.0
+special_bonds lj/coul 0 0 1
+
+# output data
 thermo 100
 thermo_style custom step etotal temp lx ly lz vol press vol density
 
+# Energy minimization
 minimize 1.0e-5 1.0e-7 1000 10000
 
-velocity        all create 300 4928459 dist gaussian
+# Initial temperature setting at 300 [K]
+velocity all create 300 4928459 dist gaussian
 
+# 1.0 fs step (Typical values ​​for GAFF, LJ, etc.)
 timestep 1.0
 
+# Initial easing with NVT
 fix fxnvt all nvt temp 300.0 300.0 500.0 tchain 1
 run 5000
 
-dump            1 all xtc 10 bpy-128_md.xtc
-dump_modify     1 unwrap yes
+# Volume relaxation with NPT
+unfix fxnvt
+fix fxnpt all npt temp 300.0 300.0 100.0 aniso 1.0 1.0 1000.0 drag 0.2
+# drag is a damping coefficient that slows down the rate at which the box size changes.
+# Smaller values ​​result in slower changes, while larger values ​​result in more rapid changes.
+# 0.2 provides moderate damping (recommended value) for a good balance between stability and responsiveness.
 
-fix fxnpt all npt temp 300.0 300.0 100.0 aniso 1.0 1.0 1000.0 drag 1.0
-run 50000
+#dump 1 all dcd 100 md_npt.dcd
+#dump_modify 1 unwrap yes
 
+run 40000 # 40 ps
 write_data md_npt.lmp
