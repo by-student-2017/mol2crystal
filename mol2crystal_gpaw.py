@@ -161,8 +161,9 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
 with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
-nmesh = 3 # 0 - 45 degree devided nmesh
-# Generate structures
+print(f"------------------------------------------------------")
+nmesh = 3 # 0 - 45 degrees divided into nmesh
+print(f"0 - 45 degrees divided into 3",nmesh)
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):

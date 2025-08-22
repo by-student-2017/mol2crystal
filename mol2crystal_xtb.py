@@ -49,6 +49,7 @@ for dir_name in dirs_to_remove:
 cpu_count = psutil.cpu_count(logical=False)
 os.environ["OMP_NUM_THREADS"] = str(cpu_count)
 
+print(f"------------------------------------------------------")
 print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
 symbols = mol.get_chemical_symbols()
@@ -182,7 +183,9 @@ def xtb_optimize(fname, precursor_energy_per_atom):
 with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
-nmesh = 3 # 0 - 45 degree devided nmesh
+print(f"------------------------------------------------------")
+nmesh = 3 # 0 - 45 degrees divided into nmesh
+print(f"0 - 45 degrees divided into 3",nmesh)
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
