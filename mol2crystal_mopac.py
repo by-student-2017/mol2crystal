@@ -42,7 +42,8 @@ for dir_name in dirs_to_remove:
         shutil.rmtree(dir_name)
 
 cpu_count = psutil.cpu_count(logical=False)
-os.environ["OMP_NUM_THREADS"] = '1'
+#os.environ["OMP_NUM_THREADS"] = '1'
+os.environ["OMP_NUM_THREADS"] = str(cpu_count)
 
 print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
@@ -115,7 +116,7 @@ def mopac_optimize(fname, precursor_energy_per_atom):
             xyz_content = xyz_file.read()
 
         with open(mopac_input_path, "w") as f:
-            f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME EF GNORM=1.0 DEBUG STRESS PRESSURE=1.0E5\nNumber of atoms: ")
+            #f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME EF GNORM=1.0 DEBUG STRESS PRESSURE=1.0E5\nNumber of atoms: ")
             f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME\nNumber of atoms: ")
             f.write(xyz_content)
             cell = atoms.get_cell()
@@ -127,7 +128,8 @@ def mopac_optimize(fname, precursor_energy_per_atom):
         log_path = os.path.join(temp_dir, "input.out")
         arc_path = os.path.join(temp_dir, "input.arc")
         with open(log_path, "w") as out:
-            subprocess.run(["mpirun", "-np", str(cpu_count), "mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
+            #subprocess.run(["mpirun", "-np", str(cpu_count), "mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
+            subprocess.run(["mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
 
         # Parse output for final energy
         energy_value = None
