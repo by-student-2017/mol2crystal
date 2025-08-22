@@ -12,6 +12,13 @@ sudo apt update
 sudo apt install openbabel
 sudo apt install libopenbabel-dev
 ```
+- MOPAC version
+```
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
+tar xvf mopac-23.1.2-linux.tar.gz
+echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
+```
 - xTB version
 ```
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
@@ -52,6 +59,10 @@ pyton3 mol2crystal.py
 - OpenBabel version (GAFF or UFF): Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. The computational cost is very low.
 ```
 pyton3 mol2crystal_gaff.py
+```
+- MOPAC version
+```
+pyton3 mol2crystal_mopac.py
 ```
 - xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations. Cell optimization is not possible.
 ```
