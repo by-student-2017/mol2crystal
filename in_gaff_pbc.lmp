@@ -40,7 +40,7 @@ run 60000 # 30 ps
 
 write_data md.data
 
-run 1
+run 0
 variable  natoms equal "count(all)" 
 variable      x0 equal "lx"
 variable      y0 equal "ly"
