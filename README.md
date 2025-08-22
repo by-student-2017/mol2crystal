@@ -1,4 +1,11 @@
 # mol2crystal
+- A crystal structure is created by applying a space group to one precursor.
+- The energy of the created crystal structure can be calculated using various codes, and a density and energy diagram can be displayed.
+- Crystal structures with high density and low energy as shown in the diagram are considered candidates.
+- Classical MD (GAFF and UFF in OpenBabel, and Reaxff in Lammps) is being developed. GAFF and UFF using OpenBabel cannot optimize structures at the cell level, so they are suitable for rough screening. On the other hand, Lammps is limited to elements handled by Reaxff, but is expected to be a promising candidate search method.
+- Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) are being developed. MOPAC and xTB are not currently recommended due to their lack of cell optimization functionality. DFTB+ is expected to be a promising candidate search method.
+- First-principles calculation codes (GPAW, CP2k, Siesta, QE, Abinit, Elk, etc.) are available, but are not recommended due to their high computational costs. They may work well on medium- to large-scale computers.
+- Not yet developed: Lammps, QE, Abinit, Elk
 
 ## Install libraries
 - mol2crystal.py
