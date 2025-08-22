@@ -119,8 +119,8 @@ def mopac_optimize(fname, precursor_energy_per_atom):
             xyz_content = xyz_file.read()
 
         with open(mopac_input_path, "w") as f:
-            #f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME EF GNORM=1.0 DEBUG STRESS PRESSURE=1.0E5\nNumber of atoms: ")
-            f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME\nNumber of atoms: ")
+            f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME EF GNORM=1.0 DEBUG STRESS PRESSURE=1.0E5\nNumber of atoms: ")
+            #f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME\nNumber of atoms: ")
             f.write(xyz_content)
             cell = atoms.get_cell()
             f.write(f"Tv {cell[0][0]:22.15f} {cell[0][1]:22.15f} {cell[0][2]:22.15f}\n")
@@ -212,9 +212,10 @@ with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
 print(f"------------------------------------------------------")
+print("# Generate valid structures")
 nmesh = 3 # 0 - 45 degrees divided into nmesh
 print(f"0 - 45 degrees divided into",nmesh)
-print("# Generate valid structures")
+print(f"------------------------------------------------------")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
     for j, phi in enumerate(np.linspace(0, np.pi/4, nmesh)):

@@ -184,9 +184,10 @@ with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
 print(f"------------------------------------------------------")
+print("# Generate valid structures")
 nmesh = 3 # 0 - 45 degrees divided into nmesh
 print(f"0 - 45 degrees divided into",nmesh)
-print("# Generate valid structures")
+print(f"------------------------------------------------------")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
     for j, phi in enumerate(np.linspace(0, np.pi/4, nmesh)):
