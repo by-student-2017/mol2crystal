@@ -58,15 +58,16 @@ inv_cell = np.linalg.inv(cell)
 print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
 print("Cell matrix:\n", cell)
 
+# Output directories
 os.makedirs("valid_structures", exist_ok=True)
 #os.makedirs("optimized_structures_vasp", exist_ok=True)
 
-
-def has_overlap(atoms, min_threshold=0.1, max_threshold=0.85):
+# Check for atomic overlap
+def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
     dists = pdist(atoms.get_positions())
     return np.any((dists > min_threshold) & (dists < max_threshold))
 
-
+# Rotation
 def rotate_molecule(positions, theta, phi):
     Rz = np.array([
         [np.cos(theta), -np.sin(theta), 0],
@@ -80,7 +81,7 @@ def rotate_molecule(positions, theta, phi):
     ])
     return positions @ Rz.T @ Ry.T
 
-
+# density calculation
 def density_calc(fname):
     temp_dir = "temp"
     if os.path.exists(temp_dir):

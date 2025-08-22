@@ -80,10 +80,10 @@ print("Cell matrix:\n", cell)
 os.makedirs("valid_structures", exist_ok=True)
 os.makedirs("optimized_structures_vasp", exist_ok=True)
 
-# Overlap check
-def has_overlap(atoms, threshold=0.9):
+# Check for atomic overlap
+def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
     dists = pdist(atoms.get_positions())
-    return np.any(dists < threshold)
+    return np.any((dists > min_threshold) & (dists < max_threshold))
 
 # Rotation
 def rotate_molecule(positions, theta, phi):
@@ -99,7 +99,7 @@ def rotate_molecule(positions, theta, phi):
     ])
     return positions @ Rz.T @ Ry.T
 
-
+# xTB calculation
 def xtb_optimize(fname, precursor_energy_per_atom):
     try:
         temp_dir = "xtb_temp"

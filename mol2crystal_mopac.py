@@ -74,15 +74,16 @@ inv_cell = np.linalg.inv(cell)
 print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
 print("Cell matrix:\n", cell)
 
+# Output directories
 os.makedirs("valid_structures", exist_ok=True)
 os.makedirs("optimized_structures_vasp", exist_ok=True)
 
-
-def has_overlap(atoms, threshold=0.85):
+# Check for atomic overlap
+def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
     dists = pdist(atoms.get_positions())
-    return np.any(dists < threshold)
+    return np.any((dists > min_threshold) & (dists < max_threshold))
 
-
+# Rotate molecule
 def rotate_molecule(positions, theta, phi):
     Rz = np.array([
         [np.cos(theta), -np.sin(theta), 0],
@@ -96,14 +97,7 @@ def rotate_molecule(positions, theta, phi):
     ])
     return positions @ Rz.T @ Ry.T
 
-
-import os
-import shutil
-import numpy as np
-import re
-import subprocess
-from ase.io import read, write
-
+# MOPAC calculation
 def mopac_optimize(fname, precursor_energy_per_atom):
     try:
         temp_dir = "mopac_temp"
