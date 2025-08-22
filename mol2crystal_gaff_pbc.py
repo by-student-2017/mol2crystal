@@ -46,6 +46,7 @@ import psutil
 import re
 
 from ase.io.lammpsdata import read_lammps_data
+from ase.geometry import wrap_positions
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -113,96 +114,101 @@ def rotate_molecule(positions, theta, phi):
     return positions @ Rz.T @ Ry.T
 
 def gaff_pbc_optimize(fname, precursor_energy_per_atom):
-    temp_dir = "gaff_pbc_temp"
-    if os.path.exists(temp_dir):
-        shutil.rmtree(temp_dir)
-    os.makedirs(temp_dir, exist_ok=True)
+    try:
+        temp_dir = "gaff_pbc_temp"
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+        os.makedirs(temp_dir, exist_ok=True)
 
-    log_file = os.path.join(temp_dir, "system.log")
+        log_file = os.path.join(temp_dir, "system.log")
 
-    # Step 1: Convert POSCAR to PDB
-    mol = read('molecular_files/precursor.mol')
-    precursor_pdb_path = os.path.join(temp_dir, "precursor.pdb")
-    write(precursor_pdb_path, mol, format="proteindatabank")
+        # Step 1: Convert POSCAR to PDB
+        mol = read('molecular_files/precursor.mol')
+        precursor_pdb_path = os.path.join(temp_dir, "precursor.pdb")
+        write(precursor_pdb_path, mol, format="proteindatabank")
 
-    atoms = read(fname)
-    crystal_pdb_path = os.path.join(temp_dir, "crystal.pdb")
-    write(crystal_pdb_path, atoms, format="proteindatabank")
-
-    moleculars = int(len(atoms)/len(mol))
-
-    # Step 2: Run antechamber to generate mol2
-    cmd = f"antechamber -i precursor.pdb -fi pdb -o precursor.mol2 -fo mol2 -at gaff -c gas -s 2"
-    with open(log_file, "w") as log:
-        subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
-
-    # Step 3: Run mol22lt.pl to generate .lt file
-    with open(log_file, "w") as log:
-        subprocess.run(f"mol22lt.pl < precursor.mol2 > precursor.lt", 
-        shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
-
-    # Step 4: Create system.lt
-    system_lt_path = os.path.join(temp_dir, "system.lt")
-    with open(system_lt_path, "w") as f:
-        f.write("import \"gaff.lt\"\n")
-        f.write("import \"precursor.lt\"\n")
-        f.write(f"crystal = new MOL [{moleculars}]\n")
-
-    # Step 5: Run moltemplate.sh
-    cmd = f"moltemplate.sh -atomstyle full -pdb crystal.pdb system.lt"
-    with open(log_file, "a") as log:
-        subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
-
-    # Step 5.5: Copy LAMMPS input file
-    shutil.copy("in_gaff_pbc.lmp", os.path.join(temp_dir, "in_gaff_pbc_temp.lmp"))
-
-    # Step 6: Run LAMMPS
-    #cmd = f"mpirun -np {cpu_count} lmp -in in_gaff_pbc_temp.lmp | tee ./../log.lammps"
-    cmd = f"lmp -in in_gaff_pbc_temp.lmp"
-    with open(log_file, "a") as log:
-        subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
-
-    log_path = os.path.join(temp_dir, "log.lammps")
-
-    # Step 7: Extract energy from log.lammps
-    with open(log_path, "r") as f:
-        log_content = f.read()
-    matches = re.findall(r"The total energy \(kcal/mol\)\s*=\s*(-?\d+\.\d+)", log_content, re.MULTILINE)
-    if matches:
-        energy = float(matches[-1]) * 0.043361254529175 # kcal/mol -> eV
-    else:
-        print("Energy value not found in LAMMPS output.")
-        energy = 0.0
-
-    optimized_xyz = os.path.join(temp_dir, "md_npt.data")
-    if os.path.exists(optimized_xyz):
-        atoms = read_lammps_data(optimized_xyz, atom_style="full", style="full")
-    else:
-        print("Warning: Optimized structure file not found. Using original structure.")
         atoms = read(fname)
+        crystal_pdb_path = os.path.join(temp_dir, "crystal.pdb")
+        write(crystal_pdb_path, atoms, format="proteindatabank")
 
-    opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
-    write(opt_fname, atoms, format='vasp')
+        moleculars = int(len(atoms)/len(mol))
 
-    # Step 8: Compute properties
-    num_atoms = len(atoms)
-    energy_per_atom = energy / num_atoms if num_atoms > 0 else 0.0
-    relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
+        # Step 2: Run antechamber to generate mol2
+        cmd = f"antechamber -i precursor.pdb -fi pdb -o precursor.mol2 -fo mol2 -at gaff -c gas -s 2"
+        with open(log_file, "w") as log:
+            subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
 
-    total_mass_amu = sum(atoms.get_masses())
-    total_mass_g = total_mass_amu * 1.66053906660e-24
-    volume = atoms.get_volume()
-    volume_cm3 = volume * 1e-24
-    density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+        # Step 3: Run mol22lt.pl to generate .lt file
+        with open(log_file, "w") as log:
+            subprocess.run(f"mol22lt.pl < precursor.mol2 > precursor.lt", 
+            shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
 
-    print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
-    print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
-    print(f"Number of atoms: {num_atoms}")
-    print(f"Volume: {volume:.6f} [A3]")
-    print(f"Density: {density:.3f} [g/cm^3]")
+        # Step 4: Create system.lt
+        system_lt_path = os.path.join(temp_dir, "system.lt")
+        with open(system_lt_path, "w") as f:
+            f.write("import \"gaff.lt\"\n")
+            f.write("import \"precursor.lt\"\n")
+            f.write(f"crystal = new MOL [{moleculars}]\n")
 
-    with open("structure_vs_energy.txt", "a") as out:
-        out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
+        # Step 5: Run moltemplate.sh
+        cmd = f"moltemplate.sh -atomstyle full -pdb crystal.pdb system.lt"
+        with open(log_file, "a") as log:
+            subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
+
+        # Step 5.5: Copy LAMMPS input file
+        shutil.copy("in_gaff_pbc.lmp", os.path.join(temp_dir, "in_gaff_pbc_temp.lmp"))
+
+        # Step 6: Run LAMMPS
+        #cmd = f"mpirun -np {cpu_count} lmp -in in_gaff_pbc_temp.lmp | tee ./../log.lammps"
+        cmd = f"lmp -in in_gaff_pbc_temp.lmp"
+        with open(log_file, "a") as log:
+            subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
+
+        log_path = os.path.join(temp_dir, "log.lammps")
+
+        # Step 7: Extract energy from log.lammps
+        with open(log_path, "r") as f:
+            log_content = f.read()
+        matches = re.findall(r"The total energy \(kcal/mol\)\s*=\s*(-?\d+\.\d+)", log_content, re.MULTILINE)
+        if matches:
+            energy = float(matches[-1]) * 0.043361254529175 # kcal/mol -> eV
+        else:
+            print("Energy value not found in LAMMPS output.")
+            energy = 0.0
+
+        optimized_xyz = os.path.join(temp_dir, "md_npt.data")
+        if os.path.exists(optimized_xyz):
+            atoms = read_lammps_data(optimized_xyz, atom_style="full")
+            atoms.wrap()
+        else:
+            print("Warning: Optimized structure file not found. Using original structure.")
+            atoms = read(fname)
+
+        opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
+        write(opt_fname, atoms, format='vasp')
+
+        # Step 8: Compute properties
+        num_atoms = len(atoms)
+        energy_per_atom = energy / num_atoms if num_atoms > 0 else 0.0
+        relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
+
+        total_mass_amu = sum(atoms.get_masses())
+        total_mass_g = total_mass_amu * 1.66053906660e-24
+        volume = atoms.get_volume()
+        volume_cm3 = volume * 1e-24
+        density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
+
+        print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
+        print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
+        print(f"Number of atoms: {num_atoms}")
+        print(f"Volume: {volume:.6f} [A3]")
+        print(f"Density: {density:.3f} [g/cm^3]")
+
+        with open("structure_vs_energy.txt", "a") as out:
+            out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
+
+    except Exception as e:
+        print(f"Error optimizing {fname}: {e}")
 
 # Reference energy from original molecule
 with open("structure_vs_energy.txt", "w") as f:
