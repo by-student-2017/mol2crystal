@@ -2,7 +2,7 @@
 
 ## Feature
 - A crystal structure is created by applying a space group to a single precursor. The output is in VASP's POSCAR format.
-- The energy of the created crystal structure can be calculated using various codes, and a density and energy diagram can be displayed.
+- The generated crystal structure can then be used to obtain energy using the various quantum chemistry calculation codes listed below to create a density-energy diagram.
 - Crystal structures with high density and low energy as shown in the diagram are considered candidates.
 - Classical MD (GAFF and UFF in OpenBabel, and Reaxff in Lammps) is being developed. GAFF and UFF using OpenBabel cannot optimize structures at the cell level, so they are suitable for rough screening. On the other hand, Lammps is limited to elements handled by Reaxff, but is expected to be a promising candidate search method.
 - Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) are being developed. MOPAC and xTB are not currently recommended due to their lack of cell optimization functionality. DFTB+ is expected to be a promising candidate search method.
