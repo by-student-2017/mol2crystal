@@ -21,7 +21,7 @@ timestep 1.0
 
 # Initial easing with NVT
 fix fxnvt all nvt temp 300.0 300.0 500.0 tchain 1
-run 5000  # 5 ps
+run 10000 # 10 ps
 
 # Volume relaxation with NPT
 # drag is a damping coefficient that slows down the rate at which the box size changes.
@@ -29,11 +29,11 @@ run 5000  # 5 ps
 # 0.2 provides moderate damping (recommended value) for a good balance between stability and responsiveness.
 unfix fxnvt
 fix fxnpt1 all npt temp 300.0 300.0 100.0 aniso 1.0 14.7 1000.0 drag 0.2
-run 20000 # 20 ps
+run 60000 # 30 ps
 
 unfix fxnpt1
 fix fxnpt2 all npt temp 300.0 300.0 100.0 aniso 14.7 1.0 1000.0 drag 0.2
-run 20000 # 20 ps
+run 60000 # 30 ps
 
 #dump 1 all dcd 100 md_npt.dcd
 #dump_modify 1 unwrap yes
