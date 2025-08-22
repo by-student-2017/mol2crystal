@@ -11,9 +11,7 @@ thermo 100
 thermo_style custom step etotal temp lx ly lz vol press vol density
 
 # Energy minimization
-fix 1 all box/relax aniso 0.0 vmax 0.001
 minimize 1.0e-5 1.0e-7 1000 10000
-unfix 1
 
 # Initial temperature setting at 300 [K]
 velocity all create 300 4928459 dist gaussian
@@ -26,21 +24,21 @@ fix fxnvt all nvt temp 300.0 300.0 500.0 tchain 1
 run 5000  # 5 ps
 
 # Volume relaxation with NPT
-unfix fxnvt
-fix fxnpt all npt temp 300.0 300.0 100.0 aniso 1.0 10.0 1000.0 drag 0.2
-run 20000 # 20 ps
 # drag is a damping coefficient that slows down the rate at which the box size changes.
 # Smaller values ​​result in slower changes, while larger values ​​result in more rapid changes.
 # 0.2 provides moderate damping (recommended value) for a good balance between stability and responsiveness.
+unfix fxnvt
+fix fxnpt1 all npt temp 300.0 300.0 100.0 aniso 1.0 100.0 1000.0 drag 0.2
+run 20000 # 20 ps
 
-unfix fxnpt
-fix fxnpt all npt temp 300.0 300.0 100.0 aniso 10.0 1.0 1000.0 drag 0.2
+unfix fxnpt1
+fix fxnpt2 all npt temp 300.0 300.0 100.0 aniso 100.0 1.0 1000.0 drag 0.2
 run 20000 # 20 ps
 
 #dump 1 all dcd 100 md_npt.dcd
 #dump_modify 1 unwrap yes
 
-write_data md_npt.data
+write_data md.data
 
 run 1
 variable  natoms equal "count(all)" 

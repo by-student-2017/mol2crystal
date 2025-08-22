@@ -176,7 +176,7 @@ def gaff_pbc_optimize(fname, precursor_energy_per_atom):
             print("Energy value not found in LAMMPS output.")
             energy = 0.0
 
-        optimized_xyz = os.path.join(temp_dir, "md_npt.data")
+        optimized_xyz = os.path.join(temp_dir, "md.data")
         if os.path.exists(optimized_xyz):
             atoms = read_lammps_data(optimized_xyz, atom_style="full")
             atoms.wrap()
