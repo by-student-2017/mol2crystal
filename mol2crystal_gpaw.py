@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-# Install libraries
+### Install libraries + GPAW ver. 25.7.0
 # pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 # pip install "numpy<2.0"
 
-# Usage
+### Usage
 # pyton3 mol2crystal_gpaw.py
 
 import os

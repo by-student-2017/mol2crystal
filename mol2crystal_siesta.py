@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Install libraries
+### Install libraries
 # pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 
 ### Siesta Installation
@@ -29,7 +29,7 @@
 # not use *.psml, then need to convert (< Siesta 5.4.0)
 # psml2psf Si.psml > Si.psf
 
-# Usage
+### Usage
 # pyton3 mol2crystal_siesta.py
 
 import os

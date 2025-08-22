@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
-# Install libraries
+### Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+
+### MOPAC ver. 23.1.2
 # wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
 # tar xvf mopac-23.1.2-linux.tar.gz
 # echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
 # source ~/.bashrc
 
-# Usage
+### Usage
 # pyton3 mol2crystal_mopac.py
 
 import os

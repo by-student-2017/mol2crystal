@@ -3,7 +3,7 @@
 ### Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 
-### lammps + moltemplate + antechamber + mol22lt.pl
+### moltemplate + antechamber + mol22lt.pl
 # sudo apt update
 # sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
 # wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
@@ -11,7 +11,7 @@
 # wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
 # sh install_WSLmisc.sh
 
-### lammps (Installation: 2025/Aug/22)
+### lammps (stable_22Jul2025)
 # cd $HOME
 # sudo apt -y install cmake gfortran gcc libopenmpi-dev
 # git clone -b stable https://github.com/lammps/lammps.git
@@ -32,7 +32,7 @@
 # sudo apt -y purge gcc-6-base
 # sudo apt autoremove
 
-# Usage
+### Usage
 # pyton3 mol2crystal_gaff_pbc.py
 
 import os

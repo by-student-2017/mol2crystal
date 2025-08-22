@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
-# Install libraries
+### Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+
+### DFTB+ ver. 24.1
 # cd $HOME
 # wget https://github.com/dftbplus/dftbplus/releases/download/24.1/dftbplus-24.1.x86_64-linux.tar.xz
 # tar -xvf dftbplus-24.1.x86_64-linux.tar.xz
 # echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 # source ~/.bashrc
 
-# Usage
+### Usage
 # pyton3 mol2crystal_dftb.py
 
 import os
