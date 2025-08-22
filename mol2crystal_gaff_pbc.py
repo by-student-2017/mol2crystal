@@ -79,7 +79,7 @@ min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
 extent[extent < 1.0] = 1.0  # avoid zero-length cell
-margin = 3.0
+margin = 6.0
 #cellpar = list(extent + margin) + [90, 90, 90]
 #cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
 max_extent = extent.max() + margin
@@ -95,7 +95,7 @@ os.makedirs("valid_structures", exist_ok=True)
 os.makedirs("optimized_structures_vasp", exist_ok=True)
 
 
-def has_overlap(atoms, min_threshold=0.1, max_threshold=0.85):
+def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
     dists = pdist(atoms.get_positions())
     return np.any((dists > min_threshold) & (dists < max_threshold))
 
