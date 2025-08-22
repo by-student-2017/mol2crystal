@@ -98,3 +98,6 @@ gnuplot plot.gpl
 
 ## Test
 - Ubuntu 22.04 LTS (WSL2, Windows 11)
+
+## References
+- [1] S. OBATA et al., Nihon Kessho Gakkaishi 62 (2020) 260-268. (Japanese): https://doi.org/10.5940/jcrsj.62.260
