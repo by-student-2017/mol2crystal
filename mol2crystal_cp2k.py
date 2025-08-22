@@ -211,7 +211,7 @@ with open("structure_vs_energy.txt", "w") as f:
 
 print(f"------------------------------------------------------")
 nmesh = 3 # 0 - 45 degrees divided into nmesh
-print(f"0 - 45 degrees divided into 3",nmesh)
+print(f"0 - 45 degrees divided into",nmesh)
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
