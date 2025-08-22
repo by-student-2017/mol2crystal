@@ -137,3 +137,4 @@ gnuplot plot.gpl
 
 ## References
 - [1] S. OBATA et al., Nihon Kessho Gakkaishi 62 (2020) 260-268. (Japanese): https://doi.org/10.5940/jcrsj.62.260
+- [2] https://makoto-yoneya.github.io/
