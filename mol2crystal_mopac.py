@@ -118,18 +118,19 @@ def mopac_optimize(fname, precursor_energy_per_atom):
             f.write("PM7 XYZ EF GNORM=1.0 DEBUG STRESS PRESSURE=1.0E5\nNumber of atoms: ")
             f.write(xyz_content)
             cell = atoms.get_cell()
-            f.write(f"TA {cell[0][0]:22.15f} {cell[0][1]:22.15f} {cell[0][2]:22.15f}\n")
-            f.write(f"TA {cell[1][0]:22.15f} {cell[1][1]:22.15f} {cell[1][2]:22.15f}\n")
-            f.write(f"TA {cell[2][0]:22.15f} {cell[2][1]:22.15f} {cell[2][2]:22.15f}\n")
+            f.write(f"Tv {cell[0][0]:22.15f} {cell[0][1]:22.15f} {cell[0][2]:22.15f}\n")
+            f.write(f"Tv {cell[1][0]:22.15f} {cell[1][1]:22.15f} {cell[1][2]:22.15f}\n")
+            f.write(f"Tv {cell[2][0]:22.15f} {cell[2][1]:22.15f} {cell[2][2]:22.15f}\n")
 
         # Run MOPAC
         log_path = os.path.join(temp_dir, "input.out")
+        arc_path = os.path.join(temp_dir, "input.arc")
         with open(log_path, "w") as out:
             subprocess.run(["mpirun", "-np", str(cpu_count), "mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
 
         # Parse output for final energy
         energy_value = None
-        if os.path.exists(log_path):
+        if os.path.exists(arc_path):
             with open(log_path, "r") as f:
                 for line in f:
                     match = re.search(r"HEAT OF FORMATION\s+=\s+(-?\d+\.\d+)", line)
@@ -138,7 +139,6 @@ def mopac_optimize(fname, precursor_energy_per_atom):
                         break
 
         # Save optimized structure
-        arc_path = os.path.join(temp_dir, "input.arc")
         if os.path.exists(arc_path):
             optimized = read(arc_path)
             opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
