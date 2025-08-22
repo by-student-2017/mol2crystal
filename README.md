@@ -1,7 +1,7 @@
 # mol2crystal
 
 ## Feature
-- A crystal structure is created by applying a space group to one precursor.
+- A crystal structure is created by applying a space group to a single precursor. The output is in VASP's POSCAR format.
 - The energy of the created crystal structure can be calculated using various codes, and a density and energy diagram can be displayed.
 - Crystal structures with high density and low energy as shown in the diagram are considered candidates.
 - Classical MD (GAFF and UFF in OpenBabel, and Reaxff in Lammps) is being developed. GAFF and UFF using OpenBabel cannot optimize structures at the cell level, so they are suitable for rough screening. On the other hand, Lammps is limited to elements handled by Reaxff, but is expected to be a promising candidate search method.
