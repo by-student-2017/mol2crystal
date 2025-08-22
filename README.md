@@ -5,7 +5,7 @@
 - The generated crystal structure can then be used to obtain energy using the various quantum chemistry calculation codes listed below to create a density-energy diagram. From the resulting diagram, crystal structures with high density and low energy are selected as candidates.
 
 ## Selection of evaluation method
-- Classical MD (GAFF and UFF in OpenBabel, and Reaxff in Lammps) is being developed. GAFF and UFF using OpenBabel cannot optimize structures at the cell level, so they are suitable for rough screening. On the other hand, Lammps is limited to elements handled by Reaxff, but is expected to be a promising candidate search method.
+- Classical MD (GAFF and UFF in OpenBabel, GAFF and ReaxFF in Lammps) has been developed. GAFF and UFF in OpenBabel cannot perform structure optimization in cells, so they are suitable for rough screening. On the other hand, although it is difficult to set up the environment, GAFF in Lammps can also perform structure optimization in cells. Although the elements that can be handled with ReaxFF are greatly limited, it is expected to be a promising candidate search method.
 - Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) are being developed. MOPAC and xTB are not currently recommended due to their lack of cell optimization functionality. DFTB+ is expected to be a promising candidate search method.
 - First-principles calculation codes (GPAW, CP2k, Siesta, QE, Abinit, Elk, etc.) are available, but are not recommended due to their high computational costs. They may work well on medium- to large-scale computers.
 - Not yet developed: Lammps (or lammps + moltemplate), QE, Abinit, Elk
@@ -21,6 +21,28 @@ pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 sudo apt update
 sudo apt install openbabel
 sudo apt install libopenbabel-dev
+```
+- Lammps version (GAFF)
+```
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+
+# lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
+sudo apt update
+sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
+wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
+sh install_moltemplate.sh
+wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
+sh install_WSLmisc.sh
+
+# lammps (Installation: 2025/Aug/22)
+cd $HOME
+sudo apt -y install cmake gfortran gcc libopenmpi-dev
+git clone -b stable https://github.com/lammps/lammps.git
+cd lammps
+mkdir build && cd build
+cmake -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
+make -j$(nproc)
+sudo make install
 ```
 - MOPAC version
 ```
@@ -91,6 +113,10 @@ pyton3 mol2crystal.py
 - OpenBabel version (GAFF or UFF): Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. The computational cost is very low.
 ```
 pyton3 mol2crystal_gaff.py
+```
+- Lammps version (GAFF): Cells can also be optimized. The prediction accuracy is not too bad either.
+```
+pyton3 mol2crystal_gaff_pbc.py
 ```
 - MOPAC version: Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. Cell optimization is not possible.
 ```
