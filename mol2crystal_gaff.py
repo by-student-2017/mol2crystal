@@ -97,9 +97,9 @@ def obenergy_calc(fname, precursor_energy_per_atom):
     write(temp_xyz, atoms, format='xyz')
 
     # Run Open Babel to calculate energy: GAFF, UFF, MMFF94, MMFF94s, Ghemical
-    xtb_cmd = ["obenergy", "-ff", "GAFF", temp_xyz]
+    obenergy_cmd = ["obenergy", "-ff", "GAFF", temp_xyz]
     try:
-        result = subprocess.run(xtb_cmd, capture_output=True, text=True, check=True)
+        result = subprocess.run(obenergy_cmd, capture_output=True, text=True, check=True)
         output = result.stdout
         match = re.search(r"TOTAL ENERGY =\s*(-?\d+\.\d+)", output)
         if match:
