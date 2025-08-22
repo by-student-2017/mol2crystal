@@ -17,7 +17,7 @@
 # git clone -b stable https://github.com/lammps/lammps.git
 # cd lammps
 # mkdir build && cd build
-# cmake -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
+# cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
 # make -j$(nproc)
 # sudo make install
 
@@ -160,7 +160,7 @@ def gaff_pbc_optimize(fname, precursor_energy_per_atom):
 
         # Step 6: Run LAMMPS
         #cmd = f"mpirun -np {cpu_count} lmp -in in_gaff_pbc_temp.lmp | tee ./../log.lammps"
-        cmd = f"lmp -in in_gaff_pbc_temp.lmp"
+        cmd = f"mpirun -np {cpu_count} lmp -in in_gaff_pbc_temp.lmp"
         with open(log_file, "a") as log:
             subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
 
