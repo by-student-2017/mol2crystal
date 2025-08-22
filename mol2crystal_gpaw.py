@@ -170,6 +170,7 @@ valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
     for j, phi in enumerate(np.linspace(0, np.pi/4, nmesh)):
         print(f"theta={theta:.2f}, phi={phi:.2f}, space group: 2 - 230")
+        print(f"------------------------------------------------------")
         rotated_positions = rotate_molecule(positions, theta, phi)
         shifted_positions = rotated_positions - rotated_positions.min(axis=0)
         fractional_positions = np.dot(shifted_positions, inv_cell)
