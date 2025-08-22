@@ -45,9 +45,8 @@ variable      v0 equal "vol"
 variable   etot0 equal "etotal"
 variable   ecoh0 equal "pe/v_natoms"
 
-variable density_v1 equal "v_density"
 variable mass_total equal mass(all)
-variable density_v2 equal ${mass_total}/(0.6022*${v0})  # g/cm^3
+variable density equal ${mass_total}/(0.6022*${v0})  # g/cm^3
 
 print "-------------------------------------------------------------"
 print "Show results of 1st step (Running Minimization)"
@@ -58,7 +57,6 @@ print "The lattice constant, z (Angstoms) = ${z0}"
 print "The volume (Angstoms^3) = ${v0}"
 print "The total energy (kcal/mol) = ${etot0}"
 print "The cohesive energy (kcal/mol) = ${ecoh0}"
-print "The density (g/cm^dim) = ${density_v1}"
-print "The density (g/cm^3) = ${density_v2}"
+print "The density (g/cm^3) = ${density}"
 print "-------------------------------------------------------------"
 print "Simulations completed !"
