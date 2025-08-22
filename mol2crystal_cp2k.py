@@ -33,7 +33,7 @@ if (os.path.exists('optimized_structures_vasp_old')):
 if (os.path.exists('optimized_structures_vasp')):
     os.rename(     'optimized_structures_vasp','optimized_structures_vasp_old')
 
-dirs_to_remove = ['temp', 'xtb_temp', 'dftb_temp', 'cp2k_temp', 'gpaw_temp']
+dirs_to_remove = ['temp', 'cp2k_temp', 'dftb_temp', 'gaff_temp', 'gaff_pbc_temp', 'gpaw_temp', 'mopac_temp', 'siesta_temp', 'xtb_temp']
 for dir_name in dirs_to_remove:
     if os.path.exists(dir_name):
         shutil.rmtree(dir_name)

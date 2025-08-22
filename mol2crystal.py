@@ -25,7 +25,7 @@ if (os.path.exists('valid_structures_old')):
 if (os.path.exists('valid_structures')):
     os.rename(     'valid_structures','valid_structures_old')
 
-dirs_to_remove = ['temp', 'xtb_temp', 'dftb_temp', 'gpaw_temp']
+dirs_to_remove = ['temp', 'cp2k_temp', 'dftb_temp', 'gaff_temp', 'gaff_pbc_temp', 'gpaw_temp', 'mopac_temp', 'siesta_temp', 'xtb_temp']
 for dir_name in dirs_to_remove:
     if os.path.exists(dir_name):
         shutil.rmtree(dir_name)
