@@ -91,7 +91,7 @@ print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
 print("Cell matrix:\n", cell)
 
 os.makedirs("valid_structures", exist_ok=True)
-#os.makedirs("optimized_structures_vasp", exist_ok=True)
+os.makedirs("optimized_structures_vasp", exist_ok=True)
 
 
 def has_overlap(atoms, min_threshold=0.1, max_threshold=0.85):
@@ -158,7 +158,7 @@ def gaff_pbc_optimize(fname, precursor_energy_per_atom):
 
     # Step 6: Run LAMMPS
     #cmd = f"mpirun -np {cpu_count} lmp -in in_gaff_pbc_temp.lmp | tee ./../log.lammps"
-    cmd = f"lmp -in in_gaff_pbc_temp.lmp | tee ./../log.lammps"
+    cmd = f"lmp -in in_gaff_pbc_temp.lmp"
     with open(log_file, "a") as log:
         subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
 
@@ -167,18 +167,19 @@ def gaff_pbc_optimize(fname, precursor_energy_per_atom):
     # Step 7: Extract energy from log.lammps
     with open(log_path, "r") as f:
         log_content = f.read()
-    matches = re.findall(r"The total energy (kcal/mol) =\s+(-?\d+\.\d+)", log_content, re.MULTILINE)
+    matches = re.findall(r"The total energy \(kcal/mol\)\s*=\s*(-?\d+\.\d+)", log_content, re.MULTILINE)
     if matches:
-        energy = float(matches[-1]) * 0.043361254529175
+        energy = float(matches[-1]) * 0.043361254529175 # kcal/mol -> eV
     else:
         print("Energy value not found in LAMMPS output.")
         energy = 0.0
 
-    optimized_xyz = os.path.join(temp_dir, "md_npt.lmp")
+    optimized_xyz = os.path.join(temp_dir, "md_npt.data")
     if os.path.exists(optimized_xyz):
-        atoms = read_lammps_data("md_npt.lmp", style="full", atom_style="full")
+        atoms = read_lammps_data(optimized_xyz, atom_style="full", style="full")
     else:
         print("Warning: Optimized structure file not found. Using original structure.")
+        atoms = read(fname)
 
     opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
     write(opt_fname, atoms, format='vasp')
