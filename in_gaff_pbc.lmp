@@ -28,11 +28,11 @@ run 5000  # 5 ps
 # Smaller values ​​result in slower changes, while larger values ​​result in more rapid changes.
 # 0.2 provides moderate damping (recommended value) for a good balance between stability and responsiveness.
 unfix fxnvt
-fix fxnpt1 all npt temp 300.0 300.0 100.0 aniso 1.0 100.0 1000.0 drag 0.2
+fix fxnpt1 all npt temp 300.0 300.0 100.0 aniso 1.0 10.0 1000.0 drag 0.2
 run 20000 # 20 ps
 
 unfix fxnpt1
-fix fxnpt2 all npt temp 300.0 300.0 100.0 aniso 100.0 1.0 1000.0 drag 0.2
+fix fxnpt2 all npt temp 300.0 300.0 100.0 aniso 10.0 1.0 1000.0 drag 0.2
 run 20000 # 20 ps
 
 #dump 1 all dcd 100 md_npt.dcd
