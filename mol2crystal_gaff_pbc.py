@@ -85,7 +85,7 @@ min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
 extent[extent < 1.0] = 1.0  # avoid zero-length cell
-margin = 3.0 # near vdW radius
+margin = 6.0 # >= vdW radius
 #cellpar = list(extent + margin) + [90, 90, 90]
 #cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
 max_extent = extent.max() + 2 * margin  # Ensure margin on both sides
