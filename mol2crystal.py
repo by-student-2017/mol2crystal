@@ -46,6 +46,8 @@ max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
 extent[extent < 1.0] = 1.0  # avoid zero-length cell
 margin = 3.0
+#cellpar = list(extent + margin) + [90, 90, 90]
+#cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
 max_extent = extent.max() + margin
 cellpar = [max_extent, max_extent, max_extent, 90, 90, 90]
 cell = np.array([[max_extent, 0, 0],
@@ -107,7 +109,7 @@ def density_calc(fname):
 with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
-nmesh = 1 # 0 - 45 degree devided by nmesh
+nmesh = 3 # 0 - 45 degree devided by nmesh
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
