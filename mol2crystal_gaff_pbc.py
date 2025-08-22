@@ -45,7 +45,7 @@ import subprocess
 import psutil
 import re
 
-from scipy.optimize import curve_fit # for fourier_potential
+from ase.io.lammpsdata import read_lammps_data
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -167,12 +167,21 @@ def gaff_pbc_optimize(fname, precursor_energy_per_atom):
     # Step 7: Extract energy from log.lammps
     with open(log_path, "r") as f:
         log_content = f.read()
-    match = re.search(r"\n\s*\d+\s+(-?\d+\.\d+)", log_content)
-    if match:
-        energy = float(match.group(1))
+    matches = re.findall(r"The total energy (kcal/mol) =\s+(-?\d+\.\d+)", log_content, re.MULTILINE)
+    if matches:
+        energy = float(matches[-1]) * 0.043361254529175
     else:
         print("Energy value not found in LAMMPS output.")
         energy = 0.0
+
+    optimized_xyz = os.path.join(temp_dir, "md_npt.lmp")
+    if os.path.exists(optimized_xyz):
+        atoms = read_lammps_data("md_npt.lmp", style="full", atom_style="full")
+    else:
+        print("Warning: Optimized structure file not found. Using original structure.")
+
+    opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
+    write(opt_fname, atoms, format='vasp')
 
     # Step 8: Compute properties
     num_atoms = len(atoms)

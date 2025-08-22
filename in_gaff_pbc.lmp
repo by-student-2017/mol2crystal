@@ -2,7 +2,7 @@ include   'system.in.init'
 read_data 'system.data'
 include   'system.in.settings'
 
-Stabilize communication and connections (optional)
+# Stabilize communication and connections (optional)
 comm_modify cutoff 20.0
 special_bonds lj/coul 0 0 1
 
@@ -35,3 +35,30 @@ fix fxnpt all npt temp 300.0 300.0 100.0 aniso 1.0 1.0 1000.0 drag 0.2
 
 run 40000 # 40 ps
 write_data md_npt.lmp
+
+run 1
+variable  natoms equal "count(all)" 
+variable      x0 equal "lx"
+variable      y0 equal "ly"
+variable      z0 equal "lz"
+variable      v0 equal "vol"
+variable   etot0 equal "etotal"
+variable   ecoh0 equal "pe/v_natoms"
+
+variable density_v1 equal "v_density"
+variable mass_total equal mass(all)
+variable density_v2 equal ${mass_total}/(0.6022*${v0})  # g/cm^3
+
+print "-------------------------------------------------------------"
+print "Show results of 1st step (Running Minimization)"
+print "The number of atoms = ${natoms}"
+print "The lattice constant, x (Angstoms) = ${x0}"
+print "The lattice constant, y (Angstoms) = ${y0}"
+print "The lattice constant, z (Angstoms) = ${z0}"
+print "The volume (Angstoms^3) = ${v0}"
+print "The total energy (kcal/mol) = ${etot0}"
+print "The cohesive energy (kcal/mol) = ${ecoh0}"
+print "The density (g/cm^dim) = ${density_v1}"
+print "The density (g/cm^3) = ${density_v2}"
+print "-------------------------------------------------------------"
+print "Simulations completed !"
