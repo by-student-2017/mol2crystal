@@ -60,7 +60,7 @@ pyton3 mol2crystal.py
 ```
 pyton3 mol2crystal_gaff.py
 ```
-- MOPAC version
+- MOPAC version: Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. Cell optimization is not possible.
 ```
 pyton3 mol2crystal_mopac.py
 ```
