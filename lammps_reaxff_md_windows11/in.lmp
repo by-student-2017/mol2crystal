@@ -63,7 +63,7 @@ run 400000 # 40 ps
 
 write_data output_data_file.data
 
-run 1
+run 0
 variable  natoms equal "count(all)" 
 variable      x0 equal "lx"
 variable      y0 equal "ly"
