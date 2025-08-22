@@ -45,6 +45,28 @@ pip install "numpy<2.0"
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 sudo apt -y install cp2k
 ```
+- SIESTA version
+```
+pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
+
+sudo apt update
+sudo apt -y install cmake gfortran build-essential libopenmpi-dev libopenblas-dev 
+sudo apt -y install libhdf5-dev pkg-config libreadline-dev
+cd $HOME
+wget https://gitlab.com/siesta-project/siesta/-/releases/5.4.0/downloads/siesta-5.4.0.tar.gz
+tar xvf siesta-5.4.0.tar.gz
+cd siesta-5.4.0
+cmake -S . -B _build -DSIESTA_WITH_FLOOK="OFF"
+cmake --build _build -j 4
+sudo cmake --install _build
+echo 'export SIESTA_PP_PATH=$HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP/nc-sr-05_pbe_standard_psml' >> ~/.bashrc  # path of pseudo-potentials
+source ~/.bashrc
+
+# https://www.pseudo-dojo.org/
+cd $HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP$
+# (set) nc-sr-05_pbe_standard_psml.tgz
+tar xvf nc-sr-05_pbe_standard_psml.tgz
+```
 
 ## Usage
 1. Draw a molecule with the free version of ChemSketch and output it in mol format.
@@ -79,6 +101,10 @@ pyton3 mol2crystal_gpaw.py
 - CP2k version
 ```
 pyton3 mol2crystal_cp2k.py
+```
+- SIESTA version
+```
+pyton3 mol2crystal_siesta.py
 ```
 
 ## plot
