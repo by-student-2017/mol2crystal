@@ -115,7 +115,8 @@ def mopac_optimize(fname, precursor_energy_per_atom):
             xyz_content = xyz_file.read()
 
         with open(mopac_input_path, "w") as f:
-            f.write("PM7 XYZ EF GNORM=1.0 DEBUG STRESS PRESSURE=1.0E5\nNumber of atoms: ")
+            f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME EF GNORM=1.0 DEBUG STRESS PRESSURE=1.0E5\nNumber of atoms: ")
+            f.write("PM7 XYZ SCFCRT=1.D-6 MOZYME\nNumber of atoms: ")
             f.write(xyz_content)
             cell = atoms.get_cell()
             f.write(f"Tv {cell[0][0]:22.15f} {cell[0][1]:22.15f} {cell[0][2]:22.15f}\n")
