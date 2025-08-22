@@ -34,7 +34,7 @@ fix fxnpt all npt temp 300.0 300.0 100.0 aniso 1.0 1.0 1000.0 drag 0.2
 #dump_modify 1 unwrap yes
 
 run 40000 # 40 ps
-write_data md_npt.lmp
+write_data md_npt.data
 
 run 1
 variable  natoms equal "count(all)" 
