@@ -1,0 +1,25 @@
+include   'system.in.init'
+
+read_data 'system.data'
+
+include   'system.in.settings'
+
+thermo 100
+thermo_style custom step etotal temp lx ly lz vol press vol density
+
+minimize 1.0e-5 1.0e-7 1000 10000
+
+velocity        all create 300 4928459 dist gaussian
+
+timestep 1.0
+
+fix fxnvt all nvt temp 300.0 300.0 500.0 tchain 1
+run 5000
+
+dump            1 all xtc 10 bpy-128_md.xtc
+dump_modify     1 unwrap yes
+
+fix fxnpt all npt temp 300.0 300.0 100.0 aniso 1.0 1.0 1000.0 drag 1.0
+run 50000
+
+write_data md_npt.lmp
