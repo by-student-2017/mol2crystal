@@ -21,6 +21,8 @@ import subprocess
 import psutil
 import re
 
+from ase import Atoms
+
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 
@@ -42,8 +44,8 @@ for dir_name in dirs_to_remove:
         shutil.rmtree(dir_name)
 
 cpu_count = psutil.cpu_count(logical=False)
-#os.environ["OMP_NUM_THREADS"] = '1'
-os.environ["OMP_NUM_THREADS"] = str(cpu_count)
+os.environ["OMP_NUM_THREADS"] = '1'             # OpenMPI
+#os.environ["OMP_NUM_THREADS"] = str(cpu_count) # OpenMP 
 
 print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
@@ -125,16 +127,16 @@ def mopac_optimize(fname, precursor_energy_per_atom):
             f.write(f"Tv {cell[2][0]:22.15f} {cell[2][1]:22.15f} {cell[2][2]:22.15f}\n")
 
         # Run MOPAC
-        log_path = os.path.join(temp_dir, "input.out")
+        log_path = os.path.join(temp_dir, "input_temp.out")
         arc_path = os.path.join(temp_dir, "input.arc")
         with open(log_path, "w") as out:
-            #subprocess.run(["mpirun", "-np", str(cpu_count), "mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
-            subprocess.run(["mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
+            subprocess.run(["mpirun", "-np", str(cpu_count), "mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
+            #subprocess.run(["mopac", "input.dat"], cwd=temp_dir, stdout=out, stderr=subprocess.STDOUT)
 
         # Parse output for final energy
         energy_value = None
         if os.path.exists(arc_path):
-            with open(log_path, "r") as f:
+            with open(arc_path, "r") as f:
                 for line in f:
                     match = re.search(r"HEAT OF FORMATION\s+=\s+(-?\d+\.\d+)", line)
                     if match:
@@ -143,7 +145,37 @@ def mopac_optimize(fname, precursor_energy_per_atom):
 
         # Save optimized structure
         if os.path.exists(arc_path):
-            optimized = read(arc_path)
+            arc_lines = open(arc_path).readlines()
+            
+            # Find the start of FINAL GEOMETRY OBTAINED
+            start_index = None
+            for i, line in enumerate(arc_lines):
+                if "FINAL GEOMETRY OBTAINED" in line:
+                    start_index = i + 4  # Skip 3 comment lines after header
+                    break
+            
+            # Parse atomic lines and Tv lines
+            symbols = []
+            positions = []
+            cell = []
+            
+            for line in arc_lines[start_index:]:
+                parts = line.split()
+                if not parts:
+                    continue
+                if parts[0] == 'Tv':
+                    vec = [float(parts[1]), float(parts[3]), float(parts[5])]
+                    cell.append(vec)
+                else:
+                    symbol = parts[0]
+                    x = float(parts[1])
+                    y = float(parts[3])
+                    z = float(parts[5])
+                    symbols.append(symbol)
+                    positions.append([x, y, z])
+            
+            # Create Atoms object
+            optimized = Atoms(symbols=symbols, positions=positions, cell=cell if cell else None, pbc=bool(cell))
             opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
             write(opt_fname, optimized, format='vasp')
 
@@ -163,7 +195,6 @@ def mopac_optimize(fname, precursor_energy_per_atom):
                 print(f"Number of atoms: {num_atoms}")
                 print(f"Volume: {volume:.6f} [A3]")
                 print(f"Density: {density:.3f} [g/cm^3]")
-                print(f"------------------------------------------------------")
 
                 with open("structure_vs_energy.txt", "a") as out:
                     out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
@@ -202,6 +233,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                     valid_files.append(fname)
                     mopac_optimize(fname, precursor_energy_per_atom=0.0)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
+                    print(f"------------------------------------------------------")
             except Exception:
                 continue
 

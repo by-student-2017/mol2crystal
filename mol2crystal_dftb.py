@@ -160,7 +160,6 @@ def dftb_optimize(fname, precursor_energy_per_atom):
             print(f"Number of atoms: {num_atoms}")
             print(f"Volume: {volume:.6f} [A3]")
             print(f"Density: {density:.3f} [g/cm^3]")
-            print(f"------------------------------------------------------")
             
             with open("structure_vs_energy.txt", "a") as out:
                 out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
@@ -197,6 +196,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                     valid_files.append(fname)
                     dftb_optimize(fname, precursor_energy_per_atom=0.0)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
+                    print(f"------------------------------------------------------")
             except Exception:
                 continue
 
