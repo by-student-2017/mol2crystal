@@ -394,6 +394,13 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
         cellpar = [cell_x, cell_y, cell_z, 90, 90, 90]
         
         for sg in range(1, 231):
+            # In structures with planes, intersections occur, so users can exclude them.
+            # Users can also exclude unnecessarily large structures.
+            if sg in [16, 27, 43, 45, 49, 50, 54, 70, 72]:
+                print(f"Skipping space group {sg} (known issue or undesired)")
+                print(f"------------------------------------------------------")
+                continue
+            
             try:
                 adjusted_cellpar = adjust_cellpar_by_spacegroup(sg, cellpar)
                 print("Cell parameters (a, b, c, alpha, beta, gamma):", adjusted_cellpar)
