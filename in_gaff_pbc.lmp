@@ -21,24 +21,9 @@ timestep 1.0
 
 # Initial easing with NVT
 fix fxnvt all nvt temp 300.0 300.0 500.0 tchain 1
-run 10000 # 10 ps
+run 5000 # 5 ps
 
-# Volume relaxation with NPT
-# drag is a damping coefficient that slows down the rate at which the box size changes.
-# Smaller values ​​result in slower changes, while larger values ​​result in more rapid changes.
-# 0.2 provides moderate damping (recommended value) for a good balance between stability and responsiveness.
-unfix fxnvt
-fix fxnpt1 all npt temp 300.0 300.0 100.0 aniso 1.0 14.7 1000.0 drag 0.2
-run 60000 # 30 ps
-
-unfix fxnpt1
-fix fxnpt2 all npt temp 300.0 300.0 100.0 aniso 14.7 1.0 1000.0 drag 0.2
-run 60000 # 30 ps
-
-#dump 1 all dcd 100 md_npt.dcd
-#dump_modify 1 unwrap yes
-
-write_data md.data
+write_data md_nvt.data
 
 run 0
 variable  natoms equal "count(all)" 
@@ -63,4 +48,46 @@ print "The total energy (kcal/mol) = ${etot0}"
 print "The cohesive energy (kcal/mol) = ${ecoh0}"
 print "The density (g/cm^3) = ${density}"
 print "-------------------------------------------------------------"
-print "Simulations completed !"
+print "NVT: Simulations completed !"
+
+# Volume relaxation with NPT
+# drag is a damping coefficient that slows down the rate at which the box size changes.
+# Smaller values ​​result in slower changes, while larger values ​​result in more rapid changes.
+# 0.2 provides moderate damping (recommended value) for a good balance between stability and responsiveness.
+unfix fxnvt
+fix fxnpt1 all npt temp 300.0 300.0 100.0 aniso 1.0 14.7 1000.0 drag 0.2
+run 30000 # 30 ps
+
+unfix fxnpt1
+fix fxnpt2 all npt temp 300.0 300.0 100.0 aniso 14.7 1.0 1000.0 drag 0.2
+run 30000 # 30 ps
+
+#dump 1 all dcd 100 md_npt.dcd
+#dump_modify 1 unwrap yes
+
+write_data md_npt.data
+
+run 0
+variable  natoms equal "count(all)" 
+variable      x0 equal "lx"
+variable      y0 equal "ly"
+variable      z0 equal "lz"
+variable      v0 equal "vol"
+variable   etot0 equal "etotal"
+variable   ecoh0 equal "pe/v_natoms"
+
+variable mass_total equal mass(all)
+variable density equal ${mass_total}/(0.6022*${v0})  # g/cm^3
+
+print "-------------------------------------------------------------"
+print "Show results of 1st step (Running Minimization)"
+print "The number of atoms = ${natoms}"
+print "The lattice constant, x (Angstoms) = ${x0}"
+print "The lattice constant, y (Angstoms) = ${y0}"
+print "The lattice constant, z (Angstoms) = ${z0}"
+print "The volume (Angstoms^3) = ${v0}"
+print "The total energy (kcal/mol) = ${etot0}"
+print "The cohesive energy (kcal/mol) = ${ecoh0}"
+print "The density (g/cm^3) = ${density}"
+print "-------------------------------------------------------------"
+print "NPT: Simulations completed !"
