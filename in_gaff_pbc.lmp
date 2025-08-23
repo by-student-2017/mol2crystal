@@ -1,8 +1,8 @@
 #---------------------------------------------
 # user setting
 variable Pinit   equal  1.0     # 0.1 MPa ( 1.0 bar = 0.1 MPa)
-variable Pobject equal  0.4     # 0.4 MPa ( 4.0 bar = 0.4 MPa)
-variable Tinit   equal 273+0    # [K] (e.g., Low  temperature 273 [K])
+variable Pobject equal  2.0     # 0.2 MPa ( 2.0 bar = 0.2 MPa)
+variable Tinit   equal 273-196  # [K] (e.g., LN2 77 [K])
 variable Tobject equal 273+25   # [K] (e.g., Room temperature 298 [K])
 #---------------------------------------------
 
@@ -68,11 +68,11 @@ print "NVT: Simulations completed !"
 # -------------------------------------------------------------
 unfix fxnvt
 fix fxnpt1 all npt temp ${Tinit} ${Tobject}   $(100.0*dt)  aniso ${Pinit} ${Pobject} $(2000.0*dt) drag 0.2
-run 15000 # 15 ps
+run 20000 # 20 ps
 
 unfix fxnpt1
 fix fxnpt2 all npt temp ${Tobject} ${Tobject} $(100.0*dt)  aniso ${Pobject} ${Pinit} $(2000.0*dt)  drag 0.2
-run 15000 # 15 ps
+run 20000 # 20 ps
 
 -------------------------------------------------------------
 #dump 1 all dcd 100 md_npt.dcd
