@@ -178,8 +178,12 @@ def gaff_pbc_optimize(fname, precursor_energy_per_atom):
         write(precursor_pdb_path, mol, format="proteindatabank")
 
         atoms = read(fname)
-        crystal_pdb_path = os.path.join(temp_dir, "crystal.pdb")
-        write(crystal_pdb_path, atoms, format="proteindatabank")
+        atoms = atoms.copy()
+        atoms.set_positions(atoms.get_positions(wrap=False))
+        #crystal_pdb_path = os.path.join(temp_dir, "crystal.pdb") # The molecule was broken in PDB. I changed it to XYZ.
+        #write(crystal_pdb_path, atoms, format="proteindatabank") # The molecule was broken in PDB. I changed it to XYZ.
+        crystal_xyz_path = os.path.join(temp_dir, "crystal.xyz")
+        write(crystal_xyz_path, atoms, format="xyz")
 
         moleculars = int(len(atoms)/len(mol))
 
@@ -200,8 +204,10 @@ def gaff_pbc_optimize(fname, precursor_energy_per_atom):
             f.write("import \"precursor.lt\"\n")
             f.write(f"crystal = new MOL [{moleculars}]\n")
 
-        # Step 5: Run moltemplate.sh
-        cmd = f"moltemplate.sh -atomstyle full -pdb crystal.pdb system.lt"
+        # Step 5: Run moltemplate.sh with PDB
+        #cmd = f"moltemplate.sh -atomstyle full -pdb crystal.pdb system.lt" # The molecule was broken in PDB. I changed it to XYZ.
+        # Step 5: Run moltemplate.sh with XYZ
+        cmd = f"moltemplate.sh -atomstyle full -xyz crystal.xyz system.lt"
         with open(log_file, "a") as log:
             subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
 
