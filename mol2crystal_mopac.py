@@ -367,6 +367,46 @@ def adjust_cellpar_by_spacegroup(sg, cellpar):
 
     return adjusted_cellpar
 
+#---------------------------------------------------------------------------------
+# Placed at the geometric center
+center = positions.mean(axis=0)
+centered_positions = positions - center
+
+# Find the atom farthest from the geometric center
+distances = np.linalg.norm(centered_positions, axis=1)
+farthest_index = np.argmax(distances)
+principal_axis = centered_positions[farthest_index]
+
+# Define the target direction (theta=45, phi=45)
+theta = np.pi / 4
+phi = np.pi / 4
+target_direction = np.array([
+    np.sin(theta) * np.cos(phi),
+    np.sin(theta) * np.sin(phi),
+    np.cos(theta)
+])
+
+# rotate principal_axis to target_direction
+def rotation_matrix_from_vectors(vec1, vec2):
+    vec1 = vec1 / np.linalg.norm(vec1)
+    vec2 = vec2 / np.linalg.norm(vec2)
+    cross = np.cross(vec1, vec2)
+    dot = np.dot(vec1, vec2)
+    if np.isclose(dot, -1.0):
+        return -np.eye(3)
+    elif np.isclose(dot, 1.0):
+        return np.eye(3)
+    skew = np.array([
+        [0, -cross[2], cross[1]],
+        [cross[2], 0, -cross[0]],
+        [-cross[1], cross[0], 0]
+    ])
+    R = np.eye(3) + skew + np.dot(skew, skew) * ((1 - dot) / (np.linalg.norm(cross) ** 2))
+    return R
+
+rotation_matrix = rotation_matrix_from_vectors(principal_axis, target_direction)
+rotated_positions = centered_positions.dot(rotation_matrix.T)
+#---------------------------------------------------------------------------------
 
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
@@ -426,9 +466,16 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
                                             cellpar=adjusted_cellpar,
                                             pbc=True)
                 atoms = crystal_structure
+                n_molecules = len(atoms) / len(mol) # # Estimation of the number of molecules
                 if len(atoms) == len(mol):
                     print(f"Space group under investigation: {sg}")
                     print(f"Not adopted because single molecule only.")
+                    print(f"------------------------------------------------------")
+                    continue
+                # Exclude if there are too many molecules (e.g., more than 10 molecules)
+                elif n_molecules > 100:
+                    print(f"Space group under investigation: {sg}")
+                    print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
                     print(f"------------------------------------------------------")
                     continue
                 elif not has_overlap(crystal_structure, atomic_radii):
