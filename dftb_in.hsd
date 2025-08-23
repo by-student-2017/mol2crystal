@@ -3,11 +3,11 @@ Geometry = VaspFormat {
 }
 
 Driver = GeometryOptimization {
-  Optimizer = FIRE {}
+  Optimizer = FIRE{} # FIRE{},LBFGS{},  SteepestDescent{}
   LatticeOpt = Yes
   OutputPrefix = "geom.out"
   Convergence {
-    GradElem = 1E-4
+    GradElem = 1E-3
   }
 }
 
