@@ -1,8 +1,8 @@
 #---------------------------------------------
 # user setting
 variable Pinit   equal  1.0     # 0.1 MPa ( 1.0 bar = 0.1 MPa)
-variable Pobject equal  2.0     # 0.2 MPa ( 2.0 bar = 0.2 MPa)
-variable Tinit   equal 273-196  # [K] (e.g., LN2 77 [K])
+variable Pobject equal 10.0     # 1.0 MPa (10.0 bar = 1.0 MPa)
+variable Tinit   equal 273-269  # [K] (e.g., He 4 [K])
 variable Tobject equal 273+25   # [K] (e.g., Room temperature 298 [K])
 #---------------------------------------------
 
@@ -21,17 +21,20 @@ thermo 100
 thermo_style custom step etotal temp lx ly lz vol press vol density
 
 # Energy minimization
+fix boxrelax all box/relax aniso 0.0
 minimize 1.0e-5 1.0e-7 1000 10000
+unfix boxrelax
 
 # Initial temperature setting at Tinit [K]
-velocity all create ${Tinit} 4928459 dist gaussian
+#velocity all create ${Tinit} 4928459 dist gaussian
+velocity all set 0.0 0.0 0.0 # To prevent molecular breakdown
 
 # 1.0 fs step (Typical values ​​for GAFF, LJ, etc.)
-timestep 1.0
+timestep 0.25
 
 # Initial easing with NVT
 fix fxnvt all nvt temp ${Tinit} ${Tobject} 500.0 tchain 1
-run 5000 # 5 ps
+run 20000 # 5 ps
 
 write_data md_nvt.data
 
@@ -59,6 +62,10 @@ print "The cohesive energy (kcal/mol) = ${ecoh0}"
 print "The density (g/cm^3) = ${density}"
 print "-------------------------------------------------------------"
 print "NVT: Simulations completed !"
+
+reset_timestep 0
+# 1.0 fs step (Typical values ​​for GAFF, LJ, etc.)
+timestep 1.0
 
 # Volume relaxation with NPT
 # -------------------------------------------------------------
