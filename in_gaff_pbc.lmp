@@ -2,6 +2,15 @@ include   'system.in.init'
 read_data 'system.data'
 include   'system.in.settings'
 
+#---------------------------------------------
+# user setting
+replicate 1 1 1                 # set cell size >= 12 x 12 x 12 [A]
+variable Pinit   equal  1.0     # 0.10 MPa (1 bar = 0.1 MPa)
+variable Pobject equal 14.7     # 1.47 MPa (1 bar = 0.1 MPa)
+variable Tinit   equal 273-196  # [K] (e.g., LN2 77 [K])
+variable Tobject equal 273+25   # [K] (e.g., Room temperature 298 [K])
+#---------------------------------------------
+
 # Stabilize communication and connections (optional)
 comm_modify cutoff 20.0
 special_bonds lj/coul 0 0 1
@@ -13,8 +22,8 @@ thermo_style custom step etotal temp lx ly lz vol press vol density
 # Energy minimization
 minimize 1.0e-5 1.0e-7 1000 10000
 
-# Initial temperature setting at 300 [K]
-velocity all create 300 4928459 dist gaussian
+# Initial temperature setting at Tinit [K]
+velocity all create ${Tinit} 4928459 dist gaussian
 
 # 1.0 fs step (Typical values ​​for GAFF, LJ, etc.)
 timestep 1.0
@@ -51,19 +60,23 @@ print "-------------------------------------------------------------"
 print "NVT: Simulations completed !"
 
 # Volume relaxation with NPT
+# -------------------------------------------------------------
 # drag is a damping coefficient that slows down the rate at which the box size changes.
 # Smaller values ​​result in slower changes, while larger values ​​result in more rapid changes.
 # 0.2 provides moderate damping (recommended value) for a good balance between stability and responsiveness.
+# -------------------------------------------------------------
 unfix fxnvt
-fix fxnpt1 all npt temp 300.0 300.0 100.0 aniso 1.0 14.7 1000.0 drag 0.2
-run 30000 # 30 ps
+fix fxnpt1 all npt temp ${Tinit} ${Tobject}   $(100.0*dt)  aniso ${Pinit} ${Pobject} $(1000.0*dt) drag 0.2
+run 20000 # 20 ps
 
 unfix fxnpt1
-fix fxnpt2 all npt temp 300.0 300.0 100.0 aniso 14.7 1.0 1000.0 drag 0.2
-run 30000 # 30 ps
+fix fxnpt2 all npt temp ${Tobject} ${Tobject} $(100.0*dt)  aniso ${Pobject} ${Pinit} $(1000.0*dt)  drag 0.2
+run 20000 # 20 ps
 
+-------------------------------------------------------------
 #dump 1 all dcd 100 md_npt.dcd
 #dump_modify 1 unwrap yes
+-------------------------------------------------------------
 
 write_data md_npt.data
 
