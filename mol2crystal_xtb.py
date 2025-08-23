@@ -445,29 +445,22 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
                                             pbc=True)
                 atoms = crystal_structure
                 n_molecules = len(atoms) / len(mol) # # Estimation of the number of molecules
+                print(f"Space group under investigation: {sg}")
                 print(f"number of molecules ({n_molecules:.2f}) in the unit cell.")
                 if len(atoms) == len(mol):
-                    print(f"Space group under investigation: {sg}")
                     print(f"Not adopted because single molecule only.")
-                    print(f"------------------------------------------------------")
-                    continue
-                # Exclude if there are too many molecules (e.g., more than 100 molecules)
-                elif n_molecules > 100:
-                    print(f"Space group under investigation: {sg}")
+                elif n_molecules > 100: # Exclude if there are too many molecules (e.g., more than 100 molecules)
                     print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
-                    print(f"------------------------------------------------------")
-                    continue
                 elif not has_overlap(crystal_structure, atomic_radii):
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
                     xtb_optimize(fname, precursor_energy_per_atom=0.0)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
-                    print(f"------------------------------------------------------")
                 else:
-                    print("Space group under investigation:",sg)
                     print("Not adopted because the interatomic distance is too close.")
-                    print(f"------------------------------------------------------")
+                print(f"------------------------------------------------------")
+                continue
             except Exception:
                 continue
 
