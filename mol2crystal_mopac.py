@@ -428,9 +428,9 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
         extent_z = max_z - min_z
         
         # Define cell parameters with margin
-        cell_x = extent_x + 2 * margin
-        cell_y = extent_y + 2 * margin
-        cell_z = extent_z + 2 * margin
+        cell_x = extent_x + margin
+        cell_y = extent_y + margin
+        cell_z = extent_z + margin
         cellpar = [cell_x, cell_y, cell_z, 90, 90, 90]
         
         for sg in range(1, 231):
@@ -458,7 +458,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
 
                 # Shift the numerator
                 min_corner = rotated_positions.min(axis=0)
-                shift_vector = -min_corner + margin
+                shift_vector = -min_corner + margin/2
                 shifted_positions = rotated_positions + shift_vector
 
                 # Transform the molecule based on adjusted_cellpar
