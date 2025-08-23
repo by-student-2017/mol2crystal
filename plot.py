@@ -12,7 +12,7 @@ with open("structure_vs_energy.txt", "r") as file:
         parts = line.strip().split()
         if len(parts) >= 4:
             #label = parts[0].split("/")[-1]
-            label = parts[0].split("/")[-1].replace("POSCAR_", "")
+            label = parts[0].split("/")[-1].replace("OPT_", "").replace(".vasp", "")
             energy = float(parts[1])
             density = float(parts[3])
             x_density.append(density)

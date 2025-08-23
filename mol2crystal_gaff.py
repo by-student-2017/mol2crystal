@@ -180,7 +180,7 @@ def obenergy_calc(fname, precursor_energy_per_atom):
     print(f"Density: {density:.3f} [g/cm^3]")
 
     with open("structure_vs_energy.txt", "a") as out:
-        out.write(f"{fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
+        out.write(f"{opt_fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
 
 # Reference energy from original molecule
 temp_mol = os.path.join('molecular_files/precursor.mol')

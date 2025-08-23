@@ -27,6 +27,12 @@ if (os.path.exists('valid_structures_old')):
 if (os.path.exists('valid_structures')):
     os.rename(     'valid_structures','valid_structures_old')
 
+if (os.path.exists('optimized_structures_vasp_old')):
+    shutil.rmtree( 'optimized_structures_vasp_old')   
+
+if (os.path.exists('optimized_structures_vasp')):
+    os.rename(     'optimized_structures_vasp','optimized_structures_vasp_old')
+
 dirs_to_remove = ['temp', 'cp2k_temp', 'dftb_temp', 'gaff_temp', 'gaff_pbc_temp', 'gpaw_temp', 'mopac_temp', 'siesta_temp', 'xtb_temp']
 for dir_name in dirs_to_remove:
     if os.path.exists(dir_name):
@@ -68,7 +74,7 @@ print(f"45 - 90 degrees divided into",nmesh)
 
 # Output directories
 os.makedirs("valid_structures", exist_ok=True)
-#os.makedirs("optimized_structures_vasp", exist_ok=True)
+os.makedirs("optimized_structures_vasp", exist_ok=True)
 
 # Check for atomic overlap
 # Old version (Simple method: This is simple but not bad.)
@@ -136,6 +142,9 @@ def density_calc(fname):
     num_atoms = len(mol) # or num_atoms = mol.get_global_number_of_atoms()
     energy_per_atom = 0.0 / num_atoms * 27.2114  # Temporary energy (can be substituted into calculations later)
 
+    opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
+    write(opt_fname, atoms, format='vasp')
+
     # --- density calculation ---
     total_mass_amu = sum(atoms.get_masses())
     total_mass_g = total_mass_amu * 1.66053906660e-24
@@ -149,7 +158,7 @@ def density_calc(fname):
     print(f"Density: {density:.3f} [g/cm^3]")
     
     with open("structure_vs_energy.txt", "a") as out:
-        out.write(f"{fname} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f} \n")
+        out.write(f"{opt_fname} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f} \n")
 
 # Reference energy from original molecule
 with open("structure_vs_energy.txt", "w") as f:
