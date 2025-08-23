@@ -444,9 +444,9 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
             
             # In structures with planes, intersections occur, so users can exclude them.
             # Users can also exclude unnecessarily large structures.
-            if sg in [16, 27, 43, 45, 49, 50, 54, 70, 72]:
-                print(f"Skipping space group {sg} (known issue or undesired)")
-                print(f"------------------------------------------------------")
+            excluded_spacegroups = [16, 27, 36, 43, 45, 49, 50, 54, 70, 72]
+            if sg in excluded_spacegroups:
+                print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
                 continue
             
             try:
