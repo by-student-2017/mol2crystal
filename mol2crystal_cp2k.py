@@ -95,7 +95,7 @@ def has_overlap(atoms, atomic_radii, scale=0.90):
             r_j = atomic_radii.get(symbols[j], 0.7)
             threshold = scale * (r_i + r_j)
             if symbols[i] == "H" and symbols[j] == "H":
-                threshold = scale * 2.0 # >= (r_i + r_j): Shortest H-H distance in an H2O molecule (1.51)
+                threshold = scale * 1.50 # >= (r_i + r_j): Shortest H-H distance in an H2O molecule (1.51)
             if dist < threshold:
                 return True
     return False
@@ -235,6 +235,143 @@ def cp2k_optimize(fname, precursor_energy_per_atom):
 with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 
+def adjust_cellpar_by_spacegroup(sg, cellpar):
+    adjusted_cellpar = cellpar.copy()
+
+    # Monoclinic (3–15)
+    if sg in {4, 11, 12, 18}:
+        adjusted_cellpar[1] *= 2
+    elif sg in {5, 8, 12, 13}:
+        adjusted_cellpar[0] *= 2 / np.sqrt(2)
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+    elif sg in {7, 9, 11, 13, 15}:
+        adjusted_cellpar[2] *= 2
+    elif sg in {14}:
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+        adjusted_cellpar[2] *= 2 / np.sqrt(2)
+
+    # Orthorhombic (16–74)
+    elif sg in {28, 51}: # a
+        adjusted_cellpar[0] *= 2
+    elif sg in {62, 74}: # b
+        adjusted_cellpar[1] *= 2
+    elif sg in {17, 20, 26, 27, 33, 36, 37, 45, 49, 60, 63, 66, 72}: # c
+        adjusted_cellpar[2] *= 2
+    elif sg in {67}: # a,b
+        adjusted_cellpar[0] *= 2
+        adjusted_cellpar[1] *= 2
+    elif sg in {29, 53, 54}: # a,c
+        adjusted_cellpar[0] *= 2
+        adjusted_cellpar[2] *= 2
+    elif sg in {39, 57}: # b,c
+        adjusted_cellpar[1] *= 2
+        adjusted_cellpar[2] *= 2
+    elif sg in {24, 73}: # a,b,c
+        adjusted_cellpar[0] *= 2
+        adjusted_cellpar[1] *= 2
+        adjusted_cellpar[2] *= 2
+    elif sg in {18, 21, 32, 35, 50, 55, 59, 65}: # ab plane
+        adjusted_cellpar[0] *= 2 / np.sqrt(2)
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+    elif sg in {30, 38}: # bc plane
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+        adjusted_cellpar[2] *= 2 / np.sqrt(2)
+    elif sg in {31}: # ac plane
+        adjusted_cellpar[0] *= 2 / np.sqrt(2)
+        adjusted_cellpar[2] *= 2 / np.sqrt(2)
+    elif sg in {40, 46, 52}:
+        adjusted_cellpar[1] *= 2
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+        adjusted_cellpar[2] *= 2 / np.sqrt(2)
+    elif sg in {19, 22, 41, 42, 56, 61, 64, 68, 69}: # FCC
+        adjusted_cellpar[0] *= 2 / np.sqrt(2)
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+        adjusted_cellpar[2] *= 2 / np.sqrt(2)
+    elif sg in {43, 70}: # Diamond
+        adjusted_cellpar[0] *= 4 / np.sqrt(2)
+        adjusted_cellpar[1] *= 4 / np.sqrt(2)
+        adjusted_cellpar[2] *= 4 / np.sqrt(2)
+    elif sg in {23, 34, 44, 48, 58, 71}: # BCC
+        adjusted_cellpar[0] *= 2 / np.sqrt(3)
+        adjusted_cellpar[1] *= 2 / np.sqrt(3)
+        adjusted_cellpar[2] *= 2 / np.sqrt(3)
+
+    # Tetragonal (75–142)
+    elif sg in {80}: # b
+        adjusted_cellpar[1] *= 2
+    elif sg in {77, 84, 93, 101, 103, 105, 108, 112, 120, 124, 131, 132, 135}: # c
+        adjusted_cellpar[2] *= 2
+    elif sg in {76, 78, 91, 95}: # c
+        adjusted_cellpar[2] *= 4
+    elif sg in {79, 82, 86, 87, 88, 94, 97, 98, 102, 104, 107, 109, 114, 118, 119, 121, 122, 126, 128, 134, 136, 137, 139, 141}: # BCC
+        adjusted_cellpar[0] *= 2 / np.sqrt(3)
+        adjusted_cellpar[1] *= 2 / np.sqrt(3)
+        adjusted_cellpar[2] *= 2 / np.sqrt(3)
+    elif sg in {85, 90, 100, 113, 117, 125, 127, 129}: # ab plane
+        adjusted_cellpar[0] *= 2 / np.sqrt(2)
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+    elif sg in {92, 96, 106, 109, 130, 133, 138, 140, 142}: # c, ab plane
+        adjusted_cellpar[2] *= 2
+        adjusted_cellpar[0] *= 2 / np.sqrt(2)
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+    elif sg in {123, 139}:
+        factor = 1.5
+        adjusted_cellpar[:3] = [x * factor for x in cellpar[:3]]
+
+    # Trigonal (143–167)
+    elif sg in {143, 147, 149, 150, 156, 157, 162, 164}:
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+    elif sg in {158, 159, 163, 165}:
+        adjusted_cellpar[2] *= 2
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+    elif sg in {144, 145, 151, 152, 153, 154}:
+        adjusted_cellpar[2] *= 4
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+    elif sg in {146, 148, 155, 160, 161, 166, 167}:
+        adjusted_cellpar[0] *= 3      # = 4 * sqrt(3)/2 * sqrt(3)/2
+        adjusted_cellpar[1] *= 3      # = 4 * sqrt(3)/2 * sqrt(3)/2
+        adjusted_cellpar[2] *= 4      
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+
+    # Hexagonal (168-194)
+    elif sg in {168, 174, 175, 177, 183, 187, 189, 191}:
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+    elif sg in {173, 176, 182, 184, 185, 186, 188, 190, 192, 193, 194}:
+        adjusted_cellpar[2] *= 2
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+    elif sg in {171, 172, 180, 181}:
+        adjusted_cellpar[2] *= 4
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+    elif sg in {169, 170, 178, 179}:
+        adjusted_cellpar[2] *= 6
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+    elif sg in {146, 148, 155, 160, 161, 166, 167}:
+        adjusted_cellpar[0] *= 3      # = 4 * sqrt(3)/2 * sqrt(3)/2
+        adjusted_cellpar[1] *= 3      # = 4 * sqrt(3)/2 * sqrt(3)/2
+        adjusted_cellpar[2] *= 4      
+        adjusted_cellpar[5] = 120     # gamma = 120 degree
+
+    # Cubic (195–230)
+    elif sg in {196, 198, 202, 205, 209, 212, 216, 225}: # FCC
+        adjusted_cellpar[0] *= 2 / np.sqrt(2)
+        adjusted_cellpar[1] *= 2 / np.sqrt(2)
+        adjusted_cellpar[2] *= 2 / np.sqrt(2)
+    elif sg in {203, 210, 212, 213, 214, 220, 227, 228, 230}: # Diamond
+        adjusted_cellpar[0] *= 4 / np.sqrt(2)
+        adjusted_cellpar[1] *= 4 / np.sqrt(2)
+        adjusted_cellpar[2] *= 4 / np.sqrt(2)
+    elif sg in {197, 201, 204, 208, 211, 217, 218, 222, 223, 224, 229}: # BCC
+        adjusted_cellpar[0] *= 2 / np.sqrt(3)
+        adjusted_cellpar[1] *= 2 / np.sqrt(3)
+        adjusted_cellpar[2] *= 2 / np.sqrt(3)
+    elif sg in {199, 206, 219, 226}:
+        adjusted_cellpar[0] *= 2
+        adjusted_cellpar[1] *= 2
+        adjusted_cellpar[2] *= 2
+
+    return adjusted_cellpar
+
+
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
 valid_files = []
@@ -243,34 +380,55 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
         print(f"------------------------------------------------------")
         print("theta", theta, ", phi", phi, ", space group: 2 - 230")
         print("# Rotation and Bounding box and cell")
+        
+        # Rotate molecule first
         rotated_positions = rotate_molecule(positions, theta, phi)
         
-        # Reevaluate bounding box
-        min_pos = rotated_positions.min(axis=0)
-        max_pos = rotated_positions.max(axis=0)
-        extent = max_pos - min_pos
+        # Reevaluate bounding box separately for x, y, z
+        min_x, min_y, min_z = rotated_positions.min(axis=0)
+        max_x, max_y, max_z = rotated_positions.max(axis=0)
+        extent_x = max_x - min_x
+        extent_y = max_y - min_y
+        extent_z = max_z - min_z
         
-        cellpar = list(extent + 2 * margin) + [90, 90, 90]
-        cell = np.array([[cellpar[0], 0, 0],
-                         [0, cellpar[1], 0],
-                         [0, 0, cellpar[2]]])
-        inv_cell = np.linalg.inv(cell)
+        # Define cell parameters with margin
+        cell_x = extent_x + 2 * margin
+        cell_y = extent_y + 2 * margin
+        cell_z = extent_z + 2 * margin
+        cellpar = [cell_x, cell_y, cell_z, 90, 90, 90]
         
-        shifted_positions = rotated_positions - rotated_positions.min(axis=0)
-        fractional_positions = np.dot(shifted_positions, inv_cell)
-        
-        print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
-        print("Cell matrix:\n", cell)
-        print(f"------------------------------------------------------")
-        
-        for sg in range(2, 231):
+        for sg in range(1, 231):
             try:
+                adjusted_cellpar = adjust_cellpar_by_spacegroup(sg, cellpar)
+                print("Cell parameters (a, b, c, alpha, beta, gamma):", adjusted_cellpar)
+                
+                # Reconstructed cell matrix
+                cell = adjusted_cellpar
+                print("Cell matrix:\n", cell)
+                
+                cell = cellpar_to_cell(adjusted_cellpar)
+                inv_cell = np.linalg.inv(cell)
+
+                # Shift the numerator
+                min_corner = rotated_positions.min(axis=0)
+                shift_vector = -min_corner + margin
+                shifted_positions = rotated_positions + shift_vector
+
+                # Transform the molecule based on adjusted_cellpar
+                fractional_positions = np.dot(shifted_positions, inv_cell)
+
                 crystal_structure = crystal(symbols=symbols,
                                             basis=fractional_positions,
                                             spacegroup=sg,
-                                            cellpar=cellpar,
+                                            cellpar=adjusted_cellpar,
                                             pbc=True)
-                if not has_overlap(crystal_structure):
+                atoms = crystal_structure
+                if len(atoms) == len(mol):
+                    print(f"Space group under investigation: {sg}")
+                    print(f"Not adopted because single molecule only.")
+                    print(f"------------------------------------------------------")
+                    continue
+                elif not has_overlap(crystal_structure, atomic_radii):
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
