@@ -43,6 +43,8 @@ import subprocess
 import psutil
 import re
 from ase.geometry import cellpar_to_cell
+from ase.neighborlist import NeighborList
+#from ase.data import vdw_radii, atomic_numbers
 
 from ase.calculators.siesta import Siesta
 from ase.filters import UnitCellFilter
@@ -114,7 +116,6 @@ def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
     dists = pdist(atoms.get_positions())
     return np.any((dists > min_threshold) & (dists < max_threshold))
 '''
-# New version
 covalent_radii = {
      "H": 0.31, "He": 0.28, "Li": 1.28, "Be": 0.96,  "B": 0.84,  "C": 0.76,  "N": 0.71,  "O": 0.66,  "F": 0.57, "Ne": 0.58,
     "Na": 1.66, "Mg": 1.41, "Al": 1.21, "Si": 1.11,  "P": 1.07,  "S": 1.05, "Cl": 1.02, "Ar": 1.06,  "K": 2.03, "Ca": 1.76,
@@ -127,6 +128,8 @@ covalent_radii = {
     "Tl": 1.45, "Pb": 1.46, "Bi": 1.48, "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.39, "Cm": 0.66, "Bm": 1.39
 }
+'''
+# New version 1: More detailed checks than the Simple version. Order(N^2) method.
 def has_overlap(atoms, covalent_radii, scale=0.90):
     positions = atoms.get_positions()
     symbols = atoms.get_chemical_symbols()
@@ -143,6 +146,28 @@ def has_overlap(atoms, covalent_radii, scale=0.90):
             threshold = scale * (r_i + r_j)
             if symbols[i] == "H" and symbols[j] == "H":
                 threshold = scale * 1.50 # >= (r_i + r_j): Shortest H-H distance in an H2O molecule (1.51)
+            if dist < threshold:
+                return True
+    return False
+'''
+# New version 2: Faster than New version 1. Order(N) methods (linked-cell method)
+def has_overlap_neighborlist(atoms, covalent_radii, scale=0.90):
+    symbols = atoms.get_chemical_symbols()
+    radii = [covalent_radii.get(sym, 0.7) * scale for sym in symbols]
+    cutoffs = [r * 2 for r in radii]  # NeighborList expects diameter
+
+    nl = NeighborList(cutoffs=cutoffs, self_interaction=False, bothways=True)
+    nl.update(atoms)
+
+    for i in range(len(atoms)):
+        indices, offsets = nl.get_neighbors(i)
+        for j, offset in zip(indices, offsets):
+            dist = atoms.get_distance(i, j, mic=True)
+            r_i = covalent_radii.get(symbols[i], 0.7)
+            r_j = covalent_radii.get(symbols[j], 0.7)
+            threshold = scale * (r_i + r_j)
+            if symbols[i] == "H" and symbols[j] == "H":
+                threshold = scale * 1.50
             if dist < threshold:
                 return True
     return False
@@ -476,7 +501,8 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
                     print(f"Not adopted because single molecule only.")
                 elif n_molecules > 100: # Exclude if there are too many molecules (e.g., more than 100 molecules)
                     print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
-                elif not has_overlap(crystal_structure, covalent_radii):
+                #elif not has_overlap(crystal_structure, covalent_radii): # For Simple or New version 1
+                elif not has_overlap_neighborlist(crystal_structure, covalent_radii): # For New version 2
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
