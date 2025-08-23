@@ -79,13 +79,25 @@ com = np.mean(mol.get_positions(), axis=0)  # Volume center (geometric center)
 mol.translate(-com)
 
 print("# The margin of one molecule setting")
-margin = 2.0 # >= vdW radius (1.55 - 3.43)
-margin = margin * 1.5 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
+vdw_radii = {
+     "H": 1.20, "He": 1.40, "Li": 1.82, "Be": 1.53,  "B": 1.92,  "C": 1.70,  "N": 1.55,  "O": 1.52,  "F": 1.47, "Ne": 1.54,
+    "Na": 2.27, "Mg": 1.73, "Al": 1.84, "Si": 2.10,  "P": 1.80,  "S": 1.80, "Cl": 1.75, "Ar": 1.88,  "K": 2.75, "Ca": 2.31,
+    "Sc": 2.11, "Ti": 2.00,  "V": 2.00, "Cr": 2.00, "Mn": 2.00, "Fe": 2.00, "Co": 2.00, "Ni": 1.63, "Cu": 1.40, "Zn": 1.39,
+    "Ga": 1.87, "Ge": 2.11, "As": 1.85, "Se": 1.90, "Br": 1.85, "Kr": 2.02, "Rb": 3.03, "Sr": 2.49,  "Y": 2.00, "Zr": 2.00,
+    "Nb": 2.00, "Mo": 2.00, "Tc": 2.00, "Ru": 2.00, "Rh": 2.00, "Pd": 1.63, "Ag": 1.72, "Cd": 1.58, "In": 1.93, "Sn": 2.17,
+    "Sb": 2.06, "Te": 2.06,  "I": 1.98, "Xe": 2.16, "Cs": 3.43, "Ba": 2.68, "La": 2.00, "Ce": 2.00, "Pr": 2.00, "Nd": 2.00,
+    "Pm": 2.00, "Sm": 2.00, "Eu": 2.00, "Gd": 2.00, "Tb": 2.00, "Dy": 2.00, "Ho": 2.00, "Er": 2.00, "Tm": 2.00, "Yb": 2.00,
+    "Lu": 2.00, "Hf": 2.00, "Ta": 2.00,  "W": 2.00, "Re": 2.00, "Os": 2.00, "Ir": 2.00, "Pt": 1.75, "Au": 1.66, "Hg": 1.55,
+    "Tl": 1.96, "Pb": 2.02, "Bi": 2.07, "Po": 2.00, "At": 2.00, "Rn": 2.20, "Fr": 2.00, "Ra": 2.00, "Ac": 2.00, "Th": 2.00,
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 2.00, "Cm": 1.52, "Bm": 2.00
+}
+margin = 1.7 # >= vdW radius (H:1.20 - Cs:3.43)
+margin = margin * 1.2 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
 print(f"Space around the molecule",margin, "[A]")
 
 print("# Rotation angle setting")
-nmesh = 7 # 0 - 90 degrees divided into nmesh
-print(f"0 - 90 degrees divided into",nmesh)
+nmesh = 3 # 45 - 90 degrees divided into nmesh
+print(f"45 - 90 degrees divided into",nmesh)
 
 # Output directories
 os.makedirs("valid_structures", exist_ok=True)
@@ -99,15 +111,19 @@ def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
     return np.any((dists > min_threshold) & (dists < max_threshold))
 '''
 # New version
-atomic_radii = {
+covalent_radii = {
      "H": 0.31, "He": 0.28, "Li": 1.28, "Be": 0.96,  "B": 0.84,  "C": 0.76,  "N": 0.71,  "O": 0.66,  "F": 0.57, "Ne": 0.58,
-    "Na": 1.66, "Mg": 1.41, "Al": 1.21, "Si": 1.11,  "P": 1.07,  "S": 1.05, "Cl": 1.02, "Ar": 1.06,
-     "K": 2.03, "Ca": 1.76, "Sc": 1.70, "Ti": 1.60,  "V": 1.53, "Cr": 1.39, "Mn": 1.39, "Fe": 1.32, "Co": 1.26, "Ni": 1.24,
-    "Cu": 1.32, "Zn": 1.22, "Ga": 1.22, "Ge": 1.20, "As": 1.19, "Se": 1.20, "Br": 1.20, "Kr": 1.16,
-    "Rb": 2.20, "Sr": 1.95,  "Y": 1.90, "Zr": 1.75, "Nb": 1.64, "Mo": 1.54, "Tc": 1.47, "Ru": 1.46, "Rh": 1.42, "Pd": 1.39,
-    "Ag": 1.45, "Cd": 1.44, "In": 1.42, "Sn": 1.39, "Sb": 1.39, "Te": 1.38,  "I": 1.39, "Xe": 1.40
+    "Na": 1.66, "Mg": 1.41, "Al": 1.21, "Si": 1.11,  "P": 1.07,  "S": 1.05, "Cl": 1.02, "Ar": 1.06,  "K": 2.03, "Ca": 1.76,
+    "Sc": 1.70, "Ti": 1.60,  "V": 1.53, "Cr": 1.39, "Mn": 1.39, "Fe": 1.32, "Co": 1.26, "Ni": 1.24, "Cu": 1.32, "Zn": 1.22,
+    "Ga": 1.22, "Ge": 1.20, "As": 1.19, "Se": 1.20, "Br": 1.20, "Kr": 1.16, "Rb": 2.20, "Sr": 1.95,  "Y": 1.90, "Zr": 1.75,
+    "Nb": 1.64, "Mo": 1.54, "Tc": 1.47, "Ru": 1.46, "Rh": 1.42, "Pd": 1.39, "Ag": 1.45, "Cd": 1.44, "In": 1.42, "Sn": 1.39,
+    "Sb": 1.39, "Te": 1.38,  "I": 1.39, "Xe": 1.40, "Cs": 2.44, "Ba": 2.15, "La": 2.07, "Ce": 2.04, "Pr": 2.03, "Nd": 2.01,
+    "Pm": 1.99, "Sm": 1.98, "Eu": 1.98, "Gd": 1.96, "Tb": 1.94, "Dy": 1.92, "Ho": 1.92, "Er": 1.89, "Tm": 1.90, "Yb": 1.87,
+    "Lu": 1.87, "Hf": 1.75, "Ta": 1.70,  "W": 1.62, "Re": 1.51, "Os": 1.44, "Ir": 1.41, "Pt": 1.36, "Au": 1.36, "Hg": 1.32,
+    "Tl": 1.45, "Pb": 1.46, "Bi": 1.48, "Po": 1.40, "At": 1.50, "Rn": 1.50, "Fr": 2.60, "Ra": 2.21, "Ac": 2.15, "Th": 2.06,
+    "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 1.39, "Cm": 0.66, "Bm": 1.39
 }
-def has_overlap(atoms, atomic_radii, scale=0.90):
+def has_overlap(atoms, covalent_radii, scale=0.90):
     positions = atoms.get_positions()
     symbols = atoms.get_chemical_symbols()
     cell = atoms.get_cell()
@@ -118,8 +134,8 @@ def has_overlap(atoms, atomic_radii, scale=0.90):
         for j in range(i + 1, natoms):
             # Shortest distance (considering periodic boundaries)
             dist = atoms.get_distance(i, j, mic=True)
-            r_i = atomic_radii.get(symbols[i], 0.7)
-            r_j = atomic_radii.get(symbols[j], 0.7)
+            r_i = covalent_radii.get(symbols[i], 0.7)
+            r_j = covalent_radii.get(symbols[j], 0.7)
             threshold = scale * (r_i + r_j)
             if symbols[i] == "H" and symbols[j] == "H":
                 threshold = scale * 1.50 # >= (r_i + r_j): Shortest H-H distance in an H2O molecule (1.51)
@@ -456,7 +472,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
                     print(f"Not adopted because single molecule only.")
                 elif n_molecules > 100: # Exclude if there are too many molecules (e.g., more than 100 molecules)
                     print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
-                elif not has_overlap(crystal_structure, atomic_radii):
+                elif not has_overlap(crystal_structure, covalent_radii):
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
