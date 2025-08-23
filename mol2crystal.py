@@ -15,6 +15,7 @@ from ase.spacegroup import crystal
 from scipy.spatial.distance import pdist
 import subprocess
 import psutil
+import re
 from ase.geometry import cellpar_to_cell
 
 import warnings

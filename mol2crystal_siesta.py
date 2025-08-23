@@ -33,12 +33,16 @@
 # pyton3 mol2crystal_siesta.py
 
 import os
+import glob
+import shutil
 import numpy as np
 from ase.io import read, write
 from ase.spacegroup import crystal
 from scipy.spatial.distance import pdist
-import shutil
+import subprocess
 import psutil
+import re
+from ase.geometry import cellpar_to_cell
 
 from ase.calculators.siesta import Siesta
 from ase.filters import UnitCellFilter

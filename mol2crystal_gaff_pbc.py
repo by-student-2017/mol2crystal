@@ -36,6 +36,7 @@
 # pyton3 mol2crystal_gaff_pbc.py
 
 import os
+import glob
 import shutil
 import numpy as np
 from ase.io import read, write
@@ -44,6 +45,7 @@ from scipy.spatial.distance import pdist
 import subprocess
 import psutil
 import re
+from ase.geometry import cellpar_to_cell
 
 from ase.io.lammpsdata import read_lammps_data
 from ase.geometry import wrap_positions

@@ -17,6 +17,7 @@ from scipy.spatial.distance import pdist
 import subprocess
 import psutil
 import re
+from ase.geometry import cellpar_to_cell
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")

@@ -14,18 +14,17 @@
 # pyton3 mol2crystal_xtb.py
 
 import os
+import glob
+import shutil
 import numpy as np
 from ase.io import read, write
 from ase.spacegroup import crystal
 from scipy.spatial.distance import pdist
 import subprocess
-import shutil
 import psutil
 import uuid
 import re
-
-# xTB optimization function
-import glob
+from ase.geometry import cellpar_to_cell
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
