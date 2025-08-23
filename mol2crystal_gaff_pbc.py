@@ -95,7 +95,7 @@ vdw_radii = {
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 2.00, "Cm": 1.52, "Bm": 2.00
 }
 margin = 1.7 # >= vdW radius (H:1.20 - Cs:3.43)
-margin = margin * 1.2 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
+margin = margin * 1.5 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
 print(f"Space around the molecule",margin, "[A]")
 
 print("# Rotation angle setting")
