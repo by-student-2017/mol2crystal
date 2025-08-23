@@ -446,12 +446,13 @@ for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
                                             pbc=True)
                 atoms = crystal_structure
                 n_molecules = len(atoms) / len(mol) # # Estimation of the number of molecules
+                print(f"number of molecules ({n_molecules:.2f}) in the unit cell.")
                 if len(atoms) == len(mol):
                     print(f"Space group under investigation: {sg}")
                     print(f"Not adopted because single molecule only.")
                     print(f"------------------------------------------------------")
                     continue
-                # Exclude if there are too many molecules (e.g., more than 10 molecules)
+                # Exclude if there are too many molecules (e.g., more than 100 molecules)
                 elif n_molecules > 100:
                     print(f"Space group under investigation: {sg}")
                     print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
