@@ -54,33 +54,54 @@ positions = mol.get_positions()
 com = np.mean(mol.get_positions(), axis=0)  # Volume center (geometric center)
 mol.translate(-com)
 
-print("# Bounding box and cell")
-min_pos = positions.min(axis=0)
-max_pos = positions.max(axis=0)
-extent = max_pos - min_pos
-extent[extent < 1.0] = 1.0  # avoid zero-length cell
+print("# The margin of one molecule setting")
 margin = 2.0 # >= vdW radius (1.55 - 3.43)
 margin = margin * 1.5 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
-#cellpar = list(extent + margin) + [90, 90, 90]
-#cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
-max_extent = extent.max() + 2 * margin  # Ensure margin on both sides
-cellpar = [max_extent, max_extent, max_extent, 90, 90, 90]
-cell = np.array([[max_extent, 0, 0],
-                 [0, max_extent, 0],
-                 [0, 0, max_extent]])
-inv_cell = np.linalg.inv(cell)
-mol.translate(0.5 * max_extent) # Move to the center of the cell
-print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
-print("Cell matrix:\n", cell)
+print(f"Space around the molecule",margin, "[A]")
+
+print("# Rotation angle setting")
+nmesh = 7 # 0 - 90 degrees divided into nmesh
+print(f"0 - 90 degrees divided into",nmesh)
 
 # Output directories
 os.makedirs("valid_structures", exist_ok=True)
 os.makedirs("optimized_structures_vasp", exist_ok=True)
 
 # Check for atomic overlap
+# Old version (Simple method: This is simple but not bad.)
+'''
 def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
     dists = pdist(atoms.get_positions())
     return np.any((dists > min_threshold) & (dists < max_threshold))
+'''
+# New version
+atomic_radii = {
+     "H": 0.31, "He": 0.28, "Li": 1.28, "Be": 0.96,  "B": 0.84,  "C": 0.76,  "N": 0.71,  "O": 0.66,  "F": 0.57, "Ne": 0.58,
+    "Na": 1.66, "Mg": 1.41, "Al": 1.21, "Si": 1.11,  "P": 1.07,  "S": 1.05, "Cl": 1.02, "Ar": 1.06,
+     "K": 2.03, "Ca": 1.76, "Sc": 1.70, "Ti": 1.60,  "V": 1.53, "Cr": 1.39, "Mn": 1.39, "Fe": 1.32, "Co": 1.26, "Ni": 1.24,
+    "Cu": 1.32, "Zn": 1.22, "Ga": 1.22, "Ge": 1.20, "As": 1.19, "Se": 1.20, "Br": 1.20, "Kr": 1.16,
+    "Rb": 2.20, "Sr": 1.95,  "Y": 1.90, "Zr": 1.75, "Nb": 1.64, "Mo": 1.54, "Tc": 1.47, "Ru": 1.46, "Rh": 1.42, "Pd": 1.39,
+    "Ag": 1.45, "Cd": 1.44, "In": 1.42, "Sn": 1.39, "Sb": 1.39, "Te": 1.38,  "I": 1.39, "Xe": 1.40
+}
+def has_overlap(atoms, atomic_radii, scale=0.90):
+    positions = atoms.get_positions()
+    symbols = atoms.get_chemical_symbols()
+    cell = atoms.get_cell()
+    pbc = atoms.get_pbc()
+    
+    natoms = len(positions)
+    for i in range(natoms):
+        for j in range(i + 1, natoms):
+            # Shortest distance (considering periodic boundaries)
+            dist = atoms.get_distance(i, j, mic=True)
+            r_i = atomic_radii.get(symbols[i], 0.7)
+            r_j = atomic_radii.get(symbols[j], 0.7)
+            threshold = scale * (r_i + r_j)
+            if symbols[i] == "H" and symbols[j] == "H":
+                threshold = scale * 2.0 # >= (r_i + r_j): Shortest H-H distance in an H2O molecule (1.51)
+            if dist < threshold:
+                return True
+    return False
 
 # Rotation
 def rotate_molecule(positions, theta, phi):
@@ -157,18 +178,32 @@ with open("structure_vs_energy.txt", "w") as f:
 
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
-nmesh = 3 # 0 - 45 degrees divided into nmesh
-print(f"0 - 45 degrees divided into",nmesh)
-print(f"------------------------------------------------------")
 valid_files = []
-for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
-    for j, phi in enumerate(np.linspace(0, np.pi/4, nmesh)):
-        print("theta", theta, ", phi", phi, ", space group: 2 - 230")
+for i, theta in enumerate(np.linspace(0, np.pi/2, nmesh)):
+    for j, phi in enumerate(np.linspace(0, np.pi/2, nmesh)):
         print(f"------------------------------------------------------")
+        print("theta", theta, ", phi", phi, ", space group: 2 - 230")
+        print("# Rotation and Bounding box and cell")
         rotated_positions = rotate_molecule(positions, theta, phi)
+        
+        # Reevaluate bounding box
+        min_pos = rotated_positions.min(axis=0)
+        max_pos = rotated_positions.max(axis=0)
+        extent = max_pos - min_pos
+        
+        cellpar = list(extent + 2 * margin) + [90, 90, 90]
+        cell = np.array([[cellpar[0], 0, 0],
+                         [0, cellpar[1], 0],
+                         [0, 0, cellpar[2]]])
+        inv_cell = np.linalg.inv(cell)
+        
         shifted_positions = rotated_positions - rotated_positions.min(axis=0)
         fractional_positions = np.dot(shifted_positions, inv_cell)
-
+        
+        print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
+        print("Cell matrix:\n", cell)
+        print(f"------------------------------------------------------")
+        
         for sg in range(2, 231):
             try:
                 crystal_structure = crystal(symbols=symbols,
@@ -182,6 +217,10 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                     valid_files.append(fname)
                     obenergy_calc(fname, precursor_energy_per_atom)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
+                    print(f"------------------------------------------------------")
+                else:
+                    print("Space group under investigation:",sg)
+                    print("Not adopted because the interatomic distance is too close.")
                     print(f"------------------------------------------------------")
             except Exception:
                 continue

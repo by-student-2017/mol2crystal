@@ -31,7 +31,8 @@ for dir_name in dirs_to_remove:
         shutil.rmtree(dir_name)
 
 cpu_count = psutil.cpu_count(logical=False)
-os.environ["OMP_NUM_THREADS"] = str(cpu_count)
+#os.environ["OMP_NUM_THREADS"] = '1'           # use OpenMPI
+os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
 
 print(f"------------------------------------------------------")
 print("# Read molecule")
