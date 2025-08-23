@@ -53,7 +53,8 @@ print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
 symbols = mol.get_chemical_symbols()
 positions = mol.get_positions()
-com = mol.get_center_of_mass()
+#com = mol.get_center_of_mass()             # Center of mass (center of gravity)
+com = np.mean(mol.get_positions(), axis=0)  # Volume center (geometric center)
 mol.translate(-com)
 
 print("# Bounding box and cell")
@@ -61,7 +62,8 @@ min_pos = positions.min(axis=0)
 max_pos = positions.max(axis=0)
 extent = max_pos - min_pos
 extent[extent < 1.0] = 1.0  # avoid zero-length cell
-margin = 6.0 # >= vdW radius
+margin = 2.0 # >= vdW radius (1.55 - 3.43)
+margin = margin * 1.5 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
 #cellpar = list(extent + margin) + [90, 90, 90]
 #cell = np.array([[cellpar[0], 0, 0], [0, cellpar[1], 0], [0, 0, cellpar[2]]])
 max_extent = extent.max() + 2 * margin  # Ensure margin on both sides
