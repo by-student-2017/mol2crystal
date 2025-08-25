@@ -508,7 +508,8 @@ point_group_to_space_groups = {
      "Oh": list(range(221, 231))  # Pm-3m, Fm-3m, etc.
 }
 
-# Display of space group
+'''
+# Display of space group (Strict selection)
 if pg in point_group_to_space_groups:
     space_groups = point_group_to_space_groups[pg]
     print(f" Applicable space groups:")
@@ -517,6 +518,60 @@ if pg in point_group_to_space_groups:
 else:
     print("No space group mapping found for this point group.")
 print(f"\n# FFinished: Space groupt vs. Point group")
+'''
+
+# Associative point cloud definition (flexible)
+related_point_groups = {
+     "C1": ["C1"],
+     "Ci": ["Ci", "C1"],
+     "C2": ["C2", "C1"],
+     "Cs": ["Cs", "C1"],
+    "C2h": ["C2h", "Ci", "C2", "Cs", "C1"],
+     "D2": ["D2", "C2", "C1"],
+    "C2v": ["C2v", "C2", "Cs", "C1"],
+    "D2h": ["D2h", "D2", "C2h", "Ci", "C2", "Cs", "C1"],
+     "C4": ["C4", "C2", "C1"],
+     "S4": ["S4", "Ci", "C2", "C1"],
+    "C4h": ["C4h", "C4", "C2h", "Ci", "C2", "Cs", "C1"],
+     "D4": ["D4", "D2", "C4", "C2", "C1"],
+    "C4v": ["C4v", "C4", "C2v", "C2", "Cs", "C1"],
+    "D2d": ["D2d", "D2", "S4", "C2", "C1"],
+    "D4h": ["D4h", "D4", "D2h", "C4h", "C4", "C2h", "Ci", "C2", "Cs", "C1"],
+     "C3": ["C3", "C1"],
+    "C3i": ["C3i", "Ci", "C3", "C1"],
+     "D3": ["D3", "C3", "C1"],
+    "C3v": ["C3v", "C3", "Cs", "C1"],
+    "D3d": ["D3d", "D3", "C3i", "C3", "Ci", "C1"],
+     "C6": ["C6", "C3", "C1"],
+    "C3h": ["C3h", "C3", "Cs", "C1"],
+    "C6h": ["C6h", "C6", "C3i", "C3", "Ci", "C1"],
+     "D6": ["D6", "C6", "D3", "C3", "C1"],
+    "C6v": ["C6v", "C6", "C3v", "C3", "Cs", "C1"],
+    "D3h": ["D3h", "D3", "C3h", "C3", "Cs", "C1"],
+    "D6h": ["D6h", "D6", "D3d", "C6h", "C6", "C3i", "C3", "Ci", "C1"],
+      "T": ["T", "D2", "C2", "C1"],
+     "Th": ["Th", "T", "D2h", "C2h", "Ci", "C2", "Cs", "C1"],
+      "O": ["O", "T", "D2", "C2", "C1"],
+     "Td": ["Td", "T", "D2", "C2", "C1"],
+     "Oh": ["Oh", "O", "Th", "T", "D2h", "C2h", "Ci", "C2", "Cs", "C1"]
+}
+
+# Acquire target point cloud
+target_groups = related_point_groups.get(pg, [pg])
+
+# Space group list unified
+space_groups = []
+for group in target_groups:
+    space_groups += point_group_to_space_groups.get(group, [])
+space_groups = sorted(set(space_groups))  # Duplicate removal
+
+# Show results
+print("------------------------------------------------------")
+print("# Applicable space groups (based on point group symmetry and related groups)")
+print(" Applicable space groups:")
+for sg in space_groups:
+    print(f" {sg}", end="")
+print("\n# Finished: Space group selection based on point group")
 #---------------------------------------------------------------------------------
 
 print(f"------------------------------------------------------")
@@ -525,8 +580,8 @@ valid_files = []
 for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
     for j, phi in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
         print(f"------------------------------------------------------")
-        print("theta", theta, ", phi", phi, ", space group: 2 - 230")
         print("# Rotation and Bounding box and cell")
+        print("theta", theta, ", phi", phi, ", space group: 2 - 230")
         
         # Rotate molecule first
         rotated_positions = rotate_molecule(positions, theta, phi)
@@ -544,9 +599,14 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
         cell_z = extent_z + margin
         cellpar = [cell_x, cell_y, cell_z, 90, 90, 90]
         
+        print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
+        cell = cellpar_to_cell(cellpar)
+        print("Cell matrix:\n", cell)
+        print(f"------------------------------------------------------")
+        
         # Loop through all space groups (1–230) to check applicability
         for sg in range(1, 231):
-            if not sg in space_groups:
+            if (sg not in space_groups) and (sg > min(space_groups)):
                 #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
                 continue
             # Space group filter (high symmetry/known problem exclusion)
