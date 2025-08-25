@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+#---------------------------------------------------------------------------------
+# User setting parameters
+#------------------------------------
+user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
+user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
+user_nmesh = 3                       # 45 - 90 degrees divided into nmesh
+user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
+user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration
+user_skipping_spacegroups = 231      # Space groups above this value are not considered.
+#---------------------------------------------------------------------------------
+
 ### Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 # pip install pymsym==0.3.4
@@ -520,25 +531,25 @@ else:
 print(f"\n# FFinished: Space groupt vs. Point group")
 '''
 
-# Associative point cloud definition (flexible)
+# Original related_point_groups dictionary with D2 added to C2v
 related_point_groups = {
      "C1": ["C1"],
      "Ci": ["Ci", "C1"],
-     "C2": ["C2", "C1"],
+     "C2": ["C2", "Ci", "Cs", "C1"],
      "Cs": ["Cs", "C1"],
-    "C2h": ["C2h", "Ci", "C2", "Cs", "C1"],
-     "D2": ["D2", "C2", "C1"],
-    "C2v": ["C2v", "C2", "Cs", "C1"],
-    "D2h": ["D2h", "D2", "C2h", "Ci", "C2", "Cs", "C1"],
+    "C2h": ["C2h", "C2", "Ci", "Cs", "C1"],
+     "D2": ["D2", "C2h", "C2", "Ci", "Cs", "C1"],
+    "C2v": ["C2v", "D2", "C2", "Cs", "C1"],
+    "D2h": ["D2h", "D2", "C2h", "C2v", "C2", "Ci", "Cs", "C1"],
      "C4": ["C4", "C2", "C1"],
      "S4": ["S4", "Ci", "C2", "C1"],
-    "C4h": ["C4h", "C4", "C2h", "Ci", "C2", "Cs", "C1"],
+    "C4h": ["C4h", "C4", "C2h", "C2", "Ci", "Cs", "C1"],
      "D4": ["D4", "D2", "C4", "C2", "C1"],
     "C4v": ["C4v", "C4", "C2v", "C2", "Cs", "C1"],
     "D2d": ["D2d", "D2", "S4", "C2", "C1"],
-    "D4h": ["D4h", "D4", "D2h", "C4h", "C4", "C2h", "Ci", "C2", "Cs", "C1"],
+    "D4h": ["D4h", "D4", "D2h", "C4h", "C4", "C2h", "C2v", "Ci", "Cs", "C2", "C1"],
      "C3": ["C3", "C1"],
-    "C3i": ["C3i", "Ci", "C3", "C1"],
+    "C3i": ["C3i", "C3", "Ci", "C1"],
      "D3": ["D3", "C3", "C1"],
     "C3v": ["C3v", "C3", "Cs", "C1"],
     "D3d": ["D3d", "D3", "C3i", "C3", "Ci", "C1"],
@@ -548,16 +559,37 @@ related_point_groups = {
      "D6": ["D6", "C6", "D3", "C3", "C1"],
     "C6v": ["C6v", "C6", "C3v", "C3", "Cs", "C1"],
     "D3h": ["D3h", "D3", "C3h", "C3", "Cs", "C1"],
-    "D6h": ["D6h", "D6", "D3d", "C6h", "C6", "C3i", "C3", "Ci", "C1"],
+    "D6h": ["D6h", "D6", "D3d", "C6h", "C6", "C3i", "C3", "Ci", "Cs", "C1"],
       "T": ["T", "D2", "C2", "C1"],
-     "Th": ["Th", "T", "D2h", "C2h", "Ci", "C2", "Cs", "C1"],
+     "Th": ["Th", "T", "D2h", "C2h", "C2", "Ci", "Cs", "C1"],
       "O": ["O", "T", "D2", "C2", "C1"],
      "Td": ["Td", "T", "D2", "C2", "C1"],
-     "Oh": ["Oh", "O", "Th", "T", "D2h", "C2h", "Ci", "C2", "Cs", "C1"]
+     "Oh": ["Oh", "O", "Th", "T", "D2h", "C2h", "C2", "Ci", "Cs", "C1"]
 }
 
-# Acquire target point cloud
-target_groups = related_point_groups.get(pg, [pg])
+# Recursive function to get all subgroups
+def get_all_subgroups(group):
+    subgroups = set()
+    def recurse(g):
+        if g in subgroups:
+            return
+        subgroups.add(g)
+        for sg in related_point_groups.get(g, []):
+            recurse(sg)
+    recurse(group)
+    return subgroups
+
+# Update each group to include all recursive subgroups
+expanded_related_point_groups = {}
+for group in related_point_groups:
+    expanded_related_point_groups[group] = sorted(get_all_subgroups(group))
+
+# Display the updated dictionary
+#for group, subgroups in expanded_related_point_groups.items():
+#    print(f"{group}: {subgroups}")
+
+# Acquire target point cloud using expanded relationships
+target_groups = expanded_related_point_groups.get(pg, [pg])
 
 # Space group list unified
 space_groups = []
@@ -610,12 +642,14 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
                 #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
                 continue
             # Space group filter (high symmetry/known problem exclusion)
-            excluded_spacegroups = []
+            excluded_spacegroups = user_excluded_spacegroups
             if sg in excluded_spacegroups:
                 print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
+                print(f"------------------------------------------------------")
                 continue
-            if sg >= 231:
+            if sg >= user_skipping_spacegroups:
                 print(f"Skipping space group {sg} (too symmetric for molecular crystals)")
+                print(f"------------------------------------------------------")
                 continue
             
             try:
@@ -650,8 +684,9 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
                     print(f"Not adopted because single molecule only.")
                 elif n_molecules > 100: # Exclude if there are too many molecules (e.g., more than 100 molecules)
                     print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
-                #elif not has_overlap(crystal_structure, covalent_radii): # For Simple or New version 1
-                elif not has_overlap_neighborlist(crystal_structure, covalent_radii): # For New version 2
+                #elif not has_overlap(atoms, min_threshold=0.1, max_threshold=0.93): # For Simple
+                #elif not has_overlap(crystal_structure, covalent_radii, scale=0.90): # New version 1
+                elif not has_overlap_neighborlist(crystal_structure, covalent_radii, scale=user_overlap_scale): # For New version 2
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
