@@ -14,17 +14,24 @@
 - mol2crystal.py
 ```
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
 ```
 - OpenBabel version (GAFF or UFF)
 ```
+### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### OpenBable
 sudo apt update
 sudo apt install openbabel
 sudo apt install libopenbabel-dev
 ```
 - Lammps version (GAFF)
 ```
+### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
 
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 sudo apt update
@@ -46,14 +53,22 @@ sudo make install
 ```
 - MOPAC version
 ```
+### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### MOPAC ver. 23.1.2
 wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
 tar xvf mopac-23.1.2-linux.tar.gz
 echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
 ```
 - xTB version
 ```
+### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### xTB ver. 6.7.1
 cd $HOME
 wget https://github.com/grimme-lab/xtb/releases/download/v6.7.1/xtb-6.7.1-linux-x86_64.tar.xz
 tar xvf xtb-6.7.1-linux-x86_64.tar.xz
@@ -62,6 +77,9 @@ echo 'export PATH=$PATH:$HOME/xtb-dist/bin' >> ~/.bashrc
 - DFTB+ version
 ```
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### DFTB+ ver. 24.1
 cd $HOME
 wget https://github.com/dftbplus/dftbplus/releases/download/24.1/dftbplus-24.1.x86_64-linux.tar.xz
 tar -xvf dftbplus-24.1.x86_64-linux.tar.xz
@@ -69,18 +87,27 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 ```
 - GPAW version
 ```
+### Install libraries + GPAW ver. 25.7.0
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install "numpy<2.0"
+pip install pymsym==0.3.4
 ```
 - CP2k version
 ```
+### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### CP2k ver.9.1
 sudo apt -y install cp2k
 ```
 - SIESTA version
 ```
+### Install libraries
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
+pip install pymsym==0.3.4
 
+### Siesta Installation
 sudo apt update
 sudo apt -y install cmake gfortran build-essential libopenmpi-dev libopenblas-dev 
 sudo apt -y install libhdf5-dev pkg-config libreadline-dev
@@ -94,6 +121,7 @@ sudo cmake --install _build
 echo 'export SIESTA_PP_PATH=$HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP/nc-sr-05_pbe_standard_psml' >> ~/.bashrc  # path of pseudo-potentials
 source ~/.bashrc
 
+### Pseudo-potantials
 # https://www.pseudo-dojo.org/
 cd $HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP$
 # (set) nc-sr-05_pbe_standard_psml.tgz
