@@ -1,3 +1,15 @@
 $xtb
    periodic = true
 $end
+
+$opt
+   tightness = veryloose
+   maxcycle = 50
+   hess = off
+$end
+
+$scf
+   acc = 1.0e-4
+   maxcycle = 50
+   diis = false
+$end

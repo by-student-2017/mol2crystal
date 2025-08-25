@@ -70,7 +70,8 @@ for dir_name in dirs_to_remove:
 
 # Parallerization for xTB calculation
 cpu_count = psutil.cpu_count(logical=False)
-os.environ["OMP_NUM_THREADS"] = str(cpu_count)
+os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
+#os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
 
 print(f"------------------------------------------------------")
 print("# Read molecule")
@@ -201,7 +202,7 @@ def xtb_optimize(fname, precursor_energy_per_atom):
         temp_poscar = os.path.join(temp_dir, "input.poscar")
         write(temp_poscar, atoms, format="vasp")
         shutil.copy("xtb.inp", os.path.join(temp_dir, "xtb_temp.inp"))
-        xtb_cmd = ["xtb", "input.poscar", "--periodic", "--opt", "--gfn", "1", "--input", "xtb_temp.inp"]
+        xtb_cmd = ["mpirun", "-np", str(cpu_count), "xtb", "input.poscar", "--periodic", "--opt", "--gfn", "1", "--input", "xtb_temp.inp"]
 
         with open(os.path.join(temp_dir, "xtb_output.log"), "w") as log_file:
             result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=log_file, stderr=subprocess.STDOUT)
