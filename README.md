@@ -11,6 +11,8 @@
 - First-principles calculation codes (GPAW, CP2k, Siesta, QE, Abinit, Elk, etc.) are also available, but are not recommended due to their high computational cost. They may run without problems on medium- to large-scale computers.
 - Not yet developed: Lammps (or lammps + reaxff), QE, Abinit, Elk
 
+---
+
 ## Install libraries
 - mol2crystal.py
 ```
@@ -135,6 +137,8 @@ cd $HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP$
 tar xvf nc-sr-05_pbe_standard_psml.tgz
 ```
 
+---
+
 ## Usage
 1. Draw a molecule with the free version of ChemSketch and output it in mol format.
 2. Add hydrogens using Avogadro and save the molecule in mol format. Name the molecule "precursor.mol."
@@ -145,17 +149,21 @@ tar xvf nc-sr-05_pbe_standard_psml.tgz
 ```
 pyton3 mol2crystal.py
 ```
+
+### classic MD
 - Lammps version (GAFF): Cells can also be optimized. The prediction accuracy is not too bad either.
 ```
 pyton3 mol2crystal_gaff_pbc.py
 ```
-- xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations.
-```
-pyton3 mol2crystal_xtb.py
-```
 - OpenBabel version (GAFF or UFF): Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. The computational cost is very low. (Not recommended: Cells cannot be optimized)
 ```
 pyton3 mol2crystal_gaff.py
+```
+
+### Semi-empirical quantum chemical calculations
+- xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations.
+```
+pyton3 mol2crystal_xtb.py
 ```
 - DFTB+ version: Intermediate accuracy and computational cost between classical MD and first-principles calculations.
 ```
@@ -165,6 +173,8 @@ pyton3 mol2crystal_dftb.py
 ```
 pyton3 mol2crystal_mopac.py
 ```
+
+### First-principles calculation (band calculation)
 - GPAW version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
 pyton3 mol2crystal_gpaw.py
@@ -178,7 +188,7 @@ pyton3 mol2crystal_cp2k.py
 pyton3 mol2crystal_siesta.py
 ```
 
-## plot
+### plot
 - matplotlib version
 ```
 python3 plot.py
@@ -188,10 +198,14 @@ python3 plot.py
 gnuplot plot.gpl
 ```
 
+---
+
 ## lammps_reaxff_md_windows11
 - This calculation is inefficient because it uses packmol to randomly arrange the particles and then apply high pressure.
 - It is better to apply the calculation to the crystal structure obtained with mol2crystal.py.
 - The calculation includes dielectric constant. In other words, this is an example that takes the solvent into account.
+
+---
 
 ## Tested Environment
 - Ubuntu: 22.04 LTS (WSL2, Windows 11)
@@ -199,6 +213,10 @@ gnuplot plot.gpl
 - ASE: 3.22.1
 - LAMMPS version: stable_22Jul2025
 
+---
+
 ## References
 - [1] S. OBATA et al., Nihon Kessho Gakkaishi 62 (2020) 260-268. (Japanese): https://doi.org/10.5940/jcrsj.62.260
 - [2] https://makoto-yoneya.github.io/
+
+---
