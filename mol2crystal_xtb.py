@@ -46,6 +46,8 @@ from ase.neighborlist import NeighborList
 # Point group analysis in space groups
 import pymsym
 
+from ase.units import Bohr
+
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 
@@ -195,35 +197,38 @@ def xtb_optimize(fname, precursor_energy_per_atom):
         atoms = read(fname)
         original_cell = atoms.get_cell()
         
-        # xyz file
-        temp_xyz = os.path.join(temp_dir, "input.xyz")
-        write(temp_xyz, atoms, format='extxyz')
-        xtb_cmd = ["xtb", "input.xyz", "--opt", "--gfn", "1"]
+        # POSCAR file (VASP)
+        temp_poscar = os.path.join(temp_dir, "input.poscar")
+        write(temp_poscar, atoms, format="vasp")
+        shutil.copy("xtb.inp", os.path.join(temp_dir, "xtb_temp.inp"))
+        xtb_cmd = ["xtb", "input.poscar", "--periodic", "--opt", "--gfn", "1", "--input", "xtb_temp.inp"]
 
         with open(os.path.join(temp_dir, "xtb_output.log"), "w") as log_file:
             result = subprocess.run(xtb_cmd, cwd=temp_dir, stdout=log_file, stderr=subprocess.STDOUT)
 
         # save result regardless of convergence
-        opt_xyz = os.path.join(temp_dir, "xtbopt.xyz")
-        last_out = os.path.join(temp_dir, "xtblast.xyz")
+        opt_out = os.path.join(temp_dir, "xtbopt.poscar")
+        last_out = os.path.join(temp_dir, "xtblast.poscar")
         
         optimized = None
         source = None
         
-        if os.path.exists(opt_xyz):
-            optimized = read(opt_xyz, format='xyz')
-            source = "xtbopt.xyz"
+        if os.path.exists(opt_out):
+            optimized = read(opt_out, format='vasp')
+            source = "xtbopt.poscar"
             print("Geometry optimization converged")
         elif os.path.exists(last_out):
-            optimized = read(last_out, format='xyz')
-            source = "xtblast.xyz"
+            optimized = read(last_out, format='vasp')
+            source = "xtblast.poscar"
             print("Note!!! Geometry optimization is not converged")
         else:
             print(f"[Error] No structure file found for {fname}")
             return
-        
-        optimized.set_cell(original_cell)
-        optimized.set_pbc(True)
+
+        # Cell conversion
+        cell = optimized.get_cell() * Bohr
+        optimized.set_cell(cell)
+
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, optimized, format='vasp')
         print(f"[{source}] Saved: {opt_fname}")
