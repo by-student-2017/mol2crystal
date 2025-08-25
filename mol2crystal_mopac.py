@@ -9,6 +9,7 @@ user_nmesh = 3                       # 45 - 90 degrees divided into nmesh
 user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
 user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration
 user_skipping_spacegroups = 231      # Space groups above this value are not considered.
+user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
 #---------------------------------------------------------------------------------
 
 ### Install libraries
@@ -467,7 +468,7 @@ rotated_positions = centered_positions.dot(rotation_matrix.T)
 
 #---------------------------------------------------------------------------------
 print(f"------------------------------------------------------")
-print("# Point group analysis")
+print(f"# Point group symmetry for 'precursor.mol'")
 symbols = mol.get_chemical_symbols()
 atomic_numbers = mol.get_atomic_numbers()
 positions = mol.get_positions()
@@ -519,91 +520,151 @@ point_group_to_space_groups = {
      "Oh": list(range(221, 231))  # Pm-3m, Fm-3m, etc.
 }
 
-'''
-# Display of space group (Strict selection)
-if pg in point_group_to_space_groups:
-    space_groups = point_group_to_space_groups[pg]
-    print(f" Applicable space groups:")
-    for sg in space_groups:
-        print(f" {sg}", end="")
-else:
-    print("No space group mapping found for this point group.")
-print(f"\n# FFinished: Space groupt vs. Point group")
-'''
-
-# Original related_point_groups dictionary with D2 added to C2v
-related_point_groups = {
-     "C1": ["C1"],
-     "Ci": ["Ci", "C1"],
-     "C2": ["C2", "Ci", "Cs", "C1"],
-     "Cs": ["Cs", "C1"],
-    "C2h": ["C2h", "C2", "Ci", "Cs", "C1"],
-     "D2": ["D2", "C2h", "C2", "Ci", "Cs", "C1"],
-    "C2v": ["C2v", "D2", "C2", "Cs", "C1"],
-    "D2h": ["D2h", "D2", "C2h", "C2v", "C2", "Ci", "Cs", "C1"],
-     "C4": ["C4", "C2", "C1"],
-     "S4": ["S4", "Ci", "C2", "C1"],
-    "C4h": ["C4h", "C4", "C2h", "C2", "Ci", "Cs", "C1"],
-     "D4": ["D4", "D2", "C4", "C2", "C1"],
-    "C4v": ["C4v", "C4", "C2v", "C2", "Cs", "C1"],
-    "D2d": ["D2d", "D2", "S4", "C2", "C1"],
-    "D4h": ["D4h", "D4", "D2h", "C4h", "C4", "C2h", "C2v", "Ci", "Cs", "C2", "C1"],
-     "C3": ["C3", "C1"],
-    "C3i": ["C3i", "C3", "Ci", "C1"],
-     "D3": ["D3", "C3", "C1"],
-    "C3v": ["C3v", "C3", "Cs", "C1"],
-    "D3d": ["D3d", "D3", "C3i", "C3", "Ci", "C1"],
-     "C6": ["C6", "C3", "C1"],
-    "C3h": ["C3h", "C3", "Cs", "C1"],
-    "C6h": ["C6h", "C6", "C3i", "C3", "Ci", "C1"],
-     "D6": ["D6", "C6", "D3", "C3", "C1"],
-    "C6v": ["C6v", "C6", "C3v", "C3", "Cs", "C1"],
-    "D3h": ["D3h", "D3", "C3h", "C3", "Cs", "C1"],
-    "D6h": ["D6h", "D6", "D3d", "C6h", "C6", "C3i", "C3", "Ci", "Cs", "C1"],
-      "T": ["T", "D2", "C2", "C1"],
-     "Th": ["Th", "T", "D2h", "C2h", "C2", "Ci", "Cs", "C1"],
-      "O": ["O", "T", "D2", "C2", "C1"],
-     "Td": ["Td", "T", "D2", "C2", "C1"],
-     "Oh": ["Oh", "O", "Th", "T", "D2h", "C2h", "C2", "Ci", "Cs", "C1"]
+# Dictionary defining strict inclusion relationships between point groups.
+# Each key is a point group, and its value is a list of point groups that are strictly included (i.e., subgroups).
+# The list includes the group itself and all of its subgroups in descending symmetry.
+related_point_groups_strict = {
+     "C1": ["C1"],                       # Identity only (no symmetry)
+     "Ci": ["Ci", "C1"],                 # Inversion symmetry
+     "Cs": ["Cs", "C1"],                 # Mirror plane symmetry
+     "C2": ["C2", "Ci", "Cs", "C1"],     # Two-fold rotation axis
+    "C2h": ["C2h", "C2"],                # C2 + horizontal mirror plane
+    "C2v": ["C2v", "C2", "Cs"],          # C2 + vertical mirror planes
+     "D2": ["D2", "C2h", "C2v"],         # Three perpendicular C2 axes
+    "D2h": ["D2h", "D2"],                # D2 + inversion + mirror planes
+     "C4": ["C4", "C2"],                 # Four-fold rotation axis
+     "S4": ["S4", "C2", "Ci"],           # Four-fold improper rotation
+    "C4h": ["C4h", "C4", "C2h"],         # C4 + horizontal mirror plane
+    "C4v": ["C4v", "C4", "C2v"],         # C4 + vertical mirror planes
+     "D4": ["D4", "D2", "C4"],           # D2 + C4 axis
+    "D4h": ["D4h", "D4", "C4h", "D2h"],  # D4 + mirror planes + inversion
+    "D2d": ["D2d", "D2", "S4"],          # D2 + diagonal mirror planes
+     "C3": ["C3", "C1"],                 # Three-fold rotation axis
+    "C3i": ["C3i", "C3", "Ci"],          # C3 + inversion
+    "C3v": ["C3v", "C3", "Cs"],          # C3 + vertical mirror planes
+    "C3h": ["C3h", "C3", "Cs"],          # C3 + horizontal mirror plane
+     "D3": ["D3", "C3"],                 # Three C2 axes perpendicular to C3
+    "D3d": ["D3d", "D3", "C3i"],         # D3 + mirror planes + inversion
+    "D3h": ["D3h", "D3", "C3h"],         # D3 + horizontal mirror plane
+     "C6": ["C6", "C3"],                 # Six-fold rotation axis
+    "C6h": ["C6h", "C6", "C3i"],         # C6 + horizontal mirror plane
+    "C6v": ["C6v", "C6", "C3v"],         # C6 + vertical mirror planes
+     "D6": ["D6", "C6", "D3"],           # D3 + C6 axis
+    "D6h": ["D6h", "D6", "C6h", "D3d"],  # D6 + mirror planes + inversion
+      "T": ["T", "D2"],                  # Tetrahedral rotation symmetry
+     "Th": ["Th", "T", "D2h"],           # Tetrahedral + inversion
+      "O": ["O", "T"],                   # Octahedral rotation symmetry
+     "Td": ["Td", "T"],                  # Tetrahedral + mirror planes
+     "Oh": ["Oh", "O", "Th"]             # Full octahedral symmetry
 }
 
-# Recursive function to get all subgroups
-def get_all_subgroups(group):
+# Dictionary defining physical inclusion relationships between point groups.
+# Each key is a point group, and its value is a list of physically related higher-symmetry point groups (supergroups).
+# These represent one-level physical symmetry extensions, not strict group-theoretical subgroups.
+related_point_groups_physical = {
+     "C1": ["Ci", "Cs", "C2"],          # C1 can be extended to inversion, mirror, or two-fold rotation
+     "Ci": ["C2h", "D2h"],              # Inversion symmetry can be extended to C2h or full orthorhombic D2h
+     "Cs": ["C2v", "D2d"],              # Mirror symmetry can be extended to vertical mirror systems or diagonal D2d
+     "C2": ["C2h", "C2v", "D2"],        # Two-fold rotation can be extended to mirror or dihedral systems
+    "C2h": ["D2h", "C4h"],              # C2h can be extended to full orthorhombic or tetragonal with horizontal mirror
+    "C2v": ["D2", "D2h", "C4v", "D4h"], # C2v can be extended to dihedral or tetragonal systems
+     "D2": ["D2h", "D4"],               # D2 can be extended to full orthorhombic or tetragonal dihedral
+    "D2h": ["D4h"],                     # D2h can be extended to full tetragonal symmetry
+     "C4": ["C4h", "C4v"],              # C4 can be extended to horizontal or vertical mirror systems
+     "S4": ["D2d", "D4h"],              # Improper rotation can be extended to diagonal or full tetragonal
+    "C4h": ["D4h"],                     # C4h can be extended to full tetragonal symmetry
+    "C4v": ["D4h"],                     # C4v can be extended to full tetragonal symmetry
+     "D4": ["D4h"],                     # D4 can be extended to full tetragonal symmetry
+    "D4h": [],                          # D4h is already a full tetragonal group
+    "D2d": ["D4h"],                     # D2d can be extended to full tetragonal symmetry
+     "C3": ["C3i", "C3v", "C3h"],       # C3 can be extended to inversion, vertical or horizontal mirror systems
+    "C3i": ["D3d", "C6h"],              # C3i can be extended to dihedral or hexagonal systems
+    "C3v": ["D3h", "C6v"],              # C3v can be extended to dihedral or hexagonal systems
+    "C3h": ["D3h"],                     # C3h can be extended to full dihedral symmetry
+     "D3": ["D3d", "D3h"],              # D3 can be extended to full dihedral systems
+    "D3d": ["D6h"],                     # D3d can be extended to full hexagonal symmetry
+    "D3h": ["D6h"],                     # D3h can be extended to full hexagonal symmetry
+     "C6": ["C6h", "C6v"],              # C6 can be extended to horizontal or vertical mirror systems
+    "C6h": ["D6h"],                     # C6h can be extended to full hexagonal symmetry
+    "C6v": ["D6h"],                     # C6v can be extended to full hexagonal symmetry
+     "D6": ["D6h"],                     # D6 can be extended to full hexagonal symmetry
+    "D6h": [],                          # D6h is already a full hexagonal group
+      "T": ["Th", "O", "Td"],           # Tetrahedral rotation can be extended to inversion, octahedral, or mirror systems
+     "Th": ["Oh"],                      # Tetrahedral + inversion can be extended to full octahedral symmetry
+      "O": ["Oh"],                      # Octahedral rotation can be extended to full octahedral symmetry
+     "Td": ["Oh"],                      # Tetrahedral + mirror can be extended to full octahedral symmetry
+     "Oh": []                           # Oh is the highest cubic symmetry group
+}
+
+# Recursive function to get all subgroups (strict inclusion)
+def get_all_subgroups(group, relation_dict):
     subgroups = set()
     def recurse(g):
         if g in subgroups:
             return
         subgroups.add(g)
-        for sg in related_point_groups.get(g, []):
+        for sg in relation_dict.get(g, []):
             recurse(sg)
     recurse(group)
     return subgroups
 
-# Update each group to include all recursive subgroups
-expanded_related_point_groups = {}
-for group in related_point_groups:
-    expanded_related_point_groups[group] = sorted(get_all_subgroups(group))
+# Recursive function to expand physical supergroups up to a given depth
+def expand_physical_supergroups(base_dict, max_depth):
+    if max_depth == 0:
+        return {}
+    expanded_dict = {}
+    for group in base_dict:
+        visited = set()
+        current_level = set(base_dict.get(group, []))
+        all_supergroups = set(current_level)
+        for _ in range(max_depth - 1):
+            next_level = set()
+            for g in current_level:
+                next_level.update(base_dict.get(g, []))
+            next_level -= all_supergroups
+            all_supergroups.update(next_level)
+            current_level = next_level
+        expanded_dict[group] = sorted(all_supergroups)
+    return expanded_dict
 
-# Display the updated dictionary
-#for group, subgroups in expanded_related_point_groups.items():
-#    print(f"{group}: {subgroups}")
+# Step 1: Get all strictly included subgroups of the input point group
+strict_groups = get_all_subgroups(pg, related_point_groups_strict)
 
-# Acquire target point cloud using expanded relationships
-target_groups = expanded_related_point_groups.get(pg, [pg])
+# Step 2: Collect space groups corresponding to the strict subgroups
+strict_sgs = set()
+for g in strict_groups:
+    strict_sgs.update(point_group_to_space_groups.get(g, []))
 
-# Space group list unified
-space_groups = []
-for group in target_groups:
-    space_groups += point_group_to_space_groups.get(group, [])
-space_groups = sorted(set(space_groups))  # Duplicate removal
+# Step 3: Expand physical supergroups of the input point group up to the specified depth
+physical_supergroups = expand_physical_supergroups(related_point_groups_physical, max_depth=user_max_depth)
+supergroups = physical_supergroups.get(pg, [])
 
-# Show results
-print("------------------------------------------------------")
-print("# Applicable space groups (based on point group symmetry and related groups)")
-print(" Applicable space groups:")
-for sg in space_groups:
-    print(f" {sg}", end="")
-print("\n# Finished: Space group selection based on point group")
+# Step 4 & 5: Collect space groups directly corresponding to supergroups and their subgroups
+expanded_sgs = set()
+direct_supergroup_sgs = set()
+
+for sg in supergroups:
+    # Step 4: Direct space groups of supergroups
+    direct_supergroup_sgs.update(point_group_to_space_groups.get(sg, []))
+    
+    # Step 5: Subgroups of supergroups
+    subgroups = get_all_subgroups(sg, related_point_groups_strict)
+    for g in subgroups:
+        expanded_sgs.update(point_group_to_space_groups.get(g, []))
+
+# Step 6: Combine space groups from strict subgroups and expanded supergroups
+combined_sgs = sorted(strict_sgs.union(expanded_sgs))
+
+# Output results
+print(f"Strictly matched space groups (strict subgroups of '{pg}'):")
+print(sorted(strict_sgs))
+
+print(f"\nSpace groups directly corresponding to physical supergroups of '{pg}' (up to {user_max_depth}-level):")
+print(sorted(direct_supergroup_sgs))
+
+print(f"\nCombined applicable space groups (strict subgroups of '{pg}' + subgroups of its physical supergroups):")
+space_groups = combined_sgs
+print(space_groups)
 #---------------------------------------------------------------------------------
 
 print(f"------------------------------------------------------")
