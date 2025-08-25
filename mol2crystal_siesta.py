@@ -2,6 +2,7 @@
 
 ### Install libraries
 # pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
+# pip install pymsym==0.3.4
 
 ### Siesta Installation
 # sudo apt update
@@ -45,6 +46,9 @@ import re
 from ase.geometry import cellpar_to_cell
 from ase.neighborlist import NeighborList
 #from ase.data import vdw_radii, atomic_numbers
+
+# Point group analysis in space groups
+import pymsym
 
 from ase.calculators.siesta import Siesta
 from ase.filters import UnitCellFilter
@@ -432,6 +436,71 @@ rotation_matrix = rotation_matrix_from_vectors(principal_axis, target_direction)
 rotated_positions = centered_positions.dot(rotation_matrix.T)
 #---------------------------------------------------------------------------------
 
+#---------------------------------------------------------------------------------
+print(f"------------------------------------------------------")
+print("# Point group analysis")
+symbols = mol.get_chemical_symbols()
+atomic_numbers = mol.get_atomic_numbers()
+positions = mol.get_positions()
+
+# Get point group
+pg = pymsym.get_point_group(atomic_numbers, positions)
+print(f"point group: {pg}")
+
+# Get Symmetry Number
+sn = pymsym.get_symmetry_number(atomic_numbers, positions)
+print(f"symmetry number: {sn}")
+
+print("------------------------------------------------------")
+print("# Applicable space groups (based on point group symmetry)")
+
+# Groups and corresponding space groups (with international numbers)
+point_group_to_space_groups = {
+     "C1": list(range(1, 2)),     # P1
+     "Ci": list(range(2, 3)),     # P-1
+     "C2": list(range(3, 6)),     # P2, P21, C2
+     "Cs": list(range(6, 10)),    # Pm, Pc, Cm, Cc
+    "C2h": list(range(10, 16)),   # P2/m, P21/m, C2/m, C2/c, P2/c, P21/c
+     "D2": list(range(16, 25)),   # P222, P212121, etc.
+    "C2v": list(range(25, 47)),   # Pmm2, Pmc21, etc.
+    "D2h": list(range(47, 75)),   # Pmmm, Pnma, etc.
+     "C4": list(range(75, 81)),   # P4, P41, etc.
+     "S4": list(range(81, 83)),   # P-4, P41
+    "C4h": list(range(83, 89)),   # P4/m, P42/m, etc.
+     "D4": list(range(89, 99)),   # P422, P4212, etc.
+    "C4v": list(range(99, 111)),  # P4mm, P42mc, etc.
+    "D2d": list(range(111, 123)), # P-42m, P-421m, etc.
+    "D4h": list(range(123, 143)), # P4/mmm, P4/nmm, etc.
+     "C3": list(range(143, 147)), # P3, P31, P32
+    "C3i": list(range(147, 149)), # R-3, P-3
+     "D3": list(range(149, 156)), # P312, P321, etc.
+    "C3v": list(range(156, 162)), # P3m1, P31m, etc.
+    "D3d": list(range(162, 168)), # R-3m, P-3m1, etc.
+     "C6": list(range(168, 174)), # P6, P61, etc.
+    "C3h": [174],                 # P-6
+    "C6h": list(range(175, 177)), # P6/m, P62/m
+     "D6": list(range(177, 183)), # P622, P6122, etc.
+    "C6v": list(range(183, 187)), # P6mm, P6cc, etc.
+    "D3h": list(range(187, 191)), # P-6m2, P-6c2, etc.
+    "D6h": list(range(191, 195)), # P6/mmm, P6/mcc, etc.
+      "T": list(range(195, 200)), # P23, F23, etc.
+     "Th": list(range(200, 207)), # P213, Pa3, etc.
+      "O": list(range(207, 215)), # P432, F432, etc.
+     "Td": list(range(215, 221)), # P-43m, F-43m, etc.
+     "Oh": list(range(221, 231))  # Pm-3m, Fm-3m, etc.
+}
+
+# Display of space group
+if pg in point_group_to_space_groups:
+    space_groups = point_group_to_space_groups[pg]
+    print(f" Applicable space groups:")
+    for sg in space_groups:
+        print(f" {sg}", end="")
+else:
+    print("No space group mapping found for this point group.")
+print(f"\n# FFinished: Space groupt vs. Point group")
+#---------------------------------------------------------------------------------
+
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
 valid_files = []
@@ -457,16 +526,18 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
         cell_z = extent_z + margin
         cellpar = [cell_x, cell_y, cell_z, 90, 90, 90]
         
+        # Loop through all space groups (1–230) to check applicability
         for sg in range(1, 231):
-            if sg >= 195:
-                print(f"Skipping space group {sg} (too symmetric for molecular crystals)")
+            if not sg in space_groups:
+                #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
                 continue
-            
-            # In structures with planes, intersections occur, so users can exclude them.
-            # Users can also exclude unnecessarily large structures.
-            excluded_spacegroups = [16, 27, 36, 43, 45, 49, 50, 54, 70, 72]
+            # Space group filter (high symmetry/known problem exclusion)
+            excluded_spacegroups = []
             if sg in excluded_spacegroups:
                 print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
+                continue
+            if sg >= 231:
+                print(f"Skipping space group {sg} (too symmetric for molecular crystals)")
                 continue
             
             try:
