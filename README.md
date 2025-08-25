@@ -5,9 +5,9 @@
 - The generated crystal structure can then be used to obtain energy using the various quantum chemistry calculation codes listed below to create a density-energy diagram. From the resulting diagram, crystal structures with high density and low energy are selected as candidates.
 
 ## Selection of evaluation method
-- Classical MD (GAFF and UFF in OpenBabel, GAFF and ReaxFF in Lammps) has been developed. GAFF and UFF in OpenBabel cannot perform structure optimization in cells, so they are suitable for rough screening. On the other hand, although it is difficult to set up the environment, GAFF in Lammps can also perform structure optimization in cells. Although the elements that can be handled with ReaxFF are greatly limited, it is expected to be a promising candidate search method.
-- Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) are being developed. MOPAC and xTB are not currently recommended due to their lack of cell optimization functionality. DFTB+ is expected to be a promising candidate search method.
-- First-principles calculation codes (GPAW, CP2k, Siesta, QE, Abinit, Elk, etc.) are available, but are not recommended due to their high computational costs. They may work well on medium- to large-scale computers.
+- Classical molecular dynamics (GAFF and UFF in OpenBabel, GAFF and ReaxFF in Lammps) have been developed. OpenBabel's GAFF and UFF are suitable for rough screening because they cannot perform in-cell geometry optimization. On the other hand, Lammps' GAFF can perform in-cell geometry optimization, but the environment setup is complicated. ReaxFF is quite limited in the elements it can handle, but is expected to be a promising candidate search method.
+- Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) have also been developed. MOPAC is not currently recommended because it does not have a cell optimization function. xTB and DFTB+ are expected to be promising candidate search methods.
+- First-principles calculation codes (GPAW, CP2k, Siesta, QE, Abinit, Elk, etc.) are also available, but are not recommended due to their high computational cost. They may run without problems on medium- to large-scale computers.
 - Not yet developed: Lammps (or lammps + moltemplate), QE, Abinit, Elk
 
 ## Install libraries
@@ -150,7 +150,7 @@ pyton3 mol2crystal_gaff_pbc.py
 ```
 pyton3 mol2crystal_mopac.py
 ```
-- xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations. Cell optimization is not possible.
+- xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations.
 ```
 pyton3 mol2crystal_xtb.py
 ```
