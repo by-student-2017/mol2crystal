@@ -11,6 +11,7 @@ user_included_spacegroups = [34,230] # Include certain space groups from conside
 user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration  (low  priority)
 user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority):
 user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
+user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_skipping_n_molecules) (high priority)
 #---------------------------------------------------------------------------------
 # Note(user_skipping_spacegroups): Since the space group ranges from 1 to 230, specifying 231 means that all are taken into consideration.
 
@@ -713,7 +714,7 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
                 print(f"number of molecules ({n_molecules:.2f}) in the unit cell.")
                 if len(atoms) == len(mol):
                     print(f"Not adopted because single molecule only.")
-                elif n_molecules > 100: # Exclude if there are too many molecules (e.g., more than 100 molecules)
+                elif n_molecules > user_skipping_n_molecules: # Exclude if there are too many molecules
                     print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
                 #elif not has_overlap(atoms, min_threshold=0.1, max_threshold=0.93): # For Simple
                 #elif not has_overlap(crystal_structure, covalent_radii, scale=0.90): # New version 1
