@@ -2,6 +2,7 @@
 
 ## Feature
 - A crystal structure is created by applying a space group to a single precursor. The output is in VASP's POSCAR format.
+- The system applies related space groups from the point group of a single precursor. A crystal structure with no atomic overlap is proposed for all subgroups related to the user-specified supergroup.
 - The generated crystal structure can then be used to obtain energy using the various quantum chemistry calculation codes listed below to create a density-energy diagram. From the resulting diagram, crystal structures with high density and low energy are selected as candidates.
 
 ## Selection of evaluation method
