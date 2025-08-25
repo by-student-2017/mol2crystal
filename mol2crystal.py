@@ -5,12 +5,14 @@
 #------------------------------------
 user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
 user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
-user_nmesh = 3                       # 45 - 90 degrees divided into nmesh
+user_nmesh = 2                       # 45 - 90 degrees divided into nmesh
 user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
-user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration
-user_skipping_spacegroups = 231      # Space groups above this value are not considered.
+user_included_spacegroups = [34,230] # Include certain space groups from consideration  (high priority)
+user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration  (low  priority)
+user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority):
 user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
 #---------------------------------------------------------------------------------
+# Note(user_skipping_spacegroups): Since the space group ranges from 1 to 230, specifying 231 means that all are taken into consideration.
 
 ### Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
@@ -585,6 +587,13 @@ print(sorted(direct_supergroup_sgs))
 print(f"\nCombined applicable space groups (strict subgroups of '{pg}' + subgroups of its physical supergroups):")
 space_groups = combined_sgs
 print(space_groups)
+
+print("------------------------------------------------------")
+print(f"# Space group filtering conditions (Forced User Settings)")
+print(f"Include (high priority): {user_included_spacegroups}")
+print(f"Exclude (low priority): {user_excluded_spacegroups}")
+print(f"Omit if >= {user_skipping_spacegroups} (low priority)")
+print("------------------------------------------------------")
 #---------------------------------------------------------------------------------
 
 print(f"------------------------------------------------------")
@@ -618,17 +627,17 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
         print(f"------------------------------------------------------")
         
         # Loop through all space groups (1–230) to check applicability
+        excluded_spacegroups = user_excluded_spacegroups
         for sg in range(1, 231):
-            if sg not in space_groups:
+            if sg not in space_groups and sg not in user_included_spacegroups:
                 #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
                 continue
             # Space group filter (high symmetry/known problem exclusion)
-            excluded_spacegroups = user_excluded_spacegroups
-            if sg in excluded_spacegroups:
+            elif sg in excluded_spacegroups:
                 print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
                 print(f"------------------------------------------------------")
                 continue
-            if sg >= user_skipping_spacegroups:
+            elif sg >= user_skipping_spacegroups:
                 print(f"Skipping space group {sg} (too symmetric for molecular crystals)")
                 print(f"------------------------------------------------------")
                 continue
