@@ -66,8 +66,8 @@ for dir_name in dirs_to_remove:
         shutil.rmtree(dir_name)
 
 cpu_count = psutil.cpu_count(logical=False)
-#os.environ["OMP_NUM_THREADS"] = '1'           # use OpenMPI
-os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
+os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
+#os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
 
 print(f"------------------------------------------------------")
 print("# Read molecule")
@@ -202,7 +202,7 @@ def dftb_optimize(fname, precursor_energy_per_atom):
         log_path = os.path.join(temp_dir, "dftb_out.log")
         err_path = os.path.join(temp_dir, "dftb_err.log")
         with open(log_path, "w") as out, open(err_path, "w") as err:
-            subprocess.run(["dftb+"], cwd=temp_dir, stdout=out, stderr=err)
+            subprocess.run(["mpirun", "-np", str(cpu_count), "dftb+"], cwd=temp_dir, stdout=out, stderr=err)
         
         # Save result regardless of convergence
         geo_end = os.path.join(temp_dir, "geo_end.gen")
