@@ -221,5 +221,9 @@ gnuplot plot.gpl
 - [3] ASE (Atomic Simulation Environment): https://wiki.fysik.dtu.dk/ase/
 - [4] pymsym: https://github.com/yoneya/pymsym
 
+---
+
+## License
+This project is licensed under the MIT License. Please check the LICENSE file for more information.
 
 ---
