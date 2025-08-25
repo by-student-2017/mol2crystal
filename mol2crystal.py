@@ -5,7 +5,7 @@
 #------------------------------------
 user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
 user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
-user_nmesh = 2                       # 45 - 90 degrees divided into nmesh
+user_nmesh = 2                       # 0 - 45 degrees divided into nmesh
 user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
 user_included_spacegroups = [34,230] # Include certain space groups from consideration  (high priority)
 user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration  (low  priority)
@@ -93,9 +93,9 @@ margin = margin * user_margin_scale
 print(f"Space around the molecule",margin, "[A]")
 
 print("# Rotation angle setting")
-#nmesh = 3 # 45 - 90 degrees divided into nmesh
+#nmesh = 3 # 0 - 45 degrees divided into nmesh
 nmesh = user_nmesh
-print(f"45 - 90 degrees divided into",nmesh)
+print(f"0 - 45 degrees divided into",nmesh)
 
 # Output directories
 os.makedirs("valid_structures", exist_ok=True)

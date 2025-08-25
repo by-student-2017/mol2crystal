@@ -5,7 +5,7 @@
 #------------------------------------
 user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
 user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
-user_nmesh = 2                       # 45 - 90 degrees divided into nmesh
+user_nmesh = 2                       # 0 - 45 degrees divided into nmesh
 user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
 user_included_spacegroups = [34,230] # Include certain space groups from consideration  (high priority)
 user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration  (low  priority)
@@ -123,9 +123,9 @@ margin = margin * user_margin_scale
 print(f"Space around the molecule",margin, "[A]")
 
 print("# Rotation angle setting")
-#nmesh = 3 # 45 - 90 degrees divided into nmesh
+#nmesh = 3 # 0 - 45 degrees divided into nmesh
 nmesh = user_nmesh
-print(f"45 - 90 degrees divided into",nmesh)
+print(f"0 - 45 degrees divided into",nmesh)
 
 # Output directories
 os.makedirs("valid_structures", exist_ok=True)
@@ -665,14 +665,14 @@ print("------------------------------------------------------")
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
 valid_files = []
-for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
-    for j, phi in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
+for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
+    for j, phi in enumerate(np.linspace(0, np.pi/4, nmesh)):
         print(f"------------------------------------------------------")
+        print("theta", theta, ", phi", phi, ", space group: 1 - 230")
         print("# Rotation and Bounding box and cell")
-        print("theta", theta, ", phi", phi, ", space group: 2 - 230")
         
         # Rotate molecule first
-        rotated_positions = rotate_molecule(positions, theta, phi)
+        rotated_positions = rotate_molecule(rotated_positions, theta, phi)
         
         # Reevaluate bounding box separately for x, y, z
         min_x, min_y, min_z = rotated_positions.min(axis=0)
