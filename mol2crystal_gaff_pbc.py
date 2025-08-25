@@ -1,22 +1,7 @@
 #!/usr/bin/env python3
 
-#---------------------------------------------------------------------------------
-# User setting parameters
-#------------------------------------
-user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
-user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
-user_nmesh = 2                       # 45 - 90 degrees divided into nmesh
-user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
-user_included_spacegroups = [34,230] # Include certain space groups from consideration  (high priority)
-user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration  (low  priority)
-user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority):
-user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
-#---------------------------------------------------------------------------------
-# Note(user_skipping_spacegroups): Since the space group ranges from 1 to 230, specifying 231 means that all are taken into consideration.
-
 ### Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-# pip install pymsym==0.3.4
 
 ### moltemplate + antechamber + mol22lt.pl
 # sudo apt update
@@ -63,9 +48,6 @@ import re
 from ase.geometry import cellpar_to_cell
 from ase.neighborlist import NeighborList
 #from ase.data import vdw_radii, atomic_numbers
-
-# Point group analysis in space groups
-import pymsym
 
 from ase.io.lammpsdata import read_lammps_data
 from ase.geometry import wrap_positions
@@ -116,15 +98,12 @@ vdw_radii = {
     "Tl": 1.96, "Pb": 2.02, "Bi": 2.07, "Po": 2.00, "At": 2.00, "Rn": 2.20, "Fr": 2.00, "Ra": 2.00, "Ac": 2.00, "Th": 2.00,
     "Pa": 2.00,  "U": 1.96, "Np": 1.90, "Pu": 1.87, "XX": 2.00, "Am": 2.00, "Cm": 1.52, "Bm": 2.00
 }
-#margin = 1.70 # >= vdW radius (H:1.20 - Cs:3.43)
-#margin = margin * 1.2 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
-margin = user_margin
-margin = margin * user_margin_scale
+margin = 1.70 # >= vdW radius (H:1.20 - Cs:3.43)
+margin = margin * 1.2 # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
 print(f"Space around the molecule",margin, "[A]")
 
 print("# Rotation angle setting")
-#nmesh = 3 # 45 - 90 degrees divided into nmesh
-nmesh = user_nmesh
+nmesh = 3 # 45 - 90 degrees divided into nmesh
 print(f"45 - 90 degrees divided into",nmesh)
 
 # Output directories
@@ -152,7 +131,7 @@ covalent_radii = {
 }
 '''
 # New version 1: More detailed checks than the Simple version. Order(N^2) method.
-def has_overlap(atoms, covalent_radii, scale):
+def has_overlap(atoms, covalent_radii, scale=0.90):
     positions = atoms.get_positions()
     symbols = atoms.get_chemical_symbols()
     cell = atoms.get_cell()
@@ -173,7 +152,7 @@ def has_overlap(atoms, covalent_radii, scale):
     return False
 '''
 # New version 2: Faster than New version 1. Order(N) methods (linked-cell method)
-def has_overlap_neighborlist(atoms, covalent_radii, scale):
+def has_overlap_neighborlist(atoms, covalent_radii, scale=0.90):
     symbols = atoms.get_chemical_symbols()
     radii = [covalent_radii.get(sym, 0.7) * scale for sym in symbols]
     cutoffs = [r * 2 for r in radii]  # NeighborList expects diameter
@@ -522,222 +501,14 @@ rotation_matrix = rotation_matrix_from_vectors(principal_axis, target_direction)
 rotated_positions = centered_positions.dot(rotation_matrix.T)
 #---------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------
-print(f"------------------------------------------------------")
-print(f"# Point group symmetry for 'precursor.mol'")
-symbols = mol.get_chemical_symbols()
-atomic_numbers = mol.get_atomic_numbers()
-positions = mol.get_positions()
-
-# Get point group
-pg = pymsym.get_point_group(atomic_numbers, positions)
-print(f"point group: {pg}")
-
-# Get Symmetry Number
-sn = pymsym.get_symmetry_number(atomic_numbers, positions)
-print(f"symmetry number: {sn}")
-
-print("------------------------------------------------------")
-print("# Applicable space groups (based on point group symmetry)")
-
-# Groups and corresponding space groups (with international numbers)
-point_group_to_space_groups = {
-     "C1": list(range(1, 2)),     # P1
-     "Ci": list(range(2, 3)),     # P-1
-     "C2": list(range(3, 6)),     # P2, P21, C2
-     "Cs": list(range(6, 10)),    # Pm, Pc, Cm, Cc
-    "C2h": list(range(10, 16)),   # P2/m, P21/m, C2/m, C2/c, P2/c, P21/c
-     "D2": list(range(16, 25)),   # P222, P212121, etc.
-    "C2v": list(range(25, 47)),   # Pmm2, Pmc21, etc.
-    "D2h": list(range(47, 75)),   # Pmmm, Pnma, etc.
-     "C4": list(range(75, 81)),   # P4, P41, etc.
-     "S4": list(range(81, 83)),   # P-4, P41
-    "C4h": list(range(83, 89)),   # P4/m, P42/m, etc.
-     "D4": list(range(89, 99)),   # P422, P4212, etc.
-    "C4v": list(range(99, 111)),  # P4mm, P42mc, etc.
-    "D2d": list(range(111, 123)), # P-42m, P-421m, etc.
-    "D4h": list(range(123, 143)), # P4/mmm, P4/nmm, etc.
-     "C3": list(range(143, 147)), # P3, P31, P32
-    "C3i": list(range(147, 149)), # R-3, P-3
-     "D3": list(range(149, 156)), # P312, P321, etc.
-    "C3v": list(range(156, 162)), # P3m1, P31m, etc.
-    "D3d": list(range(162, 168)), # R-3m, P-3m1, etc.
-     "C6": list(range(168, 174)), # P6, P61, etc.
-    "C3h": [174],                 # P-6
-    "C6h": list(range(175, 177)), # P6/m, P62/m
-     "D6": list(range(177, 183)), # P622, P6122, etc.
-    "C6v": list(range(183, 187)), # P6mm, P6cc, etc.
-    "D3h": list(range(187, 191)), # P-6m2, P-6c2, etc.
-    "D6h": list(range(191, 195)), # P6/mmm, P6/mcc, etc.
-      "T": list(range(195, 200)), # P23, F23, etc.
-     "Th": list(range(200, 207)), # P213, Pa3, etc.
-      "O": list(range(207, 215)), # P432, F432, etc.
-     "Td": list(range(215, 221)), # P-43m, F-43m, etc.
-     "Oh": list(range(221, 231))  # Pm-3m, Fm-3m, etc.
-}
-
-# Dictionary defining strict inclusion relationships between point groups.
-# Each key is a point group, and its value is a list of point groups that are strictly included (i.e., subgroups).
-# The list includes the group itself and all of its subgroups in descending symmetry.
-related_point_groups_strict = {
-     "C1": ["C1"],                       # Identity only (no symmetry)
-     "Ci": ["Ci", "C1"],                 # Inversion symmetry
-     "Cs": ["Cs", "C1"],                 # Mirror plane symmetry
-     "C2": ["C2", "Ci", "Cs", "C1"],     # Two-fold rotation axis
-    "C2h": ["C2h", "C2"],                # C2 + horizontal mirror plane
-    "C2v": ["C2v", "C2", "Cs"],          # C2 + vertical mirror planes
-     "D2": ["D2", "C2h", "C2v"],         # Three perpendicular C2 axes
-    "D2h": ["D2h", "D2"],                # D2 + inversion + mirror planes
-     "C4": ["C4", "C2"],                 # Four-fold rotation axis
-     "S4": ["S4", "C2", "Ci"],           # Four-fold improper rotation
-    "C4h": ["C4h", "C4", "C2h"],         # C4 + horizontal mirror plane
-    "C4v": ["C4v", "C4", "C2v"],         # C4 + vertical mirror planes
-     "D4": ["D4", "D2", "C4"],           # D2 + C4 axis
-    "D4h": ["D4h", "D4", "C4h", "D2h"],  # D4 + mirror planes + inversion
-    "D2d": ["D2d", "D2", "S4"],          # D2 + diagonal mirror planes
-     "C3": ["C3", "C1"],                 # Three-fold rotation axis
-    "C3i": ["C3i", "C3", "Ci"],          # C3 + inversion
-    "C3v": ["C3v", "C3", "Cs"],          # C3 + vertical mirror planes
-    "C3h": ["C3h", "C3", "Cs"],          # C3 + horizontal mirror plane
-     "D3": ["D3", "C3"],                 # Three C2 axes perpendicular to C3
-    "D3d": ["D3d", "D3", "C3i"],         # D3 + mirror planes + inversion
-    "D3h": ["D3h", "D3", "C3h"],         # D3 + horizontal mirror plane
-     "C6": ["C6", "C3"],                 # Six-fold rotation axis
-    "C6h": ["C6h", "C6", "C3i"],         # C6 + horizontal mirror plane
-    "C6v": ["C6v", "C6", "C3v"],         # C6 + vertical mirror planes
-     "D6": ["D6", "C6", "D3"],           # D3 + C6 axis
-    "D6h": ["D6h", "D6", "C6h", "D3d"],  # D6 + mirror planes + inversion
-      "T": ["T", "D2"],                  # Tetrahedral rotation symmetry
-     "Th": ["Th", "T", "D2h"],           # Tetrahedral + inversion
-      "O": ["O", "T"],                   # Octahedral rotation symmetry
-     "Td": ["Td", "T"],                  # Tetrahedral + mirror planes
-     "Oh": ["Oh", "O", "Th"]             # Full octahedral symmetry
-}
-
-# Dictionary defining physical inclusion relationships between point groups.
-# Each key is a point group, and its value is a list of physically related higher-symmetry point groups (supergroups).
-# These represent one-level physical symmetry extensions, not strict group-theoretical subgroups.
-related_point_groups_physical = {
-     "C1": ["Ci", "Cs", "C2"],          # C1 can be extended to inversion, mirror, or two-fold rotation
-     "Ci": ["C2h", "D2h"],              # Inversion symmetry can be extended to C2h or full orthorhombic D2h
-     "Cs": ["C2v", "D2d"],              # Mirror symmetry can be extended to vertical mirror systems or diagonal D2d
-     "C2": ["C2h", "C2v", "D2"],        # Two-fold rotation can be extended to mirror or dihedral systems
-    "C2h": ["D2h", "C4h"],              # C2h can be extended to full orthorhombic or tetragonal with horizontal mirror
-    "C2v": ["D2", "D2h", "C4v", "D4h"], # C2v can be extended to dihedral or tetragonal systems
-     "D2": ["D2h", "D4"],               # D2 can be extended to full orthorhombic or tetragonal dihedral
-    "D2h": ["D4h"],                     # D2h can be extended to full tetragonal symmetry
-     "C4": ["C4h", "C4v"],              # C4 can be extended to horizontal or vertical mirror systems
-     "S4": ["D2d", "D4h"],              # Improper rotation can be extended to diagonal or full tetragonal
-    "C4h": ["D4h"],                     # C4h can be extended to full tetragonal symmetry
-    "C4v": ["D4h"],                     # C4v can be extended to full tetragonal symmetry
-     "D4": ["D4h"],                     # D4 can be extended to full tetragonal symmetry
-    "D4h": [],                          # D4h is already a full tetragonal group
-    "D2d": ["D4h"],                     # D2d can be extended to full tetragonal symmetry
-     "C3": ["C3i", "C3v", "C3h"],       # C3 can be extended to inversion, vertical or horizontal mirror systems
-    "C3i": ["D3d", "C6h"],              # C3i can be extended to dihedral or hexagonal systems
-    "C3v": ["D3h", "C6v"],              # C3v can be extended to dihedral or hexagonal systems
-    "C3h": ["D3h"],                     # C3h can be extended to full dihedral symmetry
-     "D3": ["D3d", "D3h"],              # D3 can be extended to full dihedral systems
-    "D3d": ["D6h"],                     # D3d can be extended to full hexagonal symmetry
-    "D3h": ["D6h"],                     # D3h can be extended to full hexagonal symmetry
-     "C6": ["C6h", "C6v"],              # C6 can be extended to horizontal or vertical mirror systems
-    "C6h": ["D6h"],                     # C6h can be extended to full hexagonal symmetry
-    "C6v": ["D6h"],                     # C6v can be extended to full hexagonal symmetry
-     "D6": ["D6h"],                     # D6 can be extended to full hexagonal symmetry
-    "D6h": [],                          # D6h is already a full hexagonal group
-      "T": ["Th", "O", "Td"],           # Tetrahedral rotation can be extended to inversion, octahedral, or mirror systems
-     "Th": ["Oh"],                      # Tetrahedral + inversion can be extended to full octahedral symmetry
-      "O": ["Oh"],                      # Octahedral rotation can be extended to full octahedral symmetry
-     "Td": ["Oh"],                      # Tetrahedral + mirror can be extended to full octahedral symmetry
-     "Oh": []                           # Oh is the highest cubic symmetry group
-}
-
-# Recursive function to get all subgroups (strict inclusion)
-def get_all_subgroups(group, relation_dict):
-    subgroups = set()
-    def recurse(g):
-        if g in subgroups:
-            return
-        subgroups.add(g)
-        for sg in relation_dict.get(g, []):
-            recurse(sg)
-    recurse(group)
-    return subgroups
-
-# Recursive function to expand physical supergroups up to a given depth
-def expand_physical_supergroups(base_dict, max_depth):
-    if max_depth == 0:
-        return {}
-    expanded_dict = {}
-    for group in base_dict:
-        visited = set()
-        current_level = set(base_dict.get(group, []))
-        all_supergroups = set(current_level)
-        for _ in range(max_depth - 1):
-            next_level = set()
-            for g in current_level:
-                next_level.update(base_dict.get(g, []))
-            next_level -= all_supergroups
-            all_supergroups.update(next_level)
-            current_level = next_level
-        expanded_dict[group] = sorted(all_supergroups)
-    return expanded_dict
-
-# Step 1: Get all strictly included subgroups of the input point group
-strict_groups = get_all_subgroups(pg, related_point_groups_strict)
-
-# Step 2: Collect space groups corresponding to the strict subgroups
-strict_sgs = set()
-for g in strict_groups:
-    strict_sgs.update(point_group_to_space_groups.get(g, []))
-
-# Step 3: Expand physical supergroups of the input point group up to the specified depth
-physical_supergroups = expand_physical_supergroups(related_point_groups_physical, max_depth=user_max_depth)
-supergroups = physical_supergroups.get(pg, [])
-
-# Step 4 & 5: Collect space groups directly corresponding to supergroups and their subgroups
-expanded_sgs = set()
-direct_supergroup_sgs = set()
-
-for sg in supergroups:
-    # Step 4: Direct space groups of supergroups
-    direct_supergroup_sgs.update(point_group_to_space_groups.get(sg, []))
-    
-    # Step 5: Subgroups of supergroups
-    subgroups = get_all_subgroups(sg, related_point_groups_strict)
-    for g in subgroups:
-        expanded_sgs.update(point_group_to_space_groups.get(g, []))
-
-# Step 6: Combine space groups from strict subgroups and expanded supergroups
-combined_sgs = sorted(strict_sgs.union(expanded_sgs))
-
-# Output results
-print(f"Strictly matched space groups (strict subgroups of '{pg}'):")
-print(sorted(strict_sgs))
-
-print(f"\nSpace groups directly corresponding to physical supergroups of '{pg}' (up to {user_max_depth}-level):")
-print(sorted(direct_supergroup_sgs))
-
-print(f"\nCombined applicable space groups (strict subgroups of '{pg}' + subgroups of its physical supergroups):")
-space_groups = combined_sgs
-print(space_groups)
-
-print("------------------------------------------------------")
-print(f"# Space group filtering conditions (Forced User Settings)")
-print(f"Include (high priority): {user_included_spacegroups}")
-print(f"Exclude (low priority): {user_excluded_spacegroups}")
-print(f"Omit if >= {user_skipping_spacegroups} (low priority)")
-print("------------------------------------------------------")
-#---------------------------------------------------------------------------------
-
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
 valid_files = []
 for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
     for j, phi in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
         print(f"------------------------------------------------------")
-        print("# Rotation and Bounding box and cell")
         print("theta", theta, ", phi", phi, ", space group: 2 - 230")
+        print("# Rotation and Bounding box and cell")
         
         # Rotate molecule first
         rotated_positions = rotate_molecule(positions, theta, phi)
@@ -755,29 +526,19 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
         cell_z = extent_z + margin
         cellpar = [cell_x, cell_y, cell_z, 90, 90, 90]
         
-        print("Cell parameters (a, b, c, alpha, beta, gamma):", cellpar)
-        cell = cellpar_to_cell(cellpar)
-        print("Cell matrix:\n", cell)
-        print(f"------------------------------------------------------")
-        
-        # Loop through all space groups (1–230) to check applicability
-        excluded_spacegroups = user_excluded_spacegroups
         for sg in range(1, 231):
-            if sg not in space_groups and sg not in user_included_spacegroups:
-                #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
-                continue
-            # Space group filter (high symmetry/known problem exclusion)
-            elif sg in excluded_spacegroups:
-                print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
-                print(f"------------------------------------------------------")
-                continue
-            elif sg >= user_skipping_spacegroups:
+            if sg >= 195:
                 print(f"Skipping space group {sg} (too symmetric for molecular crystals)")
-                print(f"------------------------------------------------------")
+                continue
+            
+            # In structures with planes, intersections occur, so users can exclude them.
+            # Users can also exclude unnecessarily large structures.
+            excluded_spacegroups = [16, 27, 36, 43, 45, 49, 50, 54, 70, 72]
+            if sg in excluded_spacegroups:
+                print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
                 continue
             
             try:
-                print(f"# Cell of Space group {sg}")
                 adjusted_cellpar = adjust_cellpar_by_spacegroup(sg, cellpar)
                 print("Cell parameters (a, b, c, alpha, beta, gamma):", adjusted_cellpar)
                 
@@ -809,9 +570,8 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
                     print(f"Not adopted because single molecule only.")
                 elif n_molecules > 100: # Exclude if there are too many molecules (e.g., more than 100 molecules)
                     print(f"Not adopted because too many molecules ({n_molecules:.2f}) in the unit cell.")
-                #elif not has_overlap(atoms, min_threshold=0.1, max_threshold=0.93): # For Simple
-                #elif not has_overlap(crystal_structure, covalent_radii, scale=0.90): # New version 1
-                elif not has_overlap_neighborlist(crystal_structure, covalent_radii, scale=user_overlap_scale): # For New version 2
+                #elif not has_overlap(crystal_structure, covalent_radii): # For Simple or New version 1
+                elif not has_overlap_neighborlist(crystal_structure, covalent_radii): # For New version 2
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
