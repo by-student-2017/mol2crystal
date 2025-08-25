@@ -657,7 +657,7 @@ for i, theta in enumerate(np.linspace(np.pi/4, np.pi/2, nmesh)):
         
         # Loop through all space groups (1–230) to check applicability
         for sg in range(1, 231):
-            if (sg not in space_groups) and (sg > min(space_groups)):
+            if sg not in space_groups:
                 #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
                 continue
             # Space group filter (high symmetry/known problem exclusion)
