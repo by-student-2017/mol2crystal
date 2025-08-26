@@ -83,7 +83,7 @@ timestep 0.1
 
 # Initial easing with NVT
 fix fxnvt all nvt temp ${Tinit} ${Tobject} 500.0 tchain 1
-run 40000 # 4 ps
+run 20000 # 2 ps
 
 write_data md_nvt.data
 
@@ -124,11 +124,11 @@ timestep 0.25
 # -------------------------------------------------------------
 unfix fxnvt
 fix fxnpt1 all npt temp ${Tinit} ${Tobject}   $(100.0*dt)  aniso ${Pinit} ${Pobject} $(2000.0*dt) drag 0.2
-run 40000 # 10 ps
+run 20000 # 5 ps
 
 unfix fxnpt1
 fix fxnpt2 all npt temp ${Tobject} ${Tobject} $(100.0*dt)  aniso ${Pobject} ${Pinit} $(2000.0*dt)  drag 0.2
-run 40000 # 10 ps
+run 20000 # 5 ps
 
 -------------------------------------------------------------
 #dump 1 all dcd 100 md_npt.dcd
