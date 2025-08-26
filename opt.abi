@@ -1,26 +1,38 @@
-# Template Abinit input file
-# Replace placeholders with actual values
+# Input for PAW1 tutorial
+# Diamond at experimental volume
 
-# Calculation parameters
-ecut    20
-ecutdg  40
+#Definition of the unit cell
+acell             # Lengths of the primitive vectors (exp. param. in bohr)
+rprim             # 3 orthogonal primitive vectors
+nsym 0            # Automatic detection of symetries
+
+# Definition of the atom types and pseudopotentials
+ntypat            # There is only one type of atom
+znucl             # Atomic number of the possible type(s) of atom. Here carbon.
+
+# Pseudopotentials (update with actual filenames)
+#pp_dirpath "./"  # Path to the directory were
+#                 #   pseudopotentials for tests are stored
+pseudos           # Name and location of the pseudopotential
+
+# Definition of the atoms
+natom             # There are two atoms
+typat             # They both are of type 1, that is, Carbon
+xred              # Location of the atoms:
+
+# Numerical parameters of the calculation : planewave basis set and k point grid
+ecut      20.0    # Maximal plane-wave kinetic energy cut-off, in Hartree
+pawecutdg 40.0    # Max. plane-wave kinetic energy cut-off, in Ha, for the PAW double grid
+ecutsm     3.0    # Ha
+
+kptopt 0          # Automatic generation of k points, taking into account the symmetry
+ngkpt  1          # This is a 1x1x1 grid based on the primitive vectors
+kpt 0.0 0.0 0.0   # of the reciprocal space, repeated four times
+
+#Parameters for the SCF procedure
+nstep   100       # Maximal number of SCF cycles
+toldfe  1e-4
+
 ionmov  3
 optcell 2
 ntime   50
-toldfe  1e-6
-nstep   100
-diemac  12.0
-
-# Pseudopotentials (update with actual filenames)
-pseudos
-
-# Cell parameters (update with actual values)
-acell
-rprim
-
-# Atomic species and positions (update with actual values)
-ntypat
-znucl
-natom
-typat
-xred
