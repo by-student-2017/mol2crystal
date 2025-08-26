@@ -68,6 +68,7 @@ from ase.neighborlist import NeighborList
 # Point group analysis in space groups
 import pymsym
 
+from ase.io.lammpsdata import read_lammps_data
 from ase.io.lammpsdata import write_lammps_data
 from ase.data import atomic_masses
 
