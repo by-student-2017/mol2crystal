@@ -50,10 +50,8 @@ from ase.neighborlist import NeighborList
 # Point group analysis in space groups
 import pymsym
 
-from ase.units import kJ, mol
-from ase.build import bulk
 from ase.calculators.espresso import Espresso, EspressoProfile
-from ase.optimize import LBFGS
+from ase.optimize import BFGS, LBFGS
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -212,64 +210,42 @@ def qe_optimize(fname, precursor_energy_per_atom):
         elements = set(atoms.get_chemical_symbols())
         pseudo_dict = {}
         for elem in elements:
-            found = False
-            for fname in os.listdir(pseudo_dir):
-                if fname.startswith(elem) and fname.endswith(".UPF"):
-                    pseudo_dict[elem] = fname
-                    found = True
+            for pseudo_filename in os.listdir(pseudo_dir):
+                if pseudo_filename.startswith(elem) and pseudo_filename.endswith(".UPF"):
+                    pseudo_dict[elem] = pseudo_filename
                     break
-            if not found:
-                raise FileNotFoundError(f"[Error] Pseudopotential not found: .UPF corresponding to {elem} does not exist in {pseudo_dir}.")
 
         # List to store extracted ecutwfc values
-        ecutwfc_values = []
-        ecutwfc_rho_pairs = []
-        
+        max_ecutwfc = 0
         for elem in elements:
             upf_file = pseudo_dict[elem]
             upf_path = os.path.join(pseudo_dir, upf_file)
             with open(upf_path, "r") as f:
-                ecutwfc = None
-                for line in f:
-                    match = re.search(r"cutoff for wavefunctions:\s*([\d.]+)", line)
-                    if match:
-                        ecutwfc = float(match.group(1))
-                        break
-                if ecutwfc is not None:
-                    ecutwfc_rho_pairs.append((elem, ecutwfc, upf_path))
-        
-        # Select the atomic species with the largest ecutwfc
-        if ecutwfc_rho_pairs:
-            max_elem, max_ecutwfc, max_upf_path = max(ecutwfc_rho_pairs, key=lambda x: x[1])
-            
-            # Find the corresponding ecutrho in its UPF file
-            ecutrho = None
-            with open(max_upf_path, "r") as f:
-                for line in f:
-                    match = re.search(r"cutoff for charge density:\s*([\d.]+)", line)
-                    if match:
-                        ecutrho = float(match.group(1))
-                        break
-        
-            # If ecutrho is not found, estimate it using the 4x rule
-            if ecutrho is None:
-                ecutrho = 4 * max_ecutwfc
-        else:
+                content = f.read()
+                match_wfc = re.search(r"cutoff for wavefunctions:\s*([\d.]+)", content)
+                match_rho = re.search(r"cutoff for charge density:\s*([\d.]+)", content)
+                if match_wfc and match_rho:
+                    ecutwfc_local = float(match_wfc.group(1))
+                    ecutrho_local = float(match_rho.group(1))
+                    if ecutwfc_local > max_ecutwfc:
+                        max_ecutwfc = ecutwfc_local
+                        ecutrho = ecutrho_local
+                    break
+        # Fallback in case no values were found
+        if max_ecutwfc == 0:
             max_ecutwfc = 40
             ecutrho = 4 * max_ecutwfc
-        
-        print(f"ecutwfc = {max_ecutwfc}, ecutrho = {ecutrho}")
-        
+
         input_data = {
             'control': {
-                'calculation': 'vc-relax',
+                'calculation': 'scf',
                 'restart_mode': 'from_scratch',
-                'outdir': temp_dir,
+                'outdir': './',
                 'disk_io': 'low',
                 'tstress': True,
                 'tprnfor': True,
-                'etot_conv_thr': 1.0e-4,
-                'forc_conv_thr': 1.0e-3,
+                'etot_conv_thr': 1.0e-4*len(atoms),
+                'forc_conv_thr': 1.0e-3*len(atoms),
             },
             'system': {
                 'ecutwfc': max_ecutwfc,
@@ -285,7 +261,7 @@ def qe_optimize(fname, precursor_energy_per_atom):
                 'cell_dynamics': 'bfgs',
                 'cell_dofree': 'all',
                 'press': 1.0e-3,
-                'press_conv_thr': 0.5,
+                #'press_conv_thr': 0.5,
             }
         }
         
@@ -299,12 +275,21 @@ def qe_optimize(fname, precursor_energy_per_atom):
             pseudopotentials=pseudo_dict,
             input_data=input_data,
         )
+        
         os.chdir(temp_dir)
         try:
             atoms.set_calculator(calc)
-            atoms.get_potential_energy()
+            opt = LBFGS(atoms)
+            opt.run(fmax=0.5)
         finally:
             os.chdir(cwd)
+
+        '''
+        print("Number of atoms:", len(atoms))
+        print("Atomic positions:", atoms.get_positions())
+        print("Cell parameters:", atoms.get_cell())
+        print("Path:", opt_fname)
+        '''
 
         # Preservation of structure after optimization
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
