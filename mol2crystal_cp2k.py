@@ -482,15 +482,15 @@ rotated_positions = centered_positions.dot(rotation_matrix.T)
 print(f"------------------------------------------------------")
 print(f"# Point group symmetry for 'precursor.mol'")
 symbols = mol.get_chemical_symbols()
-atomic_numbers = mol.get_atomic_numbers()
+mol_atomic_numbers = mol.get_atomic_numbers()
 positions = mol.get_positions()
 
 # Get point group
-pg = pymsym.get_point_group(atomic_numbers, positions)
+pg = pymsym.get_point_group(mol_atomic_numbers, positions)
 print(f"point group: {pg}")
 
 # Get Symmetry Number
-sn = pymsym.get_symmetry_number(atomic_numbers, positions)
+sn = pymsym.get_symmetry_number(mol_atomic_numbers, positions)
 print(f"symmetry number: {sn}")
 
 print("------------------------------------------------------")

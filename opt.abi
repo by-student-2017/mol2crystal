@@ -1,0 +1,26 @@
+# Template Abinit input file
+# Replace placeholders with actual values
+
+# Calculation parameters
+ecut    20
+ecutdg  40
+ionmov  3
+optcell 2
+ntime   50
+toldfe  1e-6
+nstep   100
+diemac  12.0
+
+# Pseudopotentials (update with actual filenames)
+pseudos
+
+# Cell parameters (update with actual values)
+acell
+rprim
+
+# Atomic species and positions (update with actual values)
+ntypat
+znucl
+natom
+typat
+xred

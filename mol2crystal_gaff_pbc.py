@@ -33,7 +33,7 @@ user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_ski
 # git clone -b stable https://github.com/lammps/lammps.git
 # cd lammps
 # mkdir build && cd build
-# cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
+# cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_MEAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
 # make -j$(nproc)
 # sudo make install
 
@@ -527,15 +527,15 @@ rotated_positions = centered_positions.dot(rotation_matrix.T)
 print(f"------------------------------------------------------")
 print(f"# Point group symmetry for 'precursor.mol'")
 symbols = mol.get_chemical_symbols()
-atomic_numbers = mol.get_atomic_numbers()
+mol_atomic_numbers = mol.get_atomic_numbers()
 positions = mol.get_positions()
 
 # Get point group
-pg = pymsym.get_point_group(atomic_numbers, positions)
+pg = pymsym.get_point_group(mol_atomic_numbers, positions)
 print(f"point group: {pg}")
 
 # Get Symmetry Number
-sn = pymsym.get_symmetry_number(atomic_numbers, positions)
+sn = pymsym.get_symmetry_number(mol_atomic_numbers, positions)
 print(f"symmetry number: {sn}")
 
 print("------------------------------------------------------")
