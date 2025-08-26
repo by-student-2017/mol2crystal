@@ -2,7 +2,7 @@
 # user setting
 variable reaxff_file string "ffield.reax.2024X17.CHONSSiPtZrNiAuVBiTiZnCuMg" # ReaxFF file name
 variable Pinit   equal  1.0     # 0.1 MPa ( 1.0 bar = 0.1 MPa)
-variable Pobject equal 10.0     # 1.0 MPa (10.0 bar = 1.0 MPa)
+variable Pobject equal  1.0     # 0.1 MPa ( 1.0 bar = 0.1 MPa)
 variable Tinit   equal 273-269  # [K] (e.g., He 4 [K])
 variable Tobject equal 273+25   # [K] (e.g., Room temperature 298 [K])
 variable Nout    equal 1000     # output (every Nout)
@@ -131,11 +131,11 @@ fix q0 all qeq/reaxff 1 0.0 10.0 1.0e-6 reaxff
 # -------------------------------------------------------------
 unfix fxnvt
 fix fxnpt1 all npt temp ${Tinit} ${Tobject}   $(100.0*dt)  aniso ${Pinit} ${Pobject} $(2000.0*dt) drag 0.2
-run 4000 # 4 fs
+run 8000 # 8 fs
 
 unfix fxnpt1
 fix fxnpt2 all npt temp ${Tobject} ${Tobject} $(100.0*dt)  aniso ${Pobject} ${Pinit} $(2000.0*dt)  drag 0.2
-run 4000 # 4 fs
+run 8000 # 8 fs
 
 # -------------------------------------------------------------
 #dump 1 all dcd 100 md_npt.dcd
