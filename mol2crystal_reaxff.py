@@ -300,11 +300,11 @@ def reaxff_optimize(fname, precursor_energy_per_atom):
         # Loading the Structure
         if os.path.exists(md_npt_path):
             print("Using NPT-optimized structure.")
-            atoms = read_lammps_data(md_npt_path, atom_style="full")
+            atoms = read_lammps_data(md_npt_path, atom_style="charge")
             atoms.wrap()
         elif os.path.exists(md_nvt_path):
             print("Warning: NPT structure not found. Using NVT-optimized structure.")
-            atoms = read_lammps_data(md_nvt_path, atom_style="full")
+            atoms = read_lammps_data(md_nvt_path, atom_style="charge")
             atoms.wrap()
         else:
             print("Warning: Neither NPT nor NVT structure found. Using original structure.")
