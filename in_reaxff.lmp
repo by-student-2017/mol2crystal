@@ -1,6 +1,6 @@
 #---------------------------------------------
 # user setting
-variable reaxff_file string "ffield.reax.2024X17.CHONSSiPtZrNiAuVBiTiZnCuMg"
+variable reaxff_file string "ffield.reax.2024X17.CHONSSiPtZrNiAuVBiTiZnCuMg" # ReaxFF file name
 variable Pinit   equal  1.0     # 0.1 MPa ( 1.0 bar = 0.1 MPa)
 variable Pobject equal 10.0     # 1.0 MPa (10.0 bar = 1.0 MPa)
 variable Tinit   equal 273-269  # [K] (e.g., He 4 [K])
@@ -22,15 +22,14 @@ replicate 1 1 1
 variable elem string "C Ni S O H" # dummy
 #---------------------------------------------
 
-# Note: Since the calculation will be performed with reaxff_temp, please set the potential file to the above directory (i.e., ./../ffield.reax).
 pair_style reaxff NULL safezone 1.6 mincap 100 checkqeq no
-pair_coeff * * ./../${reaxff_file} ${elem}
+pair_coeff * * ${reaxff_file} ${elem}
 
 #variable epsilon equal 78.5  # Toluene:2.38, Chlorobenzene:5.69, water:78.5
 #---------------------------------------------
 #pair_style hybrid/overlay reaxff NULL safezone 1.6 mincap 100 coul/diel 3.5
 #---------------------------------------------
-#pair_coeff * * reaxff ffield.reax.101.CHOSMoNiLiBFPN ${elem}
+#pair_coeff * * reaxff ${reaxff_file} ${elem}
 #pair_coeff * * coul/diel ${epsilon} 1.375 0.112 # Toluene:2.38, Chlorobenzene:5.69, water:78.5
 #---------------------------------------------
 
@@ -84,7 +83,7 @@ timestep 0.1
 
 # Initial easing with NVT
 fix fxnvt all nvt temp ${Tinit} ${Tobject} 500.0 tchain 1
-run 50000 # 5 ps
+run 40000 # 4 ps
 
 write_data md_nvt.data
 
@@ -125,11 +124,11 @@ timestep 0.25
 # -------------------------------------------------------------
 unfix fxnvt
 fix fxnpt1 all npt temp ${Tinit} ${Tobject}   $(100.0*dt)  aniso ${Pinit} ${Pobject} $(2000.0*dt) drag 0.2
-run 60000 # 15 ps
+run 40000 # 10 ps
 
 unfix fxnpt1
 fix fxnpt2 all npt temp ${Tobject} ${Tobject} $(100.0*dt)  aniso ${Pobject} ${Pinit} $(2000.0*dt)  drag 0.2
-run 60000 # 15 ps
+run 40000 # 10 ps
 
 -------------------------------------------------------------
 #dump 1 all dcd 100 md_npt.dcd
