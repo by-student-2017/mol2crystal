@@ -119,6 +119,17 @@ echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
 ```
 
 ### First-principles calculation (band calculation)
+- QE version
+```
+### Install libraries + GPAW ver. 25.7.0
+pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
+pip install "numpy<2.0"
+pip install pymsym==0.3.4
+
+# QE v.6.7MaX
+sudo apt update
+sudo apt -y install quantum-espresso
+```
 - GPAW version
 ```
 ### Install libraries + GPAW ver. 25.7.0
@@ -204,6 +215,10 @@ pyton3 mol2crystal_mopac.py
 ```
 
 ### First-principles calculation (band calculation)
+- QE version: High accuracy due to first-principles calculation, but high calculation cost.
+```
+pyton3 mol2crystal_qe.py
+```
 - GPAW version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
 pyton3 mol2crystal_gpaw.py
