@@ -78,6 +78,7 @@ print "minimization: Simulations completed !"
 #velocity all create ${Tinit} 4928459 dist gaussian
 velocity all set 0.0 0.0 0.0 # To prevent molecular breakdown
 
+reset_timestep 0
 # 0.1 fs step (Typical values ​​for ReaxFF)
 timestep 0.1
 

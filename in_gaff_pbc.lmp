@@ -56,7 +56,8 @@ print "minimization: Simulations completed !"
 #velocity all create ${Tinit} 4928459 dist gaussian
 velocity all set 0.0 0.0 0.0 # To prevent molecular breakdown
 
-# 1.0 fs step (Typical values ​​for GAFF, LJ, etc.)
+reset_timestep 0
+# 1.0 fs step (Typical values ​​for GAFF, LJ, etc.) (It is made small to avoid molecular collapse.)
 timestep 0.25
 
 # Initial easing with NVT
