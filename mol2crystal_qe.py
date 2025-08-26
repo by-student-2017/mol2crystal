@@ -23,8 +23,15 @@ user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_ski
 # sudo apt update
 # sudo apt -y install quantum-espresso
 
+### Pseudo-potantials
+# QE pslibrary: https://pseudopotentials.quantum-espresso.org/legacy_tables/ps-library
+# TEHOS: https://theos-wiki.epfl.ch/Main/Pseudopotentials
+# pslibrary: https://dalcorso.github.io/pslibrary/PP_list.html
+# SSSP: https://www.materialscloud.org/discover/sssp/table/efficiency
+# (Set the pseudopotential in the pseudodirectory.)
+
 ### Usage
-# pyton3 mol2crystal_dftb.py
+# pyton3 mol2crystal_qe.py
 
 import os
 import glob
