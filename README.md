@@ -129,6 +129,14 @@ pip install pymsym==0.3.4
 # QE v.6.7MaX
 sudo apt update
 sudo apt -y install quantum-espresso
+
+### Pseudo-potantials
+# QE pslibrary: https://pseudopotentials.quantum-espresso.org/legacy_tables/ps-library
+# TEHOS: https://theos-wiki.epfl.ch/Main/Pseudopotentials
+# pslibrary: https://dalcorso.github.io/pslibrary/PP_list.html
+# SSSP: https://www.materialscloud.org/discover/sssp/table/efficiency
+# (Set the pseudopotential in the pseudodirectory.)
+
 ```
 - GPAW version
 ```
