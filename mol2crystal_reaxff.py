@@ -69,6 +69,7 @@ from ase.neighborlist import NeighborList
 import pymsym
 
 from ase.io.lammpsdata import write_lammps_data
+from ase.data import atomic_masses
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -224,11 +225,10 @@ def reaxff_optimize(fname, precursor_energy_per_atom):
 
         atoms = read(fname)
         atoms.set_initial_charges([0.0] * len(atoms))
-        print(atoms.get_initial_charges())
         crystal_data_path = os.path.join(temp_dir, "crystal.data")
         write(crystal_data_path, atoms, format="lammps-data", units="real", atom_style="charge")
 
-        # generate LAMMPS input file
+        # Generate LAMMPS input file
         symbols = atoms.get_chemical_symbols()
         unique_symbols = sorted(set(symbols), key=symbols.index)
         elem_string = " ".join(unique_symbols)
@@ -236,18 +236,25 @@ def reaxff_optimize(fname, precursor_energy_per_atom):
         with open("in_reaxff.lmp", "r") as f:
             lines = f.readlines()
         
+        # unique_symbols is generated from atoms.get_chemical_symbols()
         with open(os.path.join(temp_dir, "in_reaxff_temp.lmp"), "w") as f:
             for line in lines:
                 if line.strip().startswith("variable elem string"):
                     f.write(f'variable elem string "{elem_string}"\n')
+                    # Automatic mass generation using ASE's atomic_masses
+                    for i, elem in enumerate(unique_symbols, start=1):
+                        mass = atomic_masses[atoms[atoms.get_chemical_symbols().index(elem)].number]
+                        f.write(f"mass {i} {mass:.3f}\n")
                 else:
                     f.write(line)
+        
         '''
         symbol_to_type = {sym: i+1 for i, sym in enumerate(unique_symbols)}
         with open(os.path.join(temp_dir, "atom_types.txt"), "w") as f:
             for sym, typ in symbol_to_type.items():
                 f.write(f"{typ} {sym}\n")
         '''
+        
         '''
         cell_lengths = atoms.get_cell().lengths()
         rep_x = max(1, int(12.8 // cell_lengths[0]) + 1)
@@ -268,7 +275,7 @@ def reaxff_optimize(fname, precursor_energy_per_atom):
         print(f"Updated replicate line to: replicate {rep_x} {rep_y} {rep_z} for >= 12.8 x 12.8 x 12.8 cell size")
         '''
         
-        # Step 6: Run LAMMPS
+        # Run LAMMPS
         #cmd = f"mpirun -np {cpu_count} lmp -in in_gaff_pbc_temp.lmp | tee ./../log.lammps"
         cmd = f"mpirun -np {cpu_count} lmp -in in_reaxff_temp.lmp"
         with open(log_file, "a") as log:

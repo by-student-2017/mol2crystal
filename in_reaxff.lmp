@@ -1,30 +1,32 @@
 #---------------------------------------------
 # user setting
+variable reaxff_file string "ffield.reax.2024X17.CHONSSiPtZrNiAuVBiTiZnCuMg"
 variable Pinit   equal  1.0     # 0.1 MPa ( 1.0 bar = 0.1 MPa)
 variable Pobject equal 10.0     # 1.0 MPa (10.0 bar = 1.0 MPa)
 variable Tinit   equal 273-269  # [K] (e.g., He 4 [K])
 variable Tobject equal 273+25   # [K] (e.g., Room temperature 298 [K])
-#---------------------------------------------
-
-#---------------------------------------------
-variable elem string "C Ni S O H"
-variable Nout equal 1000     #
-variable epsilon equal 78.5  # Toluene:2.38, Chlorobenzene:5.69, water:78.5
+variable Nout    equal 1000     # output (every Nout)
 #---------------------------------------------
 
 units real
 dimension 3
 boundary p p p
-atom_style full
+atom_style charge
 
 read_data crystal.data
 
 replicate 1 1 1
 
+#---------------------------------------------
+# Automatically set with ASE and python3 (elements and masses)
+variable elem string "C Ni S O H" # dummy
+#---------------------------------------------
+
 # Note: Since the calculation will be performed with reaxff_temp, please set the potential file to the above directory (i.e., ./../ffield.reax).
 pair_style reaxff NULL safezone 1.6 mincap 100 checkqeq no
-pair_coeff * * ./../ffield.reax.2024X17.CHONSSiPtZrNiAuVBiTiZnCuMg ${elem}
+pair_coeff * * ./../${reaxff_file} ${elem}
 
+#variable epsilon equal 78.5  # Toluene:2.38, Chlorobenzene:5.69, water:78.5
 #---------------------------------------------
 #pair_style hybrid/overlay reaxff NULL safezone 1.6 mincap 100 coul/diel 3.5
 #---------------------------------------------
