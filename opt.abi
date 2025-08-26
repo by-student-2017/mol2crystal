@@ -31,8 +31,8 @@ kpt 0.0 0.0 0.0   # of the reciprocal space, repeated four times
 
 #Parameters for the SCF procedure
 nstep   100       # Maximal number of SCF cycles
-toldfe  1e-4
+toldfe  1e-4      # Ha
 
-ionmov  3
-optcell 2
-ntime   50
+ionmov  3         # BFGS
+optcell 2         # 2: full optimization of cell geometry
+ntime   50        # Number of TIME steps
