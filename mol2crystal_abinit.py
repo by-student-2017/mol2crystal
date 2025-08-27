@@ -70,6 +70,7 @@ import pymsym
 
 from ase.data import atomic_numbers
 from ase.geometry import cell_to_cellpar
+from ase import Atoms
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
