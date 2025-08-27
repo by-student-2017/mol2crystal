@@ -26,9 +26,9 @@ ecut      20.0    # Maximal plane-wave kinetic energy cut-off, in Hartree
 pawecutdg 40.0    # Max. plane-wave kinetic energy cut-off, in Ha, for the PAW double grid
 ecutsm     2.0    # Ha
 
-kptopt 0          # Automatic generation of k points, taking into account the symmetry
-ngkpt  1          # This is a 1x1x1 grid based on the primitive vectors
-kpt 0.0 0.0 0.0   # of the reciprocal space, repeated four times
+kptopt 0          # Automatically generate k-points with symmetry consideration
+ngkpt  1          # Use a 1x1x1 Monkhorst-Pack grid
+kpt 0.0 0.0 0.0   # Gamma point (used only if kptopt /= 0)
 
 #Parameters for the SCF procedure
 nstep   100       # Maximal number of SCF cycles
@@ -38,6 +38,6 @@ toldfe            # SCF (electronic structure calculation) convergence condition
 ionmov  3         # BFGS
 optcell 2         # 2: full optimization of cell geometry
 ntime   50        # Number of TIME steps
-tolmxde 1.0d-4    # Convergence condition of stress applied to the cell (unit: Ha/Bohr^3)
+tolmxde 1.0d-4    # Convergence condition of stress applied to the cell (unit: Ha/Bohr^3).
 tolmxf  0.0       # If you want to use tolmxde, you should explicitly put tolmxf to 0.0.
 #tolmxf 5.0d-3    # Convergence condition for maximum force acting on atoms (unit: Ha/Bohr)
