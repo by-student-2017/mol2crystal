@@ -10,7 +10,7 @@
 - Classical molecular dynamics (GAFF and UFF in OpenBabel, GAFF and ReaxFF in Lammps) have been developed. OpenBabel's GAFF and UFF are suitable for rough screening because they cannot perform in-cell geometry optimization. On the other hand, Lammps' GAFF can perform in-cell geometry optimization, but the environment setup is complicated. ReaxFF is quite limited in the elements it can handle, but is expected to be a promising candidate search method.
 - Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) have also been developed. MOPAC is not currently recommended because it does not have a cell optimization function. xTB and DFTB+ are expected to be promising candidate search methods.
 - First-principles calculation codes (GPAW, CP2k, Siesta, QE, Abinit, Elk, etc.) are also available, but are not recommended due to their high computational cost. They may run without problems on medium- to large-scale computers.
-- Not yet developed: Abinit, Elk
+- Not yet developed: Elk
 
 ---
 
@@ -138,6 +138,16 @@ sudo apt -y install quantum-espresso
 # (Set the pseudopotential in the pseudodirectory.)
 
 ```
+- Abinit
+```
+### Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### Abinit v.9.6.2
+sudo apt update
+sudo apt -y install abinit
+```
 - GPAW version
 ```
 ### Install libraries + GPAW ver. 25.7.0
@@ -226,6 +236,10 @@ pyton3 mol2crystal_mopac.py
 - QE version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
 pyton3 mol2crystal_qe.py
+```
+- Abinit
+```
+pyton3 mol2crystal_abinit.py
 ```
 - GPAW version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
