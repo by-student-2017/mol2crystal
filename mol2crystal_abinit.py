@@ -254,6 +254,9 @@ def abinit_optimize(fname, precursor_energy_per_atom):
         natom = len(atoms)
         typat = [unique_elements.index(sym) + 1 for sym in symbols]
         positions = atoms.get_scaled_positions()
+        
+        volume_angstrom3 = atoms.get_volume()
+        volume_bohr3 = volume_angstrom3 * (1.8897259886 ** 3)
 
         with open("opt.abi", "r") as f:
             lines = f.readlines()
