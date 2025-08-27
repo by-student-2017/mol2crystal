@@ -31,8 +31,10 @@ kpt 0.0 0.0 0.0   # of the reciprocal space, repeated four times
 
 #Parameters for the SCF procedure
 nstep   100       # Maximal number of SCF cycles
-toldfe            # SCF convergence threshold (Ha unit). "mol2crystal_abinit.py" set 1 meV/atom automatically.
+toldfe            # SCF (electronic structure calculation) convergence condition (unit: Ha). "mol2crystal_abinit.py" set 1 meV/atom automatically.
+#tolmxf 5.0d-3    # Convergence condition for maximum force acting on atoms (unit: Ha/Bohr)
 
 ionmov  3         # BFGS
 optcell 2         # 2: full optimization of cell geometry
 ntime   50        # Number of TIME steps
+tolmxde 1.0d-4    # Convergence condition of stress applied to the cell (unit: Ha/Bohr^3)
