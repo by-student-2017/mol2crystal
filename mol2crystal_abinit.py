@@ -321,21 +321,22 @@ def abinit_optimize(fname, precursor_energy_per_atom):
             subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
 
         output_path = os.path.join(temp_dir, "opt_temp.abo")
-
+        bohr_to_angstrom = 0.529177
+        
         # Simulated content of opt_temp.abo (normally read from file)
         with open(output_path, "r") as f:
             content = f.read()
         
         # Extract acell
         acell_match = re.search(r"Scale of Primitive Cell \(acell\) \[bohr\]\n\s*(\S+)\s+(\S+)\s+(\S+)", content)
-        acell = [float(acell_match.group(i)) for i in range(1, 4)] if acell_match else [1.0, 1.0, 1.0]
+        acell = [float(acell_match.group(i)) * bohr_to_angstrom for i in range(1, 4)]
         
         # Extract rprimd
         rprimd_match = re.findall(r"Real space primitive translations \(rprimd\) \[bohr\]\n((?:\s*[-+Ee0-9.]+\s+[-+Ee0-9.]+\s+[-+Ee0-9.]+\n){3})", content)
         rprimd = []
         if rprimd_match:
             for line in rprimd_match[0].strip().split("\n"):
-                rprimd.append([float(x) for x in line.split()])
+                rprimd.append([float(x) * bohr_to_angstrom for x in line.split()])
         
         # Extract xred
         xred_matches = re.findall(r"Reduced coordinates \(xred\)\n((?:\s*[-+Ee0-9.]+\s+[-+Ee0-9.]+\s+[-+Ee0-9.]+\n)+)", content)
@@ -345,6 +346,7 @@ def abinit_optimize(fname, precursor_energy_per_atom):
                 xred.append([float(x) for x in line.split()])
         
         # Construct cell matrix
+        acell = [1.0, 1.0, 1.0]
         cell = np.dot(np.diag(acell), rprimd)
         
         # Create Atoms object
@@ -353,10 +355,11 @@ def abinit_optimize(fname, precursor_energy_per_atom):
         # Extract total energy
         etotal_match = re.search(r"Total energy \(etotal\) \[Ha\]=\s*(-?\d+\.\d+E?[+-]?\d*)", content)
         etotal = float(etotal_match.group(1)) * 27.2114 if etotal_match else 0.0  # Ha to eV
+        energy = etotal
         
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, atoms, format='vasp')
-
+        
         # Compute properties
         num_atoms = len(atoms)
         energy_per_atom = energy / num_atoms if num_atoms > 0 else 0.0
@@ -376,7 +379,7 @@ def abinit_optimize(fname, precursor_energy_per_atom):
 
         with open("structure_vs_energy.txt", "a") as out:
             out.write(f"{opt_fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
-        input()
+
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
