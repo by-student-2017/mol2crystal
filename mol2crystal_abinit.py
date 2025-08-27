@@ -304,7 +304,7 @@ def abinit_optimize(fname, precursor_energy_per_atom):
                     for pos in positions:
                         f.write("  " + "  ".join(f"{x:.6f}" for x in pos) + "\n")
                 elif keyword == "toldfe":
-                    toldfe_value = 1e-4 * len(atoms) / 27.2114
+                    toldfe_value = 1e-4 * len(atoms) * 27.2114
                     f.write(f"toldfe {toldfe_value:.6e} {comment}\n")
                 else:
                     f.write(line)
@@ -316,10 +316,10 @@ def abinit_optimize(fname, precursor_energy_per_atom):
         with open(log_file, "a") as log:
             subprocess.run(cmd, shell=True, cwd=temp_dir, stdout=log, stderr=subprocess.STDOUT)
 
-        log_path = os.path.join(temp_dir, "opt_temp.abo")
+        output_path = os.path.join(temp_dir, "opt_temp.abo")
 
         # Simulated content of opt_temp.abo (normally read from file)
-        with open("opt_temp.abo", "r") as f:
+        with open(output_path, "r") as f:
             content = f.read()
         
         # Extract acell
@@ -372,7 +372,7 @@ def abinit_optimize(fname, precursor_energy_per_atom):
 
         with open("structure_vs_energy.txt", "a") as out:
             out.write(f"{opt_fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
-
+        input()
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
