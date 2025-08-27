@@ -304,7 +304,7 @@ def abinit_optimize(fname, precursor_energy_per_atom):
                     for pos in positions:
                         f.write("  " + "  ".join(f"{x:.6f}" for x in pos) + "\n")
                 elif keyword == "toldfe":
-                    toldfe_value = 1e-4 * len(atoms) * 27.2114
+                    toldfe_value = 1e-3 * len(atoms) * 27.2114
                     f.write(f"toldfe {toldfe_value:.6e} {comment}\n")
                 else:
                     f.write(line)
