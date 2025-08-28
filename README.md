@@ -296,7 +296,7 @@ This project is licensed under the MIT License. Please check the LICENSE file fo
 ---
 
 ## Error of Copilot (Edit: 2025/Aug/28)
-- "‘quasi-DFT method’ (準DFT法)  and ‘quasi-first-principles calculation’ (準第一原理計算) are incorrect translations of ‘semi-empirical DFT method’. Copilot has mistakenly used these terms. I sincerely hope this will be corrected."
-- The prefixes ‘semi-’ and ‘quasi-’ are fundamentally different in meaning, and it is difficult to confuse them even from the perspective of conditional probability in Bayesian inference or attention mechanisms in machine learning. It would be advisable to investigate thoroughly why such a mistranslation has occurred."
+- "‘quasi-DFT method’ (準DFT法) and ‘quasi-first-principles calculation’ (準第一原理計算) are incorrect translations of ‘semi-empirical DFT method’. Copilot has mistakenly used these terms. I sincerely hope this will be corrected.
+- The prefixes ‘semi-’ and ‘quasi-’ are fundamentally different in meaning, and it is difficult to confuse them—even from the perspective of conditional probability in Bayesian inference or attention mechanisms in machine learning. It would be advisable to investigate thoroughly why such a mistranslation has occurred."
 
 ---
