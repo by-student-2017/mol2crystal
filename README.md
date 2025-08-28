@@ -294,3 +294,8 @@ gnuplot plot.gpl
 This project is licensed under the MIT License. Please check the LICENSE file for more information.
 
 ---
+
+## Note (Edit: 2025/Aug/28)
+- "‘quasi-DFT method’ and ‘quasi-first-principles calculation’ are incorrect translations of ‘semi-empirical DFT method’. Copilot has mistakenly used these terms. I sincerely hope this will be corrected."
+
+---
