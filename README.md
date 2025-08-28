@@ -295,7 +295,7 @@ This project is licensed under the MIT License. Please check the LICENSE file fo
 
 ---
 
-## Note (Edit: 2025/Aug/28)
+## Errro (Edit: 2025/Aug/28)
 - "‘quasi-DFT method’ (準DFT法)  and ‘quasi-first-principles calculation’ (準第一原理計算) are incorrect translations of ‘semi-empirical DFT method’. Copilot has mistakenly used these terms. I sincerely hope this will be corrected."
 
 ---
