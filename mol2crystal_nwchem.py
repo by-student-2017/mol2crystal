@@ -205,6 +205,7 @@ def nwchem_optimize(fname, precursor_energy_per_atom):
         #os.environ["ASE_NWCHEM_COMMAND"] = "/usr/bin/nwchem.openmpi nwchem.nwi > nwchem.nwo"                         # OpenMP  (command is also acceptable)
         #os.environ["ASE_NWCHEM_COMMAND"] = f"mpirun -np {cpu_count} /usr/bin/nwchem.openmpi nwchem.nwi > nwchem.nwo" # OpenMPI (command is also acceptable)
         # ----------------------------------------------------------------------------------------
+        cpu_count = 4
         calc = NWChem(
             memory     = str(1024*16)+' mb',   # 1024 * 16 = 16 GB
             command    = f'mpirun -np {cpu_count} /usr/bin/nwchem.openmpi nwchem.nwi > nwchem.nwo', # NWChem path (ASE_NWCHEM_COMMAND environment variable is also acceptable)
