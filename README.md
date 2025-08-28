@@ -325,6 +325,12 @@ python3 plot.py
 ```
 gnuplot plot.gpl
 ```
+---
+
+## requirements.txt
+```
+pip freeze > requirements.txt
+```
 
 ---
 
