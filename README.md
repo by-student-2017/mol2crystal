@@ -13,24 +13,24 @@
 - Not yet developed: NWChem
 
 ## Table 1: Comparison of Evaluation Methods
-
-### Classical Molecular Dynamics
-
-MethodCell OptimizationElement CoverageEase of SetupRecommendationNotesUFF (OpenBabel)NoExcellentExcellentModerateSuitable for rough screening; cannot optimize cell geometry.| GAFF (LAMMPS) | Yes | Excellent | Poor | Recommended | Can optimize cell geometry; setup is somewhat complex. |
-| ReaxFF (LAMMPS) | Yes | Limited | Poor | Recommended | Element support is limited; promising for reactive MD. |
-
-### Semi-empirical Quantum Chemistry
-
-MethodCell OptimizationElement CoverageEase of SetupRecommendationNotesMOPACNoExcellentExcellentNot RecommendedCannot perform cell optimization.| xTB | Yes | Excellent | Excellent | Highly Recommended | Fast and reasonably accurate; suitable for candidate screening. |
-| DFTB+ | Yes | Excellent | Excellent | Highly Recommended | Fast and scalable; suitable for candidate screening. |
-
-### First-principles Calculations
-
-MethodCell OptimizationElement CoverageEase of SetupRecommendationNotesQuantum ESPRESSO (QE)YesExcellentModerateModerateHigh accuracy; MPI environment recommended.| Abinit | Yes | Excellent | Moderate | Moderate | Versatile and suitable for educational use. |
-| OpenMX | Yes | Excellent | Moderate | Moderate | Uses pseudopotentials and LCPAO method; developed in Japan. |
-| GPAW | Yes | Excellent | Moderate | Moderate | Python-based; has many dependencies. |
-| Siesta | Yes | Excellent | Moderate | Moderate | Supports linear scaling; uses pseudopotentials. |
-| CP2K | Yes | Excellent | Poor | Moderate | Strong for large systems; setup is complex. |
+| Code      | Method  | periodic |
+| ----------| ------- | -------- |
+| OpenBabel | GAFF    | no       | 
+| Lammps    | GAFF    | yes      |
+| Lammps    | ReaxFF  | yes      |
+| ----------| ------- | -------- |
+| DFTB+     | GFN1    | yes      |
+| xTB       | GFN1    | yes      |
+| MOPAC     | PM6-D3H4| yes      |
+| ----------| ------- | -------- |
+| QE        | DFT     | yes      |
+| Abinit    | DFT     | yes      |
+| OpenMX    | DFT     | yes      |
+| GPAW      | DFT     | yes      |
+| Siesta    | DFT     | yes      |
+| CP2k      | DFT     | yes      |
+| NWChem    | DFT     | yes      |
+| Elk       | DFT     | yes      |
 
 ---
 
