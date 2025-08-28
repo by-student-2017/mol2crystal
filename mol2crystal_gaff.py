@@ -21,8 +21,8 @@ user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_ski
 
 ### OpenBable
 # sudo apt update
-# sudo apt install openbabel
-# sudo apt install libopenbabel-dev
+# sudo apt -y install openbabel
+# sudo apt -y install libopenbabel-dev
 
 ### Usage
 # pyton3 mol2crystal_uff.py
