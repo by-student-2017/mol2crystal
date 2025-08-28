@@ -13,24 +13,24 @@
 - Not yet developed: NWChem
 
 ## Table 1: Comparison of Evaluation Methods
-| Code      | Method  | OPT (pbc) | Element  | Accuracy | Cost      | Recommendaiton |
-| --------- | ------- | --------- | -------- | -------- | --------- | -------------- |
-| OpenBabel | GAFF    | No        | Possible | Low      | Low       | Low            |
-| Lammps    | GAFF    | Yes       | Possible | Low      | Low       | High           |
-| Lammps    | ReaxFF  | Yes       | limited  | Low      | Low       | Middle         |
-|           |         |           |          |          |           |                |
-| DFTB+     | GFN1-xTB| Yes       | Possible | Middle   | Middle    | High           |
-| xTB       | GFN1-xTB| Yes       | Possible | Middle   | Middle    | Middle         |
-| MOPAC     | PM6-D3H4| No        | Possible | Middle   | Middle    | Low            |
-|           |         |           |          |          |           |                |
-| QE        | DFT     | Yes       | Possible | High     | High      | High           |
-| Abinit    | DFT     | Yes       | Possible | High     | High      | Low            |
-| OpenMX    | DFT     | Yes       | Possible | High     | High      | Middle         |
-| GPAW      | DFT     | Yes       | Possible | High     | High      | Middle         |
-| Siesta    | DFT     | Yes       | Possible | High     | High      | Middle         |
-| CP2k      | DFT     | Yes       | Possible | High     | Very high | Low            |
-| NWChem    | DFT     | Yes       | Possible | High     | Very high | Low            |
-| Elk       | DFT     | Yes       | Possible | High     | Very high | Low            |
+| Code      | version | Method  | OPT (pbc) | Element  | Accuracy | Cost      | Recommendaiton |
+| --------- | ------- | ------- | --------- | -------- | -------- | --------- | -------------- |
+| OpenBabel | 3.1.1   | GAFF    | No        | Possible | Low      | Low       | Low            |
+| Lammps    |22Jul2025| GAFF    | Yes       | Possible | Low      | Low       | High           |
+| Lammps    |22Jul2025| GAFF    | Yes       | limited  | Low      | Low       | Middle         |
+|           |         |         |           |          |          |           |                |
+| DFTB+     | 24.1    |GFN1-xTB | Yes       | Possible | Middle   | Middle    | High           |
+| xTB       | 6.7.1   |GFN1-xTB | Yes       | Possible | Middle   | Middle    | Middle         |
+| MOPAC     | 23.1.2  |PM6-D3H4 | No        | Possible | Middle   | Middle    | Low            |
+|           |         |         |           |          |          |           |                |
+| QE        | 6.7MaX  | DFT     | Yes       | Possible | High     | High      | High           |
+| Abinit    | 9.6.2   | DFT     | Yes       | Possible | High     | High      | Low            |
+| OpenMX    | 3.8.5   | DFT     | Yes       | Possible | High     | High      | Middle         |
+| GPAW      | 25.7.0  | DFT     | Yes       | Possible | High     | High      | Middle         |
+| Siesta    | 5.4.0   | DFT     | Yes       | Possible | High     | High      | Middle         |
+| CP2k      | 9.1     | DFT     | Yes       | Possible | High     | Very high | Low            |
+| NWChem    | 7.0.2   | DFT     | Yes       | Possible | High     | Very high | Low            |
+| Elk       | 7.2.42  | DFT     | Yes       | Possible | High     | Very high | Low            |
 
 ---
 
@@ -345,6 +345,9 @@ pip freeze > requirements.txt
 - OS: Ubuntu 22.04 LTS (WLS2, Windows 11)
 - Python: 3.10.12
 - ASE: 3.22.1
+- scipy: 1.13.0
+- psutil: 7.0.0
+- pymsym: 0.3.4
 - Numpy: 1.21.5
 - Matplotlib: 3.5.1
 - gfortran: gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)
