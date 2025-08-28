@@ -17,7 +17,7 @@
 | --------- | ------- | ------- | --------- | -------- | -------- | --------- | -------------- |
 | OpenBabel | 3.1.1   | GAFF    | No        | Possible | Low      | Low       | Low            |
 | Lammps    |22Jul2025| GAFF    | Yes       | Possible | Low      | Low       | High           |
-| Lammps    |22Jul2025| GAFF    | Yes       | limited  | Low      | Low       | Middle         |
+| Lammps    |22Jul2025| ReaxFF  | Yes       | limited  | Low      | Low       | Middle         |
 |           |         |         |           |          |          |           |                |
 | DFTB+     | 24.1    |GFN1-xTB | Yes       | Possible | Middle   | Middle    | High           |
 | xTB       | 6.7.1   |GFN1-xTB | Yes       | Possible | Middle   | Middle    | Middle         |
