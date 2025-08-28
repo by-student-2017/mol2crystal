@@ -236,8 +236,8 @@ def openmx_optimize(fname, precursor_energy_per_atom):
             external      = [0.0,0.0,0.0],          # External Electric Field: default=0.0 0.0 0.0 (GV/m)
             mixer         = 'RMM-DIISK',            # Simple, GR-Pulay, RM-DIIS, Kerker, RMM-DIISK, RM-DIISH
             charge        = 0.0,                    # Total charge of the system (unspecified)
-            maxiter       = 100,                    # Maximum number of SCF cycles
-            smearing      =  50,                    # Smearing temperature (K) (Default vaule: 300 [K])
+            maxiter       = 200,                    # Maximum number of SCF cycles
+            smearing      = 300,                    # Smearing temperature (K) (Default vaule: 300 [K])
             
             # Density of States (DOS)
             dos_fileout   = False,                  # DOS output availability
