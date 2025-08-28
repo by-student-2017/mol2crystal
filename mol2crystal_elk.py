@@ -19,19 +19,12 @@ user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_ski
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 # pip install pymsym==0.3.4
 
-### QE v.6.7MaX
+### Elk v7.2.42
 # sudo apt update
-# sudo apt -y install quantum-espresso
-
-### Pseudo-potantials
-# QE pslibrary: https://pseudopotentials.quantum-espresso.org/legacy_tables/ps-library
-# TEHOS: https://theos-wiki.epfl.ch/Main/Pseudopotentials
-# pslibrary: https://dalcorso.github.io/pslibrary/PP_list.html
-# SSSP: https://www.materialscloud.org/discover/sssp/table/efficiency
-# (Set the pseudopotential in the pseudodirectory.)
+# sudo apt -y install elk-lapw
 
 ### Usage
-# pyton3 mol2crystal_qe.py
+# pyton3 mol2crystal_elk.py
 
 import os
 import glob
@@ -50,7 +43,7 @@ from ase.neighborlist import NeighborList
 # Point group analysis in space groups
 import pymsym
 
-from ase.calculators.espresso import Espresso, EspressoProfile
+from ase.calculators.elk import ELK, ElkProfile
 from ase.optimize import BFGS, LBFGS
 
 import warnings
@@ -191,114 +184,55 @@ def rotate_molecule(positions, theta, phi):
     ])
     return positions @ Rz.T @ Ry.T
 
-# QE optimization
-def qe_optimize(fname, precursor_energy_per_atom):
+# Elk optimization
+def elk_optimize(fname, precursor_energy_per_atom):
     try:
-        temp_dir = "qe_temp"
+        temp_dir = "elk_temp"
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
         os.makedirs(temp_dir, exist_ok=True)
 
         atoms = read(fname)
-
+        
         # Get current directory
         cwd = os.getcwd()
         
-        # Directory containing UPF files
-        pseudo_dir = os.path.join(cwd, "pseudo")
-        
-        elements = set(atoms.get_chemical_symbols())
-        pseudo_dict = {}
-        for elem in elements:
-            for pseudo_filename in os.listdir(pseudo_dir):
-                if pseudo_filename.startswith(elem) and pseudo_filename.endswith(".UPF"):
-                    pseudo_dict[elem] = pseudo_filename
-                    break
-
-        # List to store extracted ecutwfc values
-        max_ecutwfc = 0
-        for elem in elements:
-            upf_file = pseudo_dict[elem]
-            upf_path = os.path.join(pseudo_dir, upf_file)
-            with open(upf_path, "r") as f:
-                content = f.read()
-                match_wfc = re.search(r"cutoff for wavefunctions:\s*([\d.]+)", content)
-                match_rho = re.search(r"cutoff for charge density:\s*([\d.]+)", content)
-                if match_wfc and match_rho:
-                    ecutwfc_local = float(match_wfc.group(1))
-                    ecutrho_local = float(match_rho.group(1))
-                    if ecutwfc_local > max_ecutwfc:
-                        max_ecutwfc = ecutwfc_local
-                        ecutrho = ecutrho_local
-                    break
-        # Fallback in case no values were found
-        if max_ecutwfc == 0:
-            max_ecutwfc = 40
-            ecutrho = 4 * max_ecutwfc
-
-        input_data = {
-            'control': {
-                'calculation': 'scf',
-                'restart_mode': 'from_scratch',
-                'outdir': './',
-                'disk_io': 'low',
-                'tstress': True,
-                'tprnfor': True,
-                'etot_conv_thr': 1.0e-4*len(atoms),
-                'forc_conv_thr': 1.0e-3*len(atoms),
-            },
-            'system': {
-                'ecutwfc': max_ecutwfc,
-                'ecutrho': ecutrho,
-            },
-            'electrons': {
-                'conv_thr': 1.0e-3/13.6058*len(atoms),
-            },
-            'ions': {
-                'ion_dynamics': 'bfgs',
-            },
-            'cell': {
-                'cell_dynamics': 'bfgs',
-                'cell_dofree': 'all',
-                'press': 1.0e-3,
-                #'press_conv_thr': 0.5,
-            }
-        }
-        
-        profile = EspressoProfile(
-            command=f'mpirun -n {cpu_count} /usr/bin/pw.x',
-            pseudo_dir=pseudo_dir,
+        # Specify the path to the Elk executable file
+        profile = ElkProfile(
+            command=f'mpirun -np {cpu_count} /usr/bin/elk-lapw', 
+            sppath='/usr/share/elk-lapw/species'
         )
         
-        calc = Espresso(
+        calc = ELK(
             profile=profile,
-            pseudopotentials=pseudo_dict,
-            input_data=input_data,
+            tasks   = 0,                   # 0:SCF, 21:OPT
+            ngridk  = (1, 1, 1),           # k-point. 1x1x1
+            rgkmax  = 6.0,                 # Usually around 6.0 to 9.0. (transition metals or heavy elements: >= 7.0)
+            swidth  = 0.001,               # smearing width (electronic temperature) (0.001 -> ca.11.6 K)
+            xctype  = 20,                  # Types of exchange-correlation functionals. 20:PBE
+            epsengy = 1e-3 * len(atoms) / 27.2114, # Energy Convergence Threshold (1 meV/atom)
+            epspot  = 1e-5 * len(atoms) / 27.2114, # Potential convergence threshold (Two digits lower than "epsengy")
+            maxscl  = 100,                 # Maximum number of SCF cycles
         )
         
+        # Set to the Atoms object of ASE
         os.chdir(temp_dir)
         try:
-            atoms.set_calculator(calc)
+            #atoms.set_calculator(calc)
+            atoms.calc = calc
             opt = LBFGS(atoms)
             opt.run(fmax=0.5)
         finally:
             os.chdir(cwd)
 
-        '''
-        print("Number of atoms:", len(atoms))
-        print("Atomic positions:", atoms.get_positions())
-        print("Cell parameters:", atoms.get_cell())
-        print("Path:", opt_fname)
-        '''
-
-        # Preservation of structure after optimization
+        # Save optimized structure
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, atoms, format='vasp')
 
-        # Energy and density calculations
-        energy_per_atom = atoms.get_potential_energy() / len(atoms)
+        energy_per_atom = etotal / len(atoms)
         relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
 
+        # Density calculation
         total_mass_amu = sum(atoms.get_masses())
         total_mass_g = total_mass_amu * 1.66053906660e-24
         volume = atoms.get_volume()
@@ -790,7 +724,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
-                    qe_optimize(fname, precursor_energy_per_atom=0.0)
+                    elk_optimize(fname, precursor_energy_per_atom=0.0)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
                 else:
                     print("Not adopted because the interatomic distance is too close.")
