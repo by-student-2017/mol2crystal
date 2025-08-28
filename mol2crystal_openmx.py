@@ -220,7 +220,7 @@ def openmx_optimize(fname, precursor_energy_per_atom):
             #---------------------------------------
             data_path     = '/usr/share/openmx/DFT_DATA13',  # Pseudopotential path (OPENMX_DFT_DATA_PATH environment variable is also acceptable)
             #---------------------------------------
-            #label='openmx_calc',                    # Used for output file name and System.Name (default: openmx)
+            label='openmx_calc',                    # Used for output file name and System.Name (default: openmx)
             restart       = None,                   # Restart settings (new calculation with None)
             debug         = False,                  # Debug Output
             nohup         = True,                   # Run in the background with nohup
@@ -249,7 +249,7 @@ def openmx_optimize(fname, precursor_energy_per_atom):
         try:
             atoms.calc = calc
             opt = LBFGS(atoms)
-            opt.run(fmax=0.5)
+            opt.run(fmax=1.0)
         finally:
             os.chdir(cwd)
 
