@@ -43,6 +43,7 @@ from ase.neighborlist import NeighborList
 # Point group analysis in space groups
 import pymsym
 
+from ase.units import Ha
 from ase.calculators.elk import ELK, ElkProfile
 from ase.optimize import BFGS, LBFGS
 
@@ -67,8 +68,9 @@ for dir_name in dirs_to_remove:
         shutil.rmtree(dir_name)
 
 cpu_count = psutil.cpu_count(logical=False)
-os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
-#os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
+os.environ["OMP_NUM_THREADS"] = '1'              # Limited due to memory issues
+#os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
+#os.environ["OMP_NUM_THREADS"] = str(cpu_count)  # use OpenMP 
 
 print(f"------------------------------------------------------")
 print("# Read molecule")
@@ -199,7 +201,8 @@ def elk_optimize(fname, precursor_energy_per_atom):
         
         # Specify the path to the Elk executable file
         profile = ElkProfile(
-            command=f'mpirun -np {cpu_count} /usr/bin/elk-lapw', 
+            #command=f'mpirun -np {cpu_count} /usr/bin/elk-lapw',  # OpenMPI
+            command=f'/usr/bin/elk-lapw',                          # OpenMP
             sppath='/usr/share/elk-lapw/species'
         )
         
@@ -207,11 +210,11 @@ def elk_optimize(fname, precursor_energy_per_atom):
             profile=profile,
             tasks   = 0,                   # 0:SCF, 21:OPT
             ngridk  = (1, 1, 1),           # k-point. 1x1x1
-            rgkmax  = 6.0,                 # Usually around 6.0 to 9.0. (transition metals or heavy elements: >= 7.0)
+            rgkmax  = 5.0,                 # Usually around 6.0 to 9.0. (transition metals or heavy elements: >= 7.0)
             swidth  = 0.001,               # smearing width (electronic temperature) (0.001 -> ca.11.6 K)
             xctype  = 20,                  # Types of exchange-correlation functionals. 20:PBE
-            epsengy = 1e-3 * len(atoms) / 27.2114, # Energy Convergence Threshold (1 meV/atom)
-            epspot  = 1e-5 * len(atoms) / 27.2114, # Potential convergence threshold (Two digits lower than "epsengy")
+            epsengy = 1e-3 * len(atoms) / Ha, # Energy Convergence Threshold (1 meV/atom)
+            epspot  = 1e-5 * len(atoms) / Ha, # Potential convergence threshold (Two digits lower than "epsengy")
             maxscl  = 100,                 # Maximum number of SCF cycles
         )
         
