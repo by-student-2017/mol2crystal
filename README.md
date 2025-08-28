@@ -342,10 +342,12 @@ pip freeze > requirements.txt
 ---
 
 ## Tested Environment
-- Ubuntu: 22.04 LTS (WSL2, Windows 11)
-- Python: 3.10
+- OS: Ubuntu 22.04 LTS (WLS2, Windows 11)
+- Python: 3.10.12
 - ASE: 3.22.1
-- LAMMPS version: stable_22Jul2025
+- Numpy: 1.21.5
+- Matplotlib: 3.5.1
+- gfortran: gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)
 
 ---
 
