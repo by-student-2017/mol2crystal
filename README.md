@@ -13,24 +13,24 @@
 - Not yet developed: NWChem
 
 ## Table 1: Comparison of Evaluation Methods
-| Code      | Method  | OPT (Periodic) | Element  | Accuracy | Cost      |
-| --------- | ------- | -------------- | -------- | -------- | --------- |
-| OpenBabel | GAFF    | no             | Possible | Low      | Low       |
-| Lammps    | GAFF    | yes            | Possible | Low      | Low       |
-| Lammps    | ReaxFF  | yes            | limited  | Low      | Low       |
-|           |         |                |          |          |           |
-| DFTB+     | GFN1-xTB| yes            | Possible | middle   | middle    |
-| xTB       | GFN1-xTB| yes            | Possible | middle   | middle    |
-| MOPAC     | PM6-D3H4| no             | Possible | middle   | middle    |
-|           |         |                |          |          |           |
-| QE        | DFT     | yes            | Possible | high     | high      |
-| Abinit    | DFT     | yes            | Possible | high     | high      |
-| OpenMX    | DFT     | yes            | Possible | high     | high      |
-| GPAW      | DFT     | yes            | Possible | high     | high      |
-| Siesta    | DFT     | yes            | Possible | high     | high      |
-| CP2k      | DFT     | yes            | Possible | high     | very high |
-| NWChem    | DFT     | yes            | Possible | high     | high      |
-| Elk       | DFT     | yes            | Possible | high     | very high |
+| Code      | Method  | OPT (pbc) | Element  | Accuracy | Cost      |
+| --------- | ------- | --------- | -------- | -------- | --------- |
+| OpenBabel | GAFF    | no        | Possible | Low      | Low       |
+| Lammps    | GAFF    | yes       | Possible | Low      | Low       |
+| Lammps    | ReaxFF  | yes       | limited  | Low      | Low       |
+|           |         |           |          |          |           |
+| DFTB+     | GFN1-xTB| yes       | Possible | middle   | middle    |
+| xTB       | GFN1-xTB| yes       | Possible | middle   | middle    |
+| MOPAC     | PM6-D3H4| no        | Possible | middle   | middle    |
+|           |         |           |          |          |           |
+| QE        | DFT     | yes       | Possible | high     | high      |
+| Abinit    | DFT     | yes       | Possible | high     | high      |
+| OpenMX    | DFT     | yes       | Possible | high     | high      |
+| GPAW      | DFT     | yes       | Possible | high     | high      |
+| Siesta    | DFT     | yes       | Possible | high     | high      |
+| CP2k      | DFT     | yes       | Possible | high     | very high |
+| NWChem    | DFT     | yes       | Possible | high     | high      |
+| Elk       | DFT     | yes       | Possible | high     | very high |
 
 ---
 
