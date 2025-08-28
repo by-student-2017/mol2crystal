@@ -220,7 +220,7 @@ def openmx_optimize(fname, precursor_energy_per_atom):
             #---------------------------------------
             data_path     = '/usr/share/openmx/DFT_DATA13',  # Pseudopotential path (OPENMX_DFT_DATA_PATH environment variable is also acceptable)
             #---------------------------------------
-            label='openmx_calc',                    # Used for output file name and System.Name (default: openmx)
+            #label='openmx_calc',                    # Used for output file name and System.Name (default: openmx)
             restart       = None,                   # Restart settings (new calculation with None)
             debug         = False,                  # Debug Output
             nohup         = True,                   # Run in the background with nohup
@@ -252,9 +252,9 @@ def openmx_optimize(fname, precursor_energy_per_atom):
             opt.run(fmax=0.5)
         finally:
             os.chdir(cwd)
-        input()
+
         # Save optimized structure
-        opt_fname = fname.replace("valid_structures", "optimized_structures_openmx").replace("POSCAR", "OPT") + ".vasp"
+        opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, atoms, format='vasp')
 
         # Energy and density calculations
