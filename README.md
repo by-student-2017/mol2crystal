@@ -13,24 +13,24 @@
 - Not yet developed: NWChem
 
 ## Table 1: Comparison of Evaluation Methods
-| Code      | Method  | periodic |
-| --------- | ------- | -------- |
-| OpenBabel | GAFF    | no       | 
-| Lammps    | GAFF    | yes      |
-| Lammps    | ReaxFF  | yes      |
-| --------- | ------- | -------- |
-| DFTB+     | GFN1    | yes      |
-| xTB       | GFN1    | yes      |
-| MOPAC     | PM6-D3H4| yes      |
-| ----------| ------- | -------- |
-| QE        | DFT     | yes      |
-| Abinit    | DFT     | yes      |
-| OpenMX    | DFT     | yes      |
-| GPAW      | DFT     | yes      |
-| Siesta    | DFT     | yes      |
-| CP2k      | DFT     | yes      |
-| NWChem    | DFT     | yes      |
-| Elk       | DFT     | yes      |
+| Code      | Method  | OPT (Periodic) |
+| --------- | ------- | -------------- |
+| OpenBabel | GAFF    | no             | 
+| Lammps    | GAFF    | yes            |
+| Lammps    | ReaxFF  | yes            |
+|           |         |                |
+| DFTB+     | GFN1    | yes            |
+| xTB       | GFN1    | yes            |
+| MOPAC     | PM6-D3H4| no             |
+|           |         |                |
+| QE        | DFT     | yes            |
+| Abinit    | DFT     | yes            |
+| OpenMX    | DFT     | yes            |
+| GPAW      | DFT     | yes            |
+| Siesta    | DFT     | yes            |
+| CP2k      | DFT     | yes            |
+| NWChem    | DFT     | yes            |
+| Elk       | DFT     | yes            |
 
 ---
 
