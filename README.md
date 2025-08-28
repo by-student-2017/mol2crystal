@@ -220,6 +220,16 @@ pip install pymsym==0.3.4
 ### CP2k ver.9.1
 sudo apt -y install cp2k
 ```
+- NWChem version
+```
+### Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### NWChem v7.0.2
+sudo apt update
+sudo apt -y install nwchem-openmpi
+```
 - Elk
 ```
 ### Install libraries
@@ -296,6 +306,10 @@ pyton3 mol2crystal_siesta.py
 - CP2k version
 ```
 pyton3 mol2crystal_cp2k.py
+```
+- NWChem version
+```
+pyton3 mol2crystal_nwchem.py
 ```
 - Elk version: This method provides very high accuracy, but it is computationally expensive and requires a lot of memory. (I do not recommend this method for calculations.)
 ```
