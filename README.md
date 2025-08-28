@@ -190,6 +190,16 @@ cd $HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP$
 # (set) nc-sr-05_pbe_standard_psml.tgz
 tar xvf nc-sr-05_pbe_standard_psml.tgz
 ```
+- Elk
+```
+### Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+
+### Elk v7.2.42
+sudo apt update
+sudo apt -y install elk-lapw
+```
 
 ---
 
@@ -252,6 +262,10 @@ pyton3 mol2crystal_cp2k.py
 - SIESTA version
 ```
 pyton3 mol2crystal_siesta.py
+```
+- Elk version: This method provides very high accuracy, but it is computationally expensive and requires a lot of memory. (I do not recommend this method for calculations.)
+```
+pyton3 mol2crystal_elk.py
 ```
 
 ### plot
