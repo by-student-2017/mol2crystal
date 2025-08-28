@@ -14,11 +14,11 @@
 
 ## Table 1: Comparison of Evaluation Methods
 | Code      | Method  | periodic |
-| ----------| ------- | -------- |
+| --------- | ------- | -------- |
 | OpenBabel | GAFF    | no       | 
 | Lammps    | GAFF    | yes      |
 | Lammps    | ReaxFF  | yes      |
-| ----------| ------- | -------- |
+| --------- | ------- | -------- |
 | DFTB+     | GFN1    | yes      |
 | xTB       | GFN1    | yes      |
 | MOPAC     | PM6-D3H4| yes      |
