@@ -29,7 +29,7 @@
 | GPAW      | DFT     | Yes       | Possible | High     | High      | Middle         |
 | Siesta    | DFT     | Yes       | Possible | High     | High      | Middle         |
 | CP2k      | DFT     | Yes       | Possible | High     | Very high | Low            |
-| NWChem    | DFT     | Yes       | Possible | High     | High      | Low            |
+| NWChem    | DFT     | Yes       | Possible | High     | Very high | Low            |
 | Elk       | DFT     | Yes       | Possible | High     | Very high | Low            |
 
 ---
