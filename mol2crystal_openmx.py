@@ -45,7 +45,7 @@ import pymsym
 
 from ase.units import Ha, Ry
 from ase.calculators.openmx import OpenMX
-from ase.optimize import BFGS, LBFGS
+from ase.optimize import BFGS, LBFGS, FIRE
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -248,8 +248,9 @@ def openmx_optimize(fname, precursor_energy_per_atom):
         os.chdir(temp_dir)
         try:
             atoms.calc = calc
-            opt = LBFGS(atoms)
-            opt.run(fmax=1.0)
+            #opt = LBFGS(atoms)
+            opt = FIRE(atoms)
+            opt.run(fmax=0.5)
         finally:
             os.chdir(cwd)
 
