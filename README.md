@@ -12,6 +12,26 @@
 - First-principles calculation codes (QE, Abinit, OpenMX, GPAW, Siesta, CP2k, NWChem, Elk, etc.) are also available, but are not recommended due to their high computational cost. They may run without problems on medium- to large-scale computers.
 - Not yet developed: NWChem
 
+## Table 1: Comparison of Evaluation Methods
+
+### Classical Molecular Dynamics
+
+MethodCell OptimizationElement CoverageEase of SetupRecommendationNotesUFF (OpenBabel)NoExcellentExcellentModerateSuitable for rough screening; cannot optimize cell geometry.| GAFF (LAMMPS) | Yes | Excellent | Poor | Recommended | Can optimize cell geometry; setup is somewhat complex. |
+| ReaxFF (LAMMPS) | Yes | Limited | Poor | Recommended | Element support is limited; promising for reactive MD. |
+
+### Semi-empirical Quantum Chemistry
+
+MethodCell OptimizationElement CoverageEase of SetupRecommendationNotesMOPACNoExcellentExcellentNot RecommendedCannot perform cell optimization.| xTB | Yes | Excellent | Excellent | Highly Recommended | Fast and reasonably accurate; suitable for candidate screening. |
+| DFTB+ | Yes | Excellent | Excellent | Highly Recommended | Fast and scalable; suitable for candidate screening. |
+
+### First-principles Calculations
+
+MethodCell OptimizationElement CoverageEase of SetupRecommendationNotesQuantum ESPRESSO (QE)YesExcellentModerateModerateHigh accuracy; MPI environment recommended.| Abinit | Yes | Excellent | Moderate | Moderate | Versatile and suitable for educational use. |
+| OpenMX | Yes | Excellent | Moderate | Moderate | Uses pseudopotentials and LCPAO method; developed in Japan. |
+| GPAW | Yes | Excellent | Moderate | Moderate | Python-based; has many dependencies. |
+| Siesta | Yes | Excellent | Moderate | Moderate | Supports linear scaling; uses pseudopotentials. |
+| CP2K | Yes | Excellent | Poor | Moderate | Strong for large systems; setup is complex. |
+
 ---
 
 ## Install libraries
