@@ -51,7 +51,7 @@ from ase.neighborlist import NeighborList
 import pymsym
 
 from ase.calculators.espresso import Espresso, EspressoProfile
-from ase.optimize import BFGS, LBFGS
+from ase.optimize import BFGS, LBFGS, FIRE
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -279,7 +279,8 @@ def qe_optimize(fname, precursor_energy_per_atom):
         os.chdir(temp_dir)
         try:
             atoms.set_calculator(calc)
-            opt = LBFGS(atoms)
+            #opt = LBFGS(atoms)
+            opt = FIRE(atoms)
             opt.run(fmax=0.5)
         finally:
             os.chdir(cwd)

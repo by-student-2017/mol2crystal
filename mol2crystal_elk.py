@@ -45,7 +45,7 @@ import pymsym
 
 from ase.units import Ha
 from ase.calculators.elk import ELK, ElkProfile
-from ase.optimize import BFGS, LBFGS
+from ase.optimize import BFGS, LBFGS, FIRE
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -223,7 +223,8 @@ def elk_optimize(fname, precursor_energy_per_atom):
         try:
             #atoms.set_calculator(calc)
             atoms.calc = calc
-            opt = LBFGS(atoms)
+            #opt = LBFGS(atoms)
+            opt = FIRE(atoms)
             opt.run(fmax=0.5)
         finally:
             os.chdir(cwd)

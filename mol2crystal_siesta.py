@@ -67,7 +67,7 @@ import pymsym
 
 from ase.calculators.siesta import Siesta
 from ase.filters import UnitCellFilter
-from ase.optimize import BFGS
+from ase.optimize import BFGS, LBFGS, FIRE
 from ase.units import Ry
 
 import warnings
@@ -241,7 +241,7 @@ def siesta_optimize(fname, precursor_energy_per_atom):
         opt = BFGS(ucf,
             logfile=os.path.join(temp_dir, 'opt.log'),
             trajectory=os.path.join(temp_dir, 'opt.traj'))
-        opt.run(fmax=0.05)
+        opt.run(fmax=0.5)
 
         # Save optimized structure
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"

@@ -42,7 +42,7 @@ import pymsym
 
 from gpaw import GPAW, PW
 from ase.filters import UnitCellFilter
-from ase.optimize import LBFGS
+from ase.optimize import BFGS, LBFGS, FIRE
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -200,8 +200,8 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
 
         ucf = UnitCellFilter(atoms)
         opt = LBFGS(ucf,
-                    logfile=os.path.join(temp_dir, 'opt.log'),
-                    trajectory=os.path.join(temp_dir, 'opt.traj'))
+            logfile=os.path.join(temp_dir, 'opt.log'),
+            trajectory=os.path.join(temp_dir, 'opt.traj'))
         opt.run(fmax=0.05)
 
         # Save the final structure
