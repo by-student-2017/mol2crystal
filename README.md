@@ -23,7 +23,7 @@
 | xTB       | 6.7.1   |GFN1-xTB | Yes       | Possible | Middle   | Middle    | Middle         |
 | MOPAC     | 23.1.2  |PM6-D3H4 | No        | Possible | Middle   | Middle    | Low            |
 |           |         |         |           |          |          |           |                |
-| QE        | 6.7MaX  | DFT     | Yes       | Possible | High     | High      | High           |
+| QE        | 6.7MaX  | DFT+vdW | Yes       | Possible | High     | High      | High           |
 | Abinit    | 9.6.2   | DFT     | Yes       | Possible | High     | High      | Low            |
 | OpenMX    | 3.8.5   | DFT     | Yes       | Possible | High     | High      | Middle         |
 | GPAW      | 25.7.0  | DFT     | Yes       | Possible | High     | High      | Middle         |
@@ -33,11 +33,12 @@
 | Elk       | 7.2.42  | DFT     | Yes       | Possible | High     | Very high | Low            |
 
 Table 2. vdW correation
-| Method | Note |
+| Method or Code | Note |
 | ------ | ---- |
 | GAFF   | Dispersion forces are approximated by an empirical Lennard-Jones potential (empirically adjusted values ​​are used, rather than theoretical corrections as in DFT-D). |
 | ReaxFF | It is approximated by an empirically adjusted force field rather than a theoretical dispersion correction like Grimme (ReaxFF does not explicitly introduce dispersion forces (vdW) in the same way as DFT-D, but it does include Lennard-Jones type non-bonded interactions and has a distance-dependent potential between molecules).　|
 |GFN-xTB | incorporates a term based on Grimme's D3 dispersion correction into the Hamiltonian.　|
+| QE     | DFT-D, DFT-D3, MBD, and XDM are available. TS requires a special library (libvdwxc). |
 
 ---
 
