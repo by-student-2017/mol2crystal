@@ -48,8 +48,8 @@
         DISPERSION_FUNCTIONAL PAIR_POTENTIAL
         &PAIR_POTENTIAL
           R_CUTOFF 20.0
-          SCALING 0.75e0
-          TYPE DFTD2
+          SCALING 0.75e0       ! DFTD2:0.75e0, DFTD3:1.0e0
+          TYPE DFTD2           ! DFTD2 or DFTD3
         &END PAIR_POTENTIAL
       &END VDW_POTENTIAL
       &XC_FUNCTIONAL PBE
