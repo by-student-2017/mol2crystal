@@ -44,6 +44,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 | OpenMX | DFT-D2 and DFT-D3 are supported from version 3.9 onwards. OpenMX version 3.9 or later is required. |
 | GPAW   | DFT-D2, and DFT-D3 are available. Use the dftd3 code. |
 | Siesta | DFT-D2, and DFT-D3 are available. |
+| CP2k   | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. Edit cp2k.inp to select the method you want. |
 
 ---
 
