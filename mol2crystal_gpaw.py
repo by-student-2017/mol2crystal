@@ -20,6 +20,14 @@ user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_ski
 # pip install "numpy<2.0"
 # pip install pymsym==0.3.4
 
+### DFTD-D3
+# pip install dftd3==1.2.1
+# cd $HOME
+# git clone https://github.com/loriab/dftd3.git
+# cd dftd3
+# make
+# sudo cp dftd3 /usr/local/bin/
+
 ### Usage
 # pyton3 mol2crystal_gpaw.py
 
@@ -43,6 +51,8 @@ import pymsym
 from gpaw import GPAW, PW
 from ase.filters import UnitCellFilter
 from ase.optimize import BFGS, LBFGS, FIRE
+
+from ase.calculators.dftd3 import DFTD3
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -194,8 +204,9 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
         atoms = read(fname)
 
         # Output GPAW calculation to temporary directory
-        calc = GPAW(xc='PBE', kpts=(1, 1, 1), mode=PW(400),
+        gpaw_calc = GPAW(xc='PBE', kpts=(1, 1, 1), mode=PW(400),
                     txt=os.path.join(temp_dir, 'gpaw_out.txt'))
+        calc = DFTD3(dft=gpaw_calc, xc='pbe', command='/usr/local/bin/dftd3')
         atoms.calc = calc
 
         ucf = UnitCellFilter(atoms)
@@ -207,7 +218,7 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
         # Save the final structure
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, atoms, format='vasp')
-        
+        input()
         # --- Extract only the last energy value ---
         #energy_value = atoms.get_potential_energy()
         log_path = os.path.join(temp_dir, "gpaw_out.txt")
