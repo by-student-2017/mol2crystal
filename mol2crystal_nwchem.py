@@ -224,7 +224,8 @@ def nwchem_optimize(fname, precursor_energy_per_atom):
             xc         = 'PBE',                # Exchange-correlation functional (PBE, B3LYP)
             dft        = {'convergence': {'energy'  : 1e-3 * len(atoms) / Ha,
                                           'density' : 1e-5,
-                                          'gradient': 5e-4}
+                                          'gradient': 5e-4},
+                          'disp': 'vdw 3',     # DFT-D2:'vdw 2', DFT-D3:'vdw 3'
                          },                    # NWChem keywords are specified using (potentially nested) dictionaries.
             #basispar = '',                    # Additional keywords to go in the first line of the basis block.
             center     = False,                # Do not auto-center geometry
