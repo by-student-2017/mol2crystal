@@ -48,20 +48,18 @@
         DISPERSION_FUNCTIONAL PAIR_POTENTIAL
         &PAIR_POTENTIAL
           REFERENCE_FUNCTIONAL PBE
+          R_CUTOFF 20.0           ! 15.0 - 20.0
           
           !TYPE DFTD2             ! DFTD2 case
           !SCALING 0.75e0         ! DFTD2 case
-          !R_CUTOFF 20.0          ! DFTD2 case
           
           TYPE DFTD3             ! DFTD3 case
           PARAMETER_FILE_NAME dftd3.dat
           D3_SCALING 1.0 1.0 1.0 ! DFTD3 case (s6,sr6,s8)
-          R_CUTOFF 15.0          ! DFTD3 case
           
           !TYPE DFTD3(BJ)          ! DFTD3(BJ) case
           !PARAMETER_FILE_NAME dftd3.dat
           !D3BJ_SCALING 1.0 0.5 1.0 5.0 ! DFTD3(BJ) case (s6, a1, s8, a2)
-          !R_CUTOFF 15.0          ! DFTD3(BJ) case
         &END PAIR_POTENTIAL
       &END VDW_POTENTIAL
       &XC_FUNCTIONAL PBE
