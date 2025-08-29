@@ -32,7 +32,7 @@
 | NWChem    | 7.0.2   | DFT     | Yes       | Possible | High     | Very high | Low            |
 | Elk       | 7.2.42  | DFT     | Yes       | Possible | High     | Very high | Low            |
 
-Table 2. vdW correation
+Table 2. vdW correation (This is necessary to consider intermolecular interactions more accurately.)
 | Method or Code | Note |
 | ------ | ---- |
 | GAFF   | Dispersion forces are approximated by an empirical Lennard-Jones potential (empirically adjusted values ​​are used, rather than theoretical corrections as in DFT-D). |
