@@ -280,8 +280,8 @@ def qe_optimize(fname, precursor_energy_per_atom):
         os.chdir(temp_dir)
         try:
             atoms.set_calculator(calc)
-            #opt = LBFGS(atoms)
-            opt = FIRE(atoms)
+            opt = LBFGS(atoms)
+            #opt = FIRE(atoms)
             opt.run(fmax=0.5)
         finally:
             os.chdir(cwd)
