@@ -388,6 +388,7 @@ pip freeze > requirements.txt
 - pymsym: 0.3.4
 - Numpy: 1.21.5
 - Matplotlib: 3.5.1
+- spglib: 2.6.0
 - gfortran: gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)
 
 ---
@@ -399,6 +400,7 @@ pip freeze > requirements.txt
 - [4] pymsym: https://github.com/yoneya/pymsym
 - [5] Reaxff potential list: https://github.com/by-student-2017/lammps_education_reaxff_win/tree/master/potentials (When presenting your results, be sure to cite the potential you utilized.)
 - [6] dftd3: https://github.com/loriab/dftd3
+- [7] spglib: https://github.com/spglib
 
 ---
 
