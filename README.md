@@ -25,7 +25,7 @@
 |           |         |         |           |          |          |           |                |
 | QE        | 6.7MaX  | DFT+vdW | Yes       | Possible | High     | High      | High           |
 | Abinit    | 9.6.2   | DFT+vdW | Yes       | Possible | High     | High      | Low            |
-| OpenMX    | 3.8.5   | DFT     | Yes       | Possible | High     | High      | Middle         |
+| OpenMX    |3.8.5 (3.9)|DFT (+vdW)| Yes       | Possible | High     | High      | Middle         |
 | GPAW      | 25.7.0  | DFT+vdW | Yes       | Possible | High     | High      | Middle         |
 | Siesta    | 5.4.0   | DFT+vdW | Yes       | Possible | High     | High      | Middle         |
 | CP2k      | 9.1     | DFT     | Yes       | Possible | High     | Very high | Low            |
