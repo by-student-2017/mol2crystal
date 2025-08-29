@@ -19,6 +19,7 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
+# --- Prepare environment and clean previous results ---
 '''
 # Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
@@ -36,6 +37,7 @@ pyton3 mol2crystal_nwchem.py
 
 
 #---------------------------------------------------------------------------------
+# --- Library imports and warning settings ---
 import os
 import glob
 import shutil
@@ -62,12 +64,14 @@ from ase.optimize import BFGS, LBFGS, FIRE
 import spglib
 from ase import Atoms
 
+# Warning settings
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 #---------------------------------------------------------------------------------
 
 
 #---------------------------------------------------------------------------------
+# --- Clean old outputs and temporary folders ---
 if (os.path.exists('valid_structures_old')):
     shutil.rmtree( 'valid_structures_old')   
 
@@ -88,6 +92,7 @@ for dir_name in dirs_to_remove:
 
 
 #---------------------------------------------------------------------------------
+# --- Configure thread count for OpenMP/OpenMPI ---
 #cpu_count = psutil.cpu_count(logical=False)
 cpu_count = 4
 os.environ["OMP_NUM_THREADS"] = '1'              # use OpenMPI
@@ -96,6 +101,7 @@ os.environ["OMP_NUM_THREADS"] = '1'              # use OpenMPI
 
 
 #---------------------------------------------------------------------------------
+# --- Load and center molecule, set margin and rotation parameters ---
 print(f"------------------------------------------------------")
 print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
@@ -136,7 +142,7 @@ os.makedirs("optimized_structures_vasp", exist_ok=True)
 
 
 #---------------------------------------------------------------------------------
-# Check for atomic overlap
+# --- Check for atomic overlap ---
 # Old version (Simple method: This is simple but not bad.)
 '''
 def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
@@ -202,7 +208,7 @@ def has_overlap_neighborlist(atoms, covalent_radii, scale):
 
 
 #---------------------------------------------------------------------------------
-# Rotation
+# --- Rotate molecule ---
 def rotate_molecule(positions, theta, phi):
     Rz = np.array([
         [np.cos(theta), -np.sin(theta), 0],
@@ -309,13 +315,14 @@ def nwchem_optimize(fname, precursor_energy_per_atom):
 
 
 #---------------------------------------------------------------------------------
-# Reference energy from original molecule
+# --- Reference energy from original molecule ---
 with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
 #---------------------------------------------------------------------------------
 
 
 #---------------------------------------------------------------------------------
+# --- Adjust unit cell parameters based on space group symmetry ---
 def adjust_cellpar_by_spacegroup(sg, cellpar):
     adjusted_cellpar = cellpar.copy()
 
@@ -455,6 +462,8 @@ def adjust_cellpar_by_spacegroup(sg, cellpar):
 
 
 #---------------------------------------------------------------------------------
+# --- Adjust unit cell parameters based on space group symmetry ---
+
 # Placed at the geometric center
 center = positions.mean(axis=0)
 centered_positions = positions - center
@@ -497,6 +506,7 @@ rotated_positions = centered_positions.dot(rotation_matrix.T)
 
 
 #---------------------------------------------------------------------------------
+# --- Analyze point group and derive candidate space groups ---
 print(f"------------------------------------------------------")
 print(f"# Point group symmetry for 'precursor.mol'")
 symbols = mol.get_chemical_symbols()
@@ -706,7 +716,7 @@ print("------------------------------------------------------")
 
 
 #---------------------------------------------------------------------------------
-# Find primitive cell after generating crystal structure
+# --- Find primitive cell after generating crystal structure ---
 def get_primitive_cell(atoms):
     lattice = atoms.cell
     positions = atoms.get_scaled_positions()
@@ -724,6 +734,7 @@ def get_primitive_cell(atoms):
 
 
 #---------------------------------------------------------------------------------
+# --- Main ---
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
 valid_files = []
