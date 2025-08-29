@@ -54,6 +54,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 ```
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 ```
 
 ### classic MD
@@ -62,6 +63,7 @@ pip install pymsym==0.3.4
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 sudo apt update
@@ -86,6 +88,7 @@ sudo make install
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 sudo apt update
@@ -110,6 +113,7 @@ sudo make install
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### OpenBable
 sudo apt update
@@ -123,6 +127,7 @@ sudo apt install libopenbabel-dev
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### xTB ver. 6.7.1
 cd $HOME
@@ -134,6 +139,7 @@ echo 'export PATH=$PATH:$HOME/xtb-dist/bin' >> ~/.bashrc
 ```
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### DFTB+ ver. 24.1
 cd $HOME
@@ -146,6 +152,7 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### MOPAC ver. 23.1.2
 wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
@@ -160,6 +167,7 @@ echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install "numpy<2.0"
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 # QE v.6.7MaX
 sudo apt update
@@ -178,6 +186,7 @@ sudo apt -y install quantum-espresso
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### Abinit v.9.6.2
 sudo apt update
@@ -188,6 +197,7 @@ sudo apt -y install abinit
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### OpenMX v3.8.5
 sudo apt update
@@ -199,6 +209,7 @@ sudo apt -y install openmx
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install "numpy<2.0"
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### DFTD-D3
 pip install dftd3==1.2.1
@@ -213,6 +224,7 @@ sudo cp dftd3 /usr/local/bin/
 ### Install libraries
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### Siesta Installation
 sudo apt update
@@ -239,6 +251,7 @@ tar xvf nc-sr-05_pbe_standard_psml.tgz
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### CP2k ver.9.1
 sudo apt -y install cp2k
@@ -248,6 +261,7 @@ sudo apt -y install cp2k
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### NWChem v7.0.2
 sudo apt update
@@ -258,6 +272,7 @@ sudo apt -y install nwchem-openmpi
 ### Install libraries
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
 ### Elk v7.2.42
 sudo apt update
