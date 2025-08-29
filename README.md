@@ -195,6 +195,14 @@ sudo apt -y install openmx
 pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install "numpy<2.0"
 pip install pymsym==0.3.4
+
+### DFTD-D3
+pip install dftd3==1.2.1
+cd $HOME
+git clone https://github.com/loriab/dftd3.git
+cd dftd3
+make
+sudo cp dftd3 /usr/local/bin/
 ```
 - SIESTA version
 ```
