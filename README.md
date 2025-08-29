@@ -41,6 +41,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 |PM6-D3H4| D3 (Grimme dispersion correction) is taken into account. H4 (hydrogen bond correction) is a correction term to handle hydrogen bond energy more accurately (especially important for biomolecules and water clusters). |
 | QE     | DFT-D, DFT-D3, MBD, and XDM are available. TS requires a special library (libvdwxc). |
 | Abinit | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. vdW-WF1, vdW-WF2, and vdW-QHO-WF) use Wannier functions, so they require the user to check and adjust parameters, such as fitting the Wannier functions, and are not easy to use. |
+| OpenMX | DFT-D2 and DFT-D3 are supported from version 3.9 onwards. OpenMX version 3.9 or later is required. |
 
 ---
 
