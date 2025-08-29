@@ -47,9 +47,15 @@
       &VDW_POTENTIAL
         DISPERSION_FUNCTIONAL PAIR_POTENTIAL
         &PAIR_POTENTIAL
+          REFERENCE_FUNCTIONAL PBE
           R_CUTOFF 20.0
-          SCALING 0.75e0       ! DFTD2:0.75e0, DFTD3:1.0e0
-          TYPE DFTD2           ! DFTD2 or DFTD3
+          
+          !TYPE DFTD2            ! DFTD2 case
+          !SCALING 0.75e0        ! DFTD2 case
+          
+          TYPE DFTD3             ! DFTD3 case
+          PARAMETER_FILE_NAME dftd3.dat
+          D3_SCALING 1.0 1.0 1.0 ! DFTD3 case
         &END PAIR_POTENTIAL
       &END VDW_POTENTIAL
       &XC_FUNCTIONAL PBE
