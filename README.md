@@ -38,6 +38,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 | GAFF   | Dispersion forces are approximated by an empirical Lennard-Jones potential (empirically adjusted values ​​are used, rather than theoretical corrections as in DFT-D). |
 | ReaxFF | It is approximated by an empirically adjusted force field rather than a theoretical dispersion correction like Grimme (ReaxFF does not explicitly introduce dispersion forces (vdW) in the same way as DFT-D, but it does include Lennard-Jones type non-bonded interactions and has a distance-dependent potential between molecules).　|
 |GFN-xTB | incorporates a term based on Grimme's D3 dispersion correction into the Hamiltonian.　|
+|PM6-D3H4| D3 (Grimme dispersion correction) is taken into account. H4 (hydrogen bond correction) is a correction term to handle hydrogen bond energy more accurately (especially important for biomolecules and water clusters). |
 | QE     | DFT-D, DFT-D3, MBD, and XDM are available. TS requires a special library (libvdwxc). |
 | Abinit | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. vdW-WF1, vdW-WF2, and vdW-QHO-WF) use Wannier functions, so they require the user to check and adjust parameters, such as fitting the Wannier functions, and are not easy to use. |
 
