@@ -23,7 +23,7 @@ xred              # Location of the atoms:
 
 # Numerical parameters of the calculation : planewave basis set and k point grid
 ecut      20.0    # Maximal plane-wave kinetic energy cut-off, in Hartree
-pawecutdg 40.0    # Max. plane-wave kinetic energy cut-off, in Ha, for the PAW double grid
+pawecutdg 40.0    # Max. plane-wave kinetic energy cut-off, in Ha, for the PAW double grid (pawecutdg = ecut * 2)
 ecutsm     2.0    # Ha
 
 kptopt 0          # Automatically generate k-points with symmetry consideration
