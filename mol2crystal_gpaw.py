@@ -48,9 +48,10 @@ from ase.neighborlist import NeighborList
 # Point group analysis in space groups
 import pymsym
 
-from gpaw import GPAW, PW
+from gpaw import GPAW, PW, Davidson
 from ase.filters import UnitCellFilter
 from ase.optimize import BFGS, LBFGS, FIRE
+from gpaw import Mixer
 
 from ase.calculators.dftd3 import DFTD3
 
@@ -204,16 +205,38 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
         atoms = read(fname)
 
         # Output GPAW calculation to temporary directory
-        gpaw_calc = GPAW(xc='PBE', kpts=(1, 1, 1), mode=PW(400),
-                    txt=os.path.join(temp_dir, 'gpaw_out.txt'))
-        calc = DFTD3(dft=gpaw_calc, xc='pbe', command='/usr/local/bin/dftd3')
+        gpaw_calc = GPAW(xc          = 'PBE',             # PBE, RPBE, PBEsol, PW91, BLYP, LDA, CA, TPSS, (LibXC: SCAN, HSE06, B3LYP)
+                         kpts        = (1, 1, 1),         # k-point mesh (gamma-point only), suitable for molecules and isolated systems
+                         mode        = PW(300),           # The plane wave basis is used, with a cutoff energy of 300 eV.
+                         spinpol     = False,             # Spin-unpolarized calculations (applicable to closed-shell and non-magnetic systems)
+                         occupations = {
+                            'name': 'fermi-dirac',        # 'marzari-vanderbilt', 'methfessel-paxton', 'tetrahedron-method', 'improved-tetrahedron-method'
+                            'width': 0.05},               # The electron smearing is set by the Fermi distribution. The electron temperature is 0.05 eV.
+                         convergence = {
+                            'energy': 1e-3 * len(atoms),  # Total energy convergence criterion (eV)
+                            'density': 1e-4,              # Electron density convergence criteria
+                            'eigenstates': 1e-8           # Convergence of eigenstates (if necessary)
+                         },
+                         charge      = 0,                 # Charge of the entire system, assuming a neutral system (e.g., molecule, surface)
+                         symmetry    = {'point_group': True}, # Enable point group symmetry, which contributes to improved computational efficiency
+                         maxiter     = 200,               # Maximum number of SCF iterations, increase if no convergence occurs
+                         eigensolver = 'dav',             # cg: Conjugate gradient method (Fast and stable), dav: Davidson method (Good performance in most cases)
+                         mixer       = Mixer(beta=0.02,   # Reducing the mixing coefficient reduces vibration.
+                                             nmaxold=3,   # Reducing the number of histories stabilizes the
+                                             weight=100.0 # Increase the value to emphasize the short wavelength component and suppress charge sloshing.
+                                             ),
+                         parallel    = {'domain': 1, 'band': 1}, # Parallel calculation settings. Valid when using MPI.
+                         txt         = os.path.join(temp_dir, 'gpaw_out.txt'), # Destination for saving output files. Calculation logs are recorded.
+                         )
+        # old = DFT-D2
+        calc = DFTD3(dft=gpaw_calc, xc='pbe', old=True, command='/usr/local/bin/dftd3')
         atoms.calc = calc
 
         ucf = UnitCellFilter(atoms)
         opt = LBFGS(ucf,
             logfile=os.path.join(temp_dir, 'opt.log'),
             trajectory=os.path.join(temp_dir, 'opt.traj'))
-        opt.run(fmax=0.05)
+        opt.run(fmax=0.5)
 
         # Save the final structure
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
