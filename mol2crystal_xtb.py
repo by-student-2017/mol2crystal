@@ -19,20 +19,22 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
-### Install libraries
-# pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### xTB ver. 6.7.1
-# cd $HOME
-# wget https://github.com/grimme-lab/xtb/releases/download/v6.7.1/xtb-6.7.1-linux-x86_64.tar.xz
-# tar xvf xtb-6.7.1-linux-x86_64.tar.xz
-# echo 'export PATH=$PATH:$HOME/xtb-dist/bin' >> ~/.bashrc
-# source ~/.bashrc
+# xTB ver. 6.7.1
+cd $HOME
+wget https://github.com/grimme-lab/xtb/releases/download/v6.7.1/xtb-6.7.1-linux-x86_64.tar.xz
+tar xvf xtb-6.7.1-linux-x86_64.tar.xz
+echo 'export PATH=$PATH:$HOME/xtb-dist/bin' >> ~/.bashrc
+source ~/.bashrc
 
-### Usage
-# pyton3 mol2crystal_xtb.py
+# Usage
+pyton3 mol2crystal_xtb.py
+'''
 #---------------------------------------------------------------------------------
 
 

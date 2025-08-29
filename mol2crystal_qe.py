@@ -19,24 +19,26 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
-### Install libraries
-# pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### QE v.6.7MaX
-# sudo apt update
-# sudo apt -y install quantum-espresso
+# QE v.6.7MaX
+sudo apt update
+sudo apt -y install quantum-espresso
 
-### Pseudo-potantials
+## Pseudo-potantials
 # QE pslibrary: https://pseudopotentials.quantum-espresso.org/legacy_tables/ps-library
 # TEHOS: https://theos-wiki.epfl.ch/Main/Pseudopotentials
 # pslibrary: https://dalcorso.github.io/pslibrary/PP_list.html
 # SSSP: https://www.materialscloud.org/discover/sssp/table/efficiency
 # (Set the pseudopotential in the pseudodirectory.)
 
-### Usage
-# pyton3 mol2crystal_qe.py
+# Usage
+pyton3 mol2crystal_qe.py
+'''
 #---------------------------------------------------------------------------------
 
 

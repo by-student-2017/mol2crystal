@@ -19,24 +19,25 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
-### Install libraries
-# pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries
+pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### Siesta Installation
-# sudo apt update
-# sudo apt -y install cmake gfortran build-essential libopenmpi-dev libopenblas-dev 
-# sudo apt -y install libhdf5-dev pkg-config libreadline-dev
-# cd $HOME
-# wget https://gitlab.com/siesta-project/siesta/-/releases/5.4.0/downloads/siesta-5.4.0.tar.gz
-# tar xvf siesta-5.4.0.tar.gz
-# cd siesta-5.4.0
-# cmake -S . -B _build -DSIESTA_WITH_FLOOK="OFF"
-# cmake --build _build -j 4
-# sudo cmake --install _build
-# echo 'export SIESTA_PP_PATH=$HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP/nc-sr-05_pbe_standard_psml' >> ~/.bashrc  # path of pseudo-potentials
-# source ~/.bashrc
+# Siesta Installation
+sudo apt update
+sudo apt -y install cmake gfortran build-essential libopenmpi-dev libopenblas-dev 
+sudo apt -y install libhdf5-dev pkg-config libreadline-dev
+cd $HOME
+wget https://gitlab.com/siesta-project/siesta/-/releases/5.4.0/downloads/siesta-5.4.0.tar.gz
+tar xvf siesta-5.4.0.tar.gz
+cd siesta-5.4.0
+cmake -S . -B _build -DSIESTA_WITH_FLOOK="OFF"
+cmake --build _build -j 4
+sudo cmake --install _build
+echo 'export SIESTA_PP_PATH=$HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP/nc-sr-05_pbe_standard_psml' >> ~/.bashrc  # path of pseudo-potentials
+source ~/.bashrc
 
 ### Pseudo-potantials
 # http://www.icmab.es/siesta
@@ -50,8 +51,9 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 # not use *.psml, then need to convert (< Siesta 5.4.0)
 # psml2psf Si.psml > Si.psf
 
-### Usage
-# pyton3 mol2crystal_siesta.py
+# Usage
+pyton3 mol2crystal_siesta.py
+'''
 #---------------------------------------------------------------------------------
 
 

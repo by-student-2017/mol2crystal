@@ -19,30 +19,31 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
-### Install libraries
-# pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### moltemplate + antechamber + mol22lt.pl
-# sudo apt update
-# sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
-# wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
-# sh install_moltemplate.sh
-# wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
-# sh install_WSLmisc.sh
+# moltemplate + antechamber + mol22lt.pl
+sudo apt update
+sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
+wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
+sh install_moltemplate.sh
+wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
+sh install_WSLmisc.sh
 
-### lammps (stable_22Jul2025)
-# cd $HOME
-# sudo apt -y install cmake gfortran gcc libopenmpi-dev
-# git clone -b stable https://github.com/lammps/lammps.git
-# cd lammps
-# mkdir build && cd build
-# cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_MEAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
-# make -j$(nproc)
-# sudo make install
+# lammps (stable_22Jul2025)
+cd $HOME
+sudo apt -y install cmake gfortran gcc libopenmpi-dev
+git clone -b stable https://github.com/lammps/lammps.git
+cd lammps
+mkdir build && cd build
+cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_MEAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
+make -j$(nproc)
+sudo make install
 
-### libgfortran3 (use "-c bcc")
+## libgfortran3 (use "-c bcc" case)
 # wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-6/gcc-6-base_6.4.0-17ubuntu1_amd64.deb
 # wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-6/libgfortran3_6.4.0-17ubuntu1_amd64.deb
 # sudo dpkg -i gcc-6-base_6.4.0-17ubuntu1_amd64.deb
@@ -53,8 +54,9 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 # sudo apt -y purge gcc-6-base
 # sudo apt autoremove
 
-### Usage
-# pyton3 mol2crystal_gaff_pbc.py
+# Usage
+pyton3 mol2crystal_gaff_pbc.py
+'''
 #---------------------------------------------------------------------------------
 
 

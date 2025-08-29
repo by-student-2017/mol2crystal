@@ -19,19 +19,21 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
-### Install libraries
-# pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### MOPAC ver. 23.1.2
-# wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
-# tar xvf mopac-23.1.2-linux.tar.gz
-# echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
-# source ~/.bashrc
+# MOPAC ver. 23.1.2
+wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
+tar xvf mopac-23.1.2-linux.tar.gz
+echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
+source ~/.bashrc
 
-### Usage
-# pyton3 mol2crystal_mopac.py
+# Usage
+pyton3 mol2crystal_mopac.py
+'''
 #---------------------------------------------------------------------------------
 
 

@@ -19,20 +19,22 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
-### Install libraries
-# pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### DFTB+ ver. 24.1
-# cd $HOME
-# wget https://github.com/dftbplus/dftbplus/releases/download/24.1/dftbplus-24.1.x86_64-linux.tar.xz
-# tar -xvf dftbplus-24.1.x86_64-linux.tar.xz
-# echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
-# source ~/.bashrc
+# DFTB+ ver. 24.1
+cd $HOME
+wget https://github.com/dftbplus/dftbplus/releases/download/24.1/dftbplus-24.1.x86_64-linux.tar.xz
+tar -xvf dftbplus-24.1.x86_64-linux.tar.xz
+echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
+source ~/.bashrc
 
-### Usage
-# pyton3 mol2crystal_dftb.py
+# Usage
+pyton3 mol2crystal_dftb.py
+'''
 #---------------------------------------------------------------------------------
 
 

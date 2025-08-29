@@ -18,17 +18,19 @@ user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_ski
 
 
 #---------------------------------------------------------------------------------
-### Install libraries
-# pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### Elk v7.2.42
-# sudo apt update
-# sudo apt -y install elk-lapw
+# Elk v7.2.42
+sudo apt update
+sudo apt -y install elk-lapw
 
-### Usage
-# pyton3 mol2crystal_elk.py
+# Usage
+pyton3 mol2crystal_elk.py
+'''
 #---------------------------------------------------------------------------------
 
 

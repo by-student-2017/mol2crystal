@@ -19,22 +19,24 @@ user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 
 
 #---------------------------------------------------------------------------------
-### Install libraries + GPAW ver. 25.7.0
-# pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
-# pip install "numpy<2.0"
-# pip install pymsym==0.3.4
-# pip install spglib==2.6.0
+'''
+# Install libraries + GPAW ver. 25.7.0
+pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
+pip install "numpy<2.0"
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 
-### DFTD-D3
-# pip install dftd3==1.2.1
-# cd $HOME
-# git clone https://github.com/loriab/dftd3.git
-# cd dftd3
-# make
-# sudo cp dftd3 /usr/local/bin/
+# DFTD-D3
+pip install dftd3==1.2.1
+cd $HOME
+git clone https://github.com/loriab/dftd3.git
+cd dftd3
+make
+sudo cp dftd3 /usr/local/bin/
 
-### Usage
-# pyton3 mol2crystal_gpaw.py
+# Usage
+pyton3 mol2crystal_gpaw.py
+'''
 #---------------------------------------------------------------------------------
 
 
