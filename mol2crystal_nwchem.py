@@ -217,9 +217,11 @@ def nwchem_optimize(fname, precursor_energy_per_atom):
             # ----------------------------------------------------------------------------------------
             theory     = 'pspw',               # Ideal for periodic structures. 
             basis      = 'none',               # Fast and stable with pseudopotential + plane wave.
+            pspw       = {'cutoff': 25.0},     # cutoff energy (Ha unit)
             # ----------------------------------------------------------------------------------------
             #theory     = 'paw',               # High accuracy but heavy.
             #basis      = 'paw',               # 
+            #pspw       = {'cutoff': 25.0},    # cutoff energy (Ha unit)
             # ----------------------------------------------------------------------------------------
             xc         = 'PBE',                # Exchange-correlation functional (PBE, B3LYP)
             dft        = {'convergence': {'energy'  : 1e-3 * len(atoms) / Ha,
@@ -234,7 +236,7 @@ def nwchem_optimize(fname, precursor_energy_per_atom):
             #geompar    = '',                  # Additional keywords to go in the first line of the geometry block.
             restart_kw = 'start',              # Start a new calculation
             #set': {'lindep:n_dep': 0}},       # A set of keys and values to be added directly to the NWChem rtdb. 
-        )
+            )
 
         os.chdir(temp_dir)
         try:
