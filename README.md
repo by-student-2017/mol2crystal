@@ -12,7 +12,7 @@
 - First-principles calculation codes (QE, Abinit, OpenMX, GPAW, Siesta, CP2k, NWChem, Elk, etc.) are also available, but are not recommended due to their high computational cost. They may run without problems on medium- to large-scale computers.
 - Not yet developed: NWChem
 
-## Table 1: Comparison of Evaluation Methods
+## Table 1. Comparison of Evaluation Methods
 | Code      | version | Method  | OPT (pbc) | Element  | Accuracy | Cost      | Recommendaiton |
 | --------- | ------- | ------- | --------- | -------- | -------- | --------- | -------------- |
 | OpenBabel | 3.1.1   | GAFF    | No        | Possible | Low      | Low       | Low            |
@@ -31,6 +31,13 @@
 | CP2k      | 9.1     | DFT     | Yes       | Possible | High     | Very high | Low            |
 | NWChem    | 7.0.2   | DFT     | Yes       | Possible | High     | Very high | Low            |
 | Elk       | 7.2.42  | DFT     | Yes       | Possible | High     | Very high | Low            |
+
+Table 2. vdW correation
+| Method | Note |
+| ------ | ---- |
+| GAFF   | Dispersion forces are approximated by an empirical Lennard-Jones potential (empirically adjusted values ​​are used, rather than theoretical corrections as in DFT-D). |
+| ReaxFF | It is approximated by an empirically adjusted force field rather than a theoretical dispersion correction like Grimme (ReaxFF does not explicitly introduce dispersion forces (vdW) in the same way as DFT-D, but it does include Lennard-Jones type non-bonded interactions and has a distance-dependent potential between molecules).　|
+|GFN-xTB | incorporates a term based on Grimme's D3 dispersion correction into the Hamiltonian.　|
 
 ---
 
