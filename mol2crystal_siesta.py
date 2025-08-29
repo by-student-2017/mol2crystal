@@ -68,7 +68,7 @@ import pymsym
 from ase.calculators.siesta import Siesta
 from ase.filters import UnitCellFilter
 from ase.optimize import BFGS, LBFGS, FIRE
-from ase.units import Ry
+from ase.units import Ry, Ha
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
@@ -220,19 +220,37 @@ def siesta_optimize(fname, precursor_energy_per_atom):
 
         # Siesta calculator
         calc = Siesta(
-            label=os.path.join(temp_dir, 'siesta_calc'),
-            xc='PBE',
-            mesh_cutoff=200 * Ry,
-            energy_shift=0.01 * Ry,
-            basis_set='DZP',
-            kpts=(1, 1, 1),
-            fdf_arguments={
-                'DM.MixingWeight': 0.1,
-                'MaxSCFIterations': 100,
-                'SolutionMethod': 'diagon',
-                'WriteCoorXmol': True
+            label         = os.path.join(temp_dir, 'siesta_calc'),
+            xc            = 'PBE',                # Exchange-correlation functionals (e.g., LDA, GGA-PBE, GGA-PBESOL)
+            mesh_cutoff   = 200*Ry,               # Mesh cutoff (affects calculation accuracy, typically 150-300 Ry)
+            energy_shift  = 0.01*Ry,              # Energy shift to avoid overlap between atoms
+            basis_set     = 'DZP',                # Basis function size (SZ, DZ, DZP, TZP, etc.)
+            kpts          = (1, 1, 1),            # k-point mesh ((1,1,1) for molecules and isolated systems)
+            fdf_arguments = {
+                'SpinPolarized': False,           # Spin depolarization (set to True for magnetic calculations)）
+                
+                'SCF.ConvergenceTolerance': str(1.0e-3*len(atoms)/Ha), # 1 meV/atom -> Ha unit
+                'DM.Tolerance': '1.d-4',
+                'DM.MixingWeight': 0.1,           # Density matrix mixing coefficient (affects convergence stability)
+                'MaxSCFIterations': 100,          # Maximum number of SCF iterations
+                'SolutionMethod': 'diagon',       # Diagonalization methods (diagon, OMM, OrderN, CheSS)
+                
+                'VDWCorrection': True,            # wdW correlation: DFT-D2 or DFT-D3
+                'VDWFunctional': 'DFTD3',         # DFTD2, DFTD3
+                'VDWScaling': 1.0,                # 0.75:DFTD2, 1.0:DFTD3
+                
+                'ElectronicTemperature': '300 K', # Electron temperature (K) -> Affects convergence in metallic systems
+                'OccupationFunction': 'FD',       # Fermi Distribution (FD) or Fixed
+                
+                'SaveHS': True,                   # Save Hamiltonian and overlap matrix
+                
+                'WriteForces': True,              # Output force (useful for optimization)
+                'WriteKpoints': True,             # Output k-point information
+                'WriteCoorXmol': True,            # output *.xmol file
+                
+                'LatticeConstant': '1.0 Ang',     # Scaling of lattice parameters (if necessary)
             },
-            pseudo_path=os.environ.get("SIESTA_PP_PATH", "./psf") # path of Pseudo-potentials
+            pseudo_path   = os.environ.get("SIESTA_PP_PATH", "./psf"), # path of Pseudo-potentials
         )
 
         atoms.calc = calc
