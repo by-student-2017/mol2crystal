@@ -256,9 +256,14 @@ def siesta_optimize(fname, precursor_energy_per_atom):
         atoms.calc = calc
 
         ucf = UnitCellFilter(atoms)
-        opt = BFGS(ucf,
+        opt = FIRE(ucf,
             logfile=os.path.join(temp_dir, 'opt.log'),
             trajectory=os.path.join(temp_dir, 'opt.traj'))
+        '''
+        opt = LBFGS(ucf,
+            logfile=os.path.join(temp_dir, 'opt.log'),
+            trajectory=os.path.join(temp_dir, 'opt.traj'))
+        '''
         opt.run(fmax=0.5)
 
         # Save optimized structure
