@@ -249,7 +249,7 @@ def nwchem_optimize(fname, precursor_energy_per_atom):
             memory     = str(1024*16)+' mb',   # 1024 * 16 = 16 GB
             command    = f'mpirun -np {cpu_count} /usr/bin/nwchem.openmpi nwchem.nwi > nwchem.nwo', # NWChem path (ASE_NWCHEM_COMMAND environment variable is also acceptable)
             label      = 'nwchem',             # Input/output file prefix (Recommend to fix 'nwchem')
-            task       = 'energy',             # (energy, gradient, optimize)
+            task       = 'gradient',           # (energy, gradient, optimize, hessian, frequency, dynamics, property, transition)
             # ----------------------------------------------------------------------------------------
             #theory     = 'dft',               # (dft, scf, mp2, ccsd, tce, tddft, pspw, band, paw)
             #basis      = '6-31G*',            # You can change this to another basis set (STO-3G, 3-21G, 6-31G*, cc-pVDZ)
