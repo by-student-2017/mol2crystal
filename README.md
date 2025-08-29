@@ -398,9 +398,9 @@ pip freeze > requirements.txt
 - [2] https://makoto-yoneya.github.io/
 - [3] ASE (Atomic Simulation Environment): https://wiki.fysik.dtu.dk/ase/
 - [4] pymsym: https://github.com/yoneya/pymsym
-- [5] Reaxff potential list: https://github.com/by-student-2017/lammps_education_reaxff_win/tree/master/potentials (When presenting your results, be sure to cite the potential you utilized.)
-- [6] dftd3: https://github.com/loriab/dftd3
-- [7] spglib: https://github.com/spglib
+- [5] spglib: https://github.com/spglib
+- [6] Reaxff potential list: https://github.com/by-student-2017/lammps_education_reaxff_win/tree/master/potentials (When presenting your results, be sure to cite the potential you utilized.)
+- [7] dftd3: https://github.com/loriab/dftd3
 
 ---
 
