@@ -92,7 +92,8 @@ for dir_name in dirs_to_remove:
 
 # Set CPU threads
 cpu_count = psutil.cpu_count(logical=False)
-os.environ["OMP_NUM_THREADS"] = str(cpu_count)
+os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
+#os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
 
 print(f"------------------------------------------------------")
 print("# Read molecule")
@@ -217,20 +218,23 @@ def siesta_optimize(fname, precursor_energy_per_atom):
         os.makedirs(temp_dir, exist_ok=True)
 
         atoms = read(fname)
+        
+        os.environ['SIESTA_COMMAND'] = f'mpirun -np {cpu_count} /usr/local/bin/siesta'
 
         # Siesta calculator
         calc = Siesta(
             label         = os.path.join(temp_dir, 'siesta_calc'),
-            xc            = 'PBE',                # LDA, PBE, revPBE, RPBE, WC, PBEsol, BLYP, (including vdW: DRSLL, LMKLL, KBM)
-            mesh_cutoff   = 150*Ry,               # Mesh cutoff (affects calculation accuracy, typically 150-300 Ry)
-            energy_shift  = 0.01*Ry,              # Energy shift to avoid overlap between atoms
-            basis_set     = 'DZP',                # Basis function size (SZ, DZ, DZP, TZP, etc.)
+            xc            = 'PBE',                # LDA, PBE, revPBE, RPBE, WC, PBEsol, BLYP, (Including vdW: DRSLL, LMKLL, KBM)
+            mesh_cutoff   = 200*Ry,               # Mesh cutoff (affects calculation accuracy, typically 150-300 Ry)
+            energy_shift  = 0.01*Ry,              # Energy shift to avoid overlap between atoms (typically 0.01 Ry)
+            basis_set     = 'DZP',                # Basis function size (SZ, DZ, DZP, TZP, etc.) (typically DZP)
             kpts          = (1, 1, 1),            # k-point mesh ((1,1,1) for molecules and isolated systems)
             fdf_arguments = {
                 'SpinPolarized': False,           # Spin depolarization (set to True for magnetic calculations)）
+                'SpinOrbit': False,               # Usually, when using SOI, spin polarization is also enabled.
                 
                 'SCF.ConvergenceTolerance': str(1.0e-3*len(atoms)/Ha), # 1 meV/atom -> Ha unit
-                'DM.Tolerance': '1.d-4',
+                'DM.Tolerance': '1.d-4',          # Tolerance of Density Matrix. 
                 'DM.MixingWeight': 0.1,           # Density matrix mixing coefficient (affects convergence stability)
                 'MaxSCFIterations': 100,          # Maximum number of SCF iterations
                 'SolutionMethod': 'diagon',       # Diagonalization methods (diagon, OMM, OrderN, CheSS)
@@ -240,15 +244,14 @@ def siesta_optimize(fname, precursor_energy_per_atom):
                 'VDWScaling': 1.0,                # 0.75:DFTD2, 1.0:DFTD3
                 
                 'ElectronicTemperature': '300 K', # Electron temperature (K) -> Affects convergence in metallic systems
-                'OccupationFunction': 'FD',       # Fermi Distribution (FD) or Fixed
+                'OccupationFunction': 'FD',       # Fermi Distribution (FD), Methfessel-Paxton (MP), Cold
                 
-                'SaveHS': True,                   # Save Hamiltonian and overlap matrix
+                #'WriteForces': True,              # Output force (useful for optimization)
+                #'WriteKpoints': True,             # Output k-point information
+                #'WriteCoorXmol': True,            # output *.xmol file
+                #'SaveHS': True,                   # Save Hamiltonian and overlap matrix
                 
-                'WriteForces': True,              # Output force (useful for optimization)
-                'WriteKpoints': True,             # Output k-point information
-                'WriteCoorXmol': True,            # output *.xmol file
-                
-                'LatticeConstant': '1.0 Ang',     # Scaling of lattice parameters (if necessary)
+                #'LatticeConstant': '1.0 Ang',     # Scaling of lattice parameters (if necessary)
             },
             pseudo_path   = os.environ.get("SIESTA_PP_PATH", "./psf"), # path of Pseudo-potentials
         )
