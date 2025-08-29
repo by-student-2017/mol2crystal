@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 #---------------------------------------------------------------------------------
 # User setting parameters
 #------------------------------------
@@ -12,12 +13,16 @@ user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from conside
 user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority):
 user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
 user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_skipping_n_molecules) (high priority)
+user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
 #---------------------------------------------------------------------------------
 # Note(user_skipping_spacegroups): Since the space group ranges from 1 to 230, specifying 231 means that all are taken into consideration.
 
+
+#---------------------------------------------------------------------------------
 ### Install libraries
 # pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 # pip install pymsym==0.3.4
+# pip install spglib==2.6.0
 
 ### xTB ver. 6.7.1
 # cd $HOME
@@ -28,7 +33,10 @@ user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_ski
 
 ### Usage
 # pyton3 mol2crystal_xtb.py
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 import os
 import glob
 import shutil
@@ -51,7 +59,10 @@ from ase.units import Bohr
 
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 if (os.path.exists('valid_structures_old')):
     shutil.rmtree( 'valid_structures_old')   
 
@@ -68,12 +79,18 @@ dirs_to_remove = ['temp', 'cp2k_temp', 'dftb_temp', 'gaff_temp', 'gaff_pbc_temp'
 for dir_name in dirs_to_remove:
     if os.path.exists(dir_name):
         shutil.rmtree(dir_name)
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 # Parallerization for xTB calculation
 cpu_count = psutil.cpu_count(logical=False)
 os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
 #os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 print(f"------------------------------------------------------")
 print("# Read molecule")
 mol = read('molecular_files/precursor.mol')
@@ -173,7 +190,10 @@ def has_overlap_neighborlist(atoms, covalent_radii, scale):
             if dist < threshold:
                 return True
     return False
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 # Rotation
 def rotate_molecule(positions, theta, phi):
     Rz = np.array([
@@ -187,7 +207,10 @@ def rotate_molecule(positions, theta, phi):
         [-np.sin(phi), 0, np.cos(phi)]
     ])
     return positions @ Rz.T @ Ry.T
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 # xTB calculation
 def xtb_optimize(fname, precursor_energy_per_atom):
     try:
@@ -271,11 +294,17 @@ def xtb_optimize(fname, precursor_energy_per_atom):
         
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 # Reference energy from original molecule
 with open("structure_vs_energy.txt", "w") as f:
     print("# POSCAR file, Relative Energy [eV/atom], Total Energy [eV/atom], Density [g/cm^3], Number of atoms, Volume [A^3]", file=f)
+#---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
 def adjust_cellpar_by_spacegroup(sg, cellpar):
     adjusted_cellpar = cellpar.copy()
 
@@ -411,6 +440,8 @@ def adjust_cellpar_by_spacegroup(sg, cellpar):
         adjusted_cellpar[2] *= 2
 
     return adjusted_cellpar
+#---------------------------------------------------------------------------------
+
 
 #---------------------------------------------------------------------------------
 # Placed at the geometric center
@@ -452,6 +483,7 @@ def rotation_matrix_from_vectors(vec1, vec2):
 rotation_matrix = rotation_matrix_from_vectors(principal_axis, target_direction)
 rotated_positions = centered_positions.dot(rotation_matrix.T)
 #---------------------------------------------------------------------------------
+
 
 #---------------------------------------------------------------------------------
 print(f"------------------------------------------------------")
@@ -661,6 +693,26 @@ print(f"Omit if >= {user_skipping_spacegroups} (low priority)")
 print("------------------------------------------------------")
 #---------------------------------------------------------------------------------
 
+
+#---------------------------------------------------------------------------------
+# Find primitive cell after generating crystal structure
+def get_primitive_cell(atoms):
+    lattice = atoms.cell
+    positions = atoms.get_scaled_positions()
+    numbers = atoms.get_atomic_numbers()
+    cell = (lattice, positions, numbers)
+    
+    primitive = spglib.find_primitive(cell)
+    if primitive is None:
+        return atoms
+    
+    lattice, positions, numbers = primitive
+    primitive_atoms = Atoms(numbers=numbers, cell=lattice, scaled_positions=positions, pbc=True)
+    return primitive_atoms
+#---------------------------------------------------------------------------------
+
+
+#---------------------------------------------------------------------------------
 print(f"------------------------------------------------------")
 print("# Generate valid structures")
 valid_files = []
@@ -743,6 +795,8 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                 #elif not has_overlap(crystal_structure, covalent_radii, scale=0.90): # New version 1
                 elif not has_overlap_neighborlist(crystal_structure, covalent_radii, scale=user_overlap_scale): # For New version 2
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
+                    if user_primitive_cell_output == 1:
+                        crystal_structure = get_primitive_cell(atoms)
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
                     xtb_optimize(fname, precursor_energy_per_atom=0.0)
@@ -753,5 +807,6 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                 continue
             except Exception:
                 continue
+#---------------------------------------------------------------------------------
 
 print("Finished space group search and xTB optimization.")
