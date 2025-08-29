@@ -220,10 +220,10 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
                          charge      = 0,                 # Charge of the entire system, assuming a neutral system (e.g., molecule, surface)
                          symmetry    = {'point_group': True}, # Enable point group symmetry, which contributes to improved computational efficiency
                          maxiter     = 200,               # Maximum number of SCF iterations, increase if no convergence occurs
-                         eigensolver = 'dav',             # cg: Conjugate gradient method (Fast and stable), dav: Davidson method (Good performance in most cases)
-                         mixer       = Mixer(beta=0.02,   # Reducing the mixing coefficient reduces vibration.
-                                             nmaxold=3,   # Reducing the number of histories stabilizes the
-                                             weight=100.0 # Increase the value to emphasize the short wavelength component and suppress charge sloshing.
+                         eigensolver = 'cg',              # cg: Conjugate gradient method (Fast and stable), dav: Davidson method (Good performance in most cases)
+                         mixer       = Mixer(beta=0.05,   # Reducing the mixing coefficient reduces vibration.
+                                             nmaxold=5,   # Reducing the number of histories stabilizes the
+                                             weight=50.0  # Increase the value to emphasize the short wavelength component and suppress charge sloshing.
                                              ),
                          parallel    = {'domain': 1, 'band': 1}, # Parallel calculation settings. Valid when using MPI.
                          txt         = os.path.join(temp_dir, 'gpaw_out.txt'), # Destination for saving output files. Calculation logs are recorded.
@@ -233,9 +233,14 @@ def gpaw_optimize(fname, precursor_energy_per_atom):
         atoms.calc = calc
 
         ucf = UnitCellFilter(atoms)
+        opt = FIRE(ucf, 
+            logfile=os.path.join(temp_dir, 'opt.log'),
+            trajectory=os.path.join(temp_dir, 'opt.traj'))
+        '''
         opt = LBFGS(ucf,
             logfile=os.path.join(temp_dir, 'opt.log'),
             trajectory=os.path.join(temp_dir, 'opt.traj'))
+        '''
         opt.run(fmax=0.5)
 
         # Save the final structure
