@@ -221,8 +221,8 @@ def siesta_optimize(fname, precursor_energy_per_atom):
         # Siesta calculator
         calc = Siesta(
             label         = os.path.join(temp_dir, 'siesta_calc'),
-            xc            = 'PBE',                # Exchange-correlation functionals (e.g., LDA, GGA-PBE, GGA-PBESOL)
-            mesh_cutoff   = 200*Ry,               # Mesh cutoff (affects calculation accuracy, typically 150-300 Ry)
+            xc            = 'PBE',                # LDA, PBE, revPBE, RPBE, WC, PBEsol, BLYP, (including vdW: DRSLL, LMKLL, KBM)
+            mesh_cutoff   = 150*Ry,               # Mesh cutoff (affects calculation accuracy, typically 150-300 Ry)
             energy_shift  = 0.01*Ry,              # Energy shift to avoid overlap between atoms
             basis_set     = 'DZP',                # Basis function size (SZ, DZ, DZP, TZP, etc.)
             kpts          = (1, 1, 1),            # k-point mesh ((1,1,1) for molecules and isolated systems)
