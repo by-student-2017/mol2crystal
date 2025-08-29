@@ -204,7 +204,7 @@ def openmx_optimize(fname, precursor_energy_per_atom):
         # OpenMX v.3.8 manual: https://www.openmx-square.org/openmx_man3.8/openmx.html
         #   Keywords: https://www.openmx-square.org/openmx_man3.8/node24.html
         # ----------------------------------------------------------------------------------------
-        #Note: I have confirmed that all of the following configurations work, so choose the method you prefer.
+        # Note: I have confirmed that all of the following configurations work, so choose the method you prefer.
         # ----------------------------------------------------------------------------------------
         #os.environ["ASE_OPENMX_COMMAND"] = "/usr/bin/openmx"                        # OpenMP  (command is also acceptable)
         #os.environ["ASE_OPENMX_COMMAND"] = f"mpirun -np {cpu_coun} /usr/bin/openmx" # OpenMPI (command is also acceptable)
@@ -225,6 +225,16 @@ def openmx_optimize(fname, precursor_energy_per_atom):
             debug         = False,                  # Debug Output
             nohup         = True,                   # Run in the background with nohup
             dft_data_dict = None,                   # Basis function settings for each atomic type (if necessary)
+            
+            #dft_data_dict = { # DFT-D2 settings (OpenMX ver.3.9)
+            #    'scf.dftD': 'on',
+            #    'version.dftD': '2',
+            #    'DFTD.Unit': 'Ang',
+            #    'DFTD.rcut_dftD': '100.0',
+            #    'DFTD.cncut_dftD': '40',
+            #    'DFTD.IntDirection': '1 1 1',
+            #    'DFTD.scale6': '0.75'
+            #},
             
             # Standard parameters
             xc            = 'GGA-PBE',              # Exchange-correlation functions (e.g., LDA, LSDA-CA, LSDA-PW, GGA-PBE)
@@ -276,7 +286,7 @@ def openmx_optimize(fname, precursor_energy_per_atom):
 
         with open("structure_vs_energy.txt", "a") as out:
             out.write(f"{opt_fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {len(atoms)} {volume:.6f}\n")
-
+        input()
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
 
