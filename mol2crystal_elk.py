@@ -208,14 +208,22 @@ def elk_optimize(fname, precursor_energy_per_atom):
         
         calc = ELK(
             profile=profile,
-            tasks   = 0,                   # 0:SCF, 21:OPT
-            ngridk  = (1, 1, 1),           # k-point. 1x1x1
-            rgkmax  = 5.0,                 # Usually around 6.0 to 9.0. (transition metals or heavy elements: >= 7.0)
-            swidth  = 0.001,               # smearing width (electronic temperature) (0.001 -> ca.11.6 K)
-            xctype  = 1,                   # 1:LDA, 20:PBE, 21:PBEsol
-            epsengy = 1e-3 * len(atoms) / Ha, # Energy Convergence Threshold (1 meV/atom)
-            epspot  = 1e-5 * len(atoms) / Ha, # Potential convergence threshold (Two digits lower than "epsengy")
-            maxscl  = 100,                 # Maximum number of SCF cycles
+            tasks    = 0,                   # 0:SCF, 1:Re.SCF, 2:OPT, 3:Re.OPT, 10:DOS, 20:Band, 25:effective mass tensor, 140:ELNES, 185:BSE, 205:DFPT, 250:Eliashberg, 300:RDMFT, 320:TDDFT
+            ngridk   = (1, 1, 1),           # k-point. 1x1x1
+            rgkmax   = 5.0,                 # Usually around 6.0 to 9.0. (transition metals or heavy elements: >= 7.0)
+            xctype   = 1,                   # 1:LDA, 20:PBE, 21:PBEsol, 22:RPBE, 23:WC, 
+            epsengy  = 1e-3 * len(atoms) / Ha, # Energy Convergence Threshold (1 meV/atom)
+            epspot   = 1e-5 * len(atoms) / Ha, # Potential convergence threshold (Two digits lower than "epsengy")
+            maxscl   = 100,                 # Maximum number of SCF cycles
+            spinpol  = False,               # set to .true. if a spin-polarised calculation is required
+            spinorb  = False,               # set to .true. if a spin-orbit coupling is required
+            spinsprl = False,               # set to .true. if a spin-spiral calculation is required
+            mixtype  = 3,                   # 1:linear, 2:Adaptive linear, 3:Broyden (default:3)
+            mixsdb   = 5,                   # subspace dimension for Broyden mixing
+            stype    = 3,                   # 0:Gauss, 1:MP1, 2:MP2, 3:FD (tempk) (default:3)
+            #tempk    = 300,                # temperature T of the electronic system in kelvin
+            swidth   = 0.001,               # smearing width (electronic temperature)
+            #autoswidth = False,            # .true. if thesmearingparameterswidthshouldbe determinedautomatically
         )
         
         # Set to the Atoms object of ASE
