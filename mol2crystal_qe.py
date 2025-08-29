@@ -250,6 +250,7 @@ def qe_optimize(fname, precursor_energy_per_atom):
             'system': {
                 'ecutwfc': max_ecutwfc,
                 'ecutrho': ecutrho,
+                'vdw_corr': 'DFT-D', # DFT-D, DFT-D3, MBD, XDM, (TS)
             },
             'electrons': {
                 'conv_thr': 1.0e-3/13.6058*len(atoms),
