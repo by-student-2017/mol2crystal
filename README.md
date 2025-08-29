@@ -26,7 +26,7 @@
 | QE        | 6.7MaX  | DFT+vdW | Yes       | Possible | High     | High      | High           |
 | Abinit    | 9.6.2   | DFT+vdW | Yes       | Possible | High     | High      | Low            |
 | OpenMX    | 3.8.5   | DFT     | Yes       | Possible | High     | High      | Middle         |
-| GPAW      | 25.7.0  | DFT     | Yes       | Possible | High     | High      | Middle         |
+| GPAW      | 25.7.0  | DFT+vdW | Yes       | Possible | High     | High      | Middle         |
 | Siesta    | 5.4.0   | DFT     | Yes       | Possible | High     | High      | Middle         |
 | CP2k      | 9.1     | DFT     | Yes       | Possible | High     | Very high | Low            |
 | NWChem    | 7.0.2   | DFT     | Yes       | Possible | High     | Very high | Low            |
@@ -42,6 +42,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 | QE     | DFT-D, DFT-D3, MBD, and XDM are available. TS requires a special library (libvdwxc). |
 | Abinit | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. vdW-WF1, vdW-WF2, and vdW-QHO-WF) use Wannier functions, so they require the user to check and adjust parameters, such as fitting the Wannier functions, and are not easy to use. |
 | OpenMX | DFT-D2 and DFT-D3 are supported from version 3.9 onwards. OpenMX version 3.9 or later is required. |
+| GPAW   | 
 
 ---
 
@@ -379,6 +380,7 @@ pip freeze > requirements.txt
 - [3] ASE (Atomic Simulation Environment): https://wiki.fysik.dtu.dk/ase/
 - [4] pymsym: https://github.com/yoneya/pymsym
 - [5] Reaxff potential list: https://github.com/by-student-2017/lammps_education_reaxff_win/tree/master/potentials (When presenting your results, be sure to cite the potential you utilized.)
+- [6] dftd3: https://github.com/loriab/dftd3
 
 ---
 
