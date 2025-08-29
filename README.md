@@ -28,7 +28,7 @@
 | OpenMX    |3.8.5 (3.9)|DFT (+vdW)| Yes       | Possible | High     | High      | Middle         |
 | GPAW      | 25.7.0  | DFT+vdW | Yes       | Possible | High     | High      | Middle         |
 | Siesta    | 5.4.0   | DFT+vdW | Yes       | Possible | High     | High      | High           |
-| CP2k      | 9.1     | DFT     | Yes       | Possible | High     | Very high | Low            |
+| CP2k      | 9.1     | DFT+vdW | Yes       | Possible | High     | Very high | Low            |
 | NWChem    | 7.0.2   | DFT     | Yes       | Possible | High     | Very high | Low            |
 | Elk       | 7.2.42  | DFT     | Yes       | Possible | High     | Very high | Low            |
 
