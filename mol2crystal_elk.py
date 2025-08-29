@@ -212,7 +212,7 @@ def elk_optimize(fname, precursor_energy_per_atom):
             ngridk  = (1, 1, 1),           # k-point. 1x1x1
             rgkmax  = 5.0,                 # Usually around 6.0 to 9.0. (transition metals or heavy elements: >= 7.0)
             swidth  = 0.001,               # smearing width (electronic temperature) (0.001 -> ca.11.6 K)
-            xctype  = 20,                  # Types of exchange-correlation functionals. 20:PBE
+            xctype  = 1,                   # 1:LDA, 20:PBE, 21:PBEsol
             epsengy = 1e-3 * len(atoms) / Ha, # Energy Convergence Threshold (1 meV/atom)
             epspot  = 1e-5 * len(atoms) / Ha, # Potential convergence threshold (Two digits lower than "epsengy")
             maxscl  = 100,                 # Maximum number of SCF cycles
