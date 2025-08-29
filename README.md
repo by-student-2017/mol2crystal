@@ -24,7 +24,7 @@
 | MOPAC     | 23.1.2  |PM6-D3H4 | No        | Possible | Middle   | Middle    | Low            |
 |           |         |         |           |          |          |           |                |
 | QE        | 6.7MaX  | DFT+vdW | Yes       | Possible | High     | High      | High           |
-| Abinit    | 9.6.2   | DFT     | Yes       | Possible | High     | High      | Low            |
+| Abinit    | 9.6.2   | DFT+vdW | Yes       | Possible | High     | High      | Low            |
 | OpenMX    | 3.8.5   | DFT     | Yes       | Possible | High     | High      | Middle         |
 | GPAW      | 25.7.0  | DFT     | Yes       | Possible | High     | High      | Middle         |
 | Siesta    | 5.4.0   | DFT     | Yes       | Possible | High     | High      | Middle         |
@@ -39,6 +39,7 @@ Table 2. vdW correation
 | ReaxFF | It is approximated by an empirically adjusted force field rather than a theoretical dispersion correction like Grimme (ReaxFF does not explicitly introduce dispersion forces (vdW) in the same way as DFT-D, but it does include Lennard-Jones type non-bonded interactions and has a distance-dependent potential between molecules).　|
 |GFN-xTB | incorporates a term based on Grimme's D3 dispersion correction into the Hamiltonian.　|
 | QE     | DFT-D, DFT-D3, MBD, and XDM are available. TS requires a special library (libvdwxc). |
+| Abinit | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. vdW-WF1, vdW-WF2, and vdW-QHO-WF) use Wannier functions, so they require the user to check and adjust parameters, such as fitting the Wannier functions, and are not easy to use. |
 
 ---
 
