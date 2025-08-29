@@ -36,7 +36,7 @@ toldfe            # SCF (electronic structure calculation) convergence condition
 #tolmxf 5.0d-3    # Convergence condition for maximum force acting on atoms (unit: Ha/Bohr)
 
 # Dispersion correction
-vdw_xc  7         # 5:DFT-D2, 6:DFT-D3, 7:DFT-D3(BJ), (Failed: 10:vdW-WF1, 11:vdW-WF2, 14:vdW-QHO-WF)
+vdw_xc  5         # 5:DFT-D2, 6:DFT-D3, 7:DFT-D3(BJ), (Failed: 10:vdW-WF1, 11:vdW-WF2, 14:vdW-QHO-WF)
 vdw_tol 1.0d-4    # Threshold for ignoring pairs with small dispersion correction contributions (optionally adjustable)
 
 ionmov  3         # 3:BFGS
