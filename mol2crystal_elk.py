@@ -68,7 +68,8 @@ for dir_name in dirs_to_remove:
         shutil.rmtree(dir_name)
 
 cpu_count = psutil.cpu_count(logical=False)
-os.environ["OMP_NUM_THREADS"] = '1'              # Limited due to memory issues
+cpu_count = '1'                      # Limited due to memory issues
+os.environ["OMP_NUM_THREADS"] = '1'  # Limited due to memory issues
 #os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
 #os.environ["OMP_NUM_THREADS"] = str(cpu_count)  # use OpenMP 
 
@@ -201,8 +202,8 @@ def elk_optimize(fname, precursor_energy_per_atom):
         
         # Specify the path to the Elk executable file
         profile = ElkProfile(
-            #command=f'mpirun -np {cpu_count} /usr/bin/elk-lapw',  # OpenMPI
-            command=f'/usr/bin/elk-lapw',                          # OpenMP
+            command=f'mpirun -np {cpu_count} /usr/bin/elk-lapw',  # OpenMPI
+            #command=f'/usr/bin/elk-lapw',                        # OpenMP
             sppath='/usr/share/elk-lapw/species'
         )
         
