@@ -29,7 +29,7 @@
 | GPAW      | 25.7.0  | DFT+vdW | Yes       | Possible | High     | High      | Middle         |
 | Siesta    | 5.4.0   | DFT+vdW | Yes       | Possible | High     | High      | High           |
 | CP2k      | 9.1     | DFT+vdW | Yes       | Possible | High     | Very high | Low            |
-| NWChem    | 7.0.2   | DFT     | Yes       | Possible | High     | Very high | Low            |
+| NWChem    | 7.0.2   | DFT+vdW | Yes       | Possible | High     | Very high | Low            |
 | Elk       | 7.2.42  | DFT     | Yes       | Possible | High     | Very high | Low            |
 
 Table 2. vdW correation (This is necessary to consider intermolecular interactions more accurately.)
@@ -45,6 +45,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 | GPAW   | DFT-D2, and DFT-D3 are available. Use the dftd3 code. |
 | Siesta | DFT-D2, and DFT-D3 are available. |
 | CP2k   | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. Edit cp2k.inp to select the method you want. |
+| NWChem | DFT-D2, and DFT-D3 are available. |
 
 ---
 
