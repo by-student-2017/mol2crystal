@@ -51,7 +51,6 @@ from ase.spacegroup import crystal
 from scipy.spatial.distance import pdist
 import subprocess
 import psutil
-import uuid
 import re
 from ase.geometry import cellpar_to_cell
 from ase.neighborlist import NeighborList
@@ -62,6 +61,10 @@ import pymsym
 
 # xTB settings
 from ase.units import Bohr
+
+# Get primitive cell
+import spglib
+from ase import Atoms
 
 # Warning settings
 import warnings
@@ -91,7 +94,7 @@ for dir_name in dirs_to_remove:
 
 
 #---------------------------------------------------------------------------------
-# --- Configure thread count for OpenMP/OpenMPI ---
+# --- Configure thread count for OpenMP/OpenMPI --
 cpu_count = psutil.cpu_count(logical=False)
 os.environ["OMP_NUM_THREADS"] = '1'             # use OpenMPI
 #os.environ["OMP_NUM_THREADS"] = str(cpu_count) # use OpenMP 
@@ -136,11 +139,8 @@ print(f"0 - 45 degrees divided into",nmesh)
 # Output directories
 os.makedirs("valid_structures", exist_ok=True)
 os.makedirs("optimized_structures_vasp", exist_ok=True)
-#---------------------------------------------------------------------------------
 
-
-#---------------------------------------------------------------------------------
-# --- Check for atomic overlap ---
+# Check for atomic overlap
 # Old version (Simple method: This is simple but not bad.)
 '''
 def has_overlap(atoms, min_threshold=0.1, max_threshold=0.93):
@@ -206,7 +206,7 @@ def has_overlap_neighborlist(atoms, covalent_radii, scale):
 
 
 #---------------------------------------------------------------------------------
-# --- Rotate molecule ---
+# --- Rotation ---
 def rotate_molecule(positions, theta, phi):
     Rz = np.array([
         [np.cos(theta), -np.sin(theta), 0],
@@ -761,17 +761,17 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
         print(f"------------------------------------------------------")
         
         # Loop through all space groups (1–230) to check applicability
-        excluded_spacegroups = user_excluded_spacegroups
         for sg in range(1, 231):
-            if sg not in space_groups and sg not in user_included_spacegroups:
+            if sg not in space_groups:
                 #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
                 continue
             # Space group filter (high symmetry/known problem exclusion)
-            elif sg in excluded_spacegroups:
+            excluded_spacegroups = user_excluded_spacegroups
+            if sg in excluded_spacegroups:
                 print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
                 print(f"------------------------------------------------------")
                 continue
-            elif sg >= user_skipping_spacegroups:
+            if sg >= user_skipping_spacegroups:
                 print(f"Skipping space group {sg} (too symmetric for molecular crystals)")
                 print(f"------------------------------------------------------")
                 continue
