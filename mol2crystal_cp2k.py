@@ -856,4 +856,4 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                 continue
 #---------------------------------------------------------------------------------
 
-print("Finished space group search and DFTB+ optimization.")
+print("Finished space group search and CP2k optimization.")

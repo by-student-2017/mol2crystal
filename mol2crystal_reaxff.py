@@ -897,4 +897,4 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                 continue
 #---------------------------------------------------------------------------------
 
-print("Finished checking space groups. valid structures written.")
+print("Finished space group search and Lammps (ReaxFF) optimization.")
