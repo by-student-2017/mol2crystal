@@ -7,7 +7,7 @@
 - The generated crystal structure can then be used to obtain energy using the various quantum chemistry calculation codes listed below to create a density-energy diagram. From the resulting diagram, crystal structures with high density and low energy are selected as candidates.
 
 ## Selection of evaluation method
-- Classical molecular dynamics (GAFF and UFF in OpenBabel, GAFF and ReaxFF in Lammps) have been developed. OpenBabel's GAFF and UFF are suitable for rough screening because they cannot perform in-cell geometry optimization. On the other hand, Lammps' GAFF can perform in-cell geometry optimization, but the environment setup is complicated. ReaxFF is quite limited in the elements it can handle, but is expected to be a promising candidate search method.
+- Classical molecular dynamics (GAFF and ReaxFF in Lammps) have been developed. GAFF can perform in-cell geometry optimization, but the environment setup is complicated. ReaxFF is quite limited in the elements it can handle, but is expected to be a promising candidate search method.
 - Empirical quantum chemical calculations (MOPAC, xTB, DFTB+) have also been developed. MOPAC is not currently recommended because it does not have a cell optimization function. xTB and DFTB+ are expected to be promising candidate search methods.
 - First-principles calculation codes (QE, Abinit, OpenMX, GPAW, Siesta, CP2k, NWChem, Elk, etc.) are also available, but are not recommended due to their high computational cost. They may run without problems on medium- to large-scale computers.
 - Not yet developed: NWChem
@@ -15,7 +15,6 @@
 ## Table 1. Comparison of Evaluation Methods
 | Code      | version | Method  | OPT (pbc) | Element  | Accuracy | Cost      | Recommendaiton |
 | --------- | ------- | ------- | --------- | -------- | -------- | --------- | -------------- |
-| OpenBabel | 3.1.1   | GAFF    | No        | Possible | Low      | Low       | Low            |
 | Lammps    |22Jul2025| GAFF    | Yes       | Possible | Low      | Low       | High           |
 | Lammps    |22Jul2025| ReaxFF  | Yes       | limited  | Low      | Low       | Middle         |
 |           |         |         |           |          |          |           |                |
@@ -33,12 +32,13 @@
 | Elk       | 7.2.42  | DFT     | Yes       | Possible | High     | Very high | Low            |
 
 Table 2. vdW correation (This is necessary to consider intermolecular interactions more accurately.)
-| Method or Code | Note |
+| Method | Note |
 | ------ | ---- |
 | GAFF   | Dispersion forces are approximated by an empirical Lennard-Jones potential (empirically adjusted values ​​are used, rather than theoretical corrections as in DFT-D). |
 | ReaxFF | It is approximated by an empirically adjusted force field rather than a theoretical dispersion correction like Grimme (ReaxFF does not explicitly introduce dispersion forces (vdW) in the same way as DFT-D, but it does include Lennard-Jones type non-bonded interactions and has a distance-dependent potential between molecules).　|
 |GFN-xTB | incorporates a term based on Grimme's D3 dispersion correction into the Hamiltonian.　|
 |PM6-D3H4| D3 (Grimme dispersion correction) is taken into account. H4 (hydrogen bond correction) is a correction term to handle hydrogen bond energy more accurately (especially important for biomolecules and water clusters). |
+| Code | Note |
 | QE     | DFT-D, DFT-D3, MBD, and XDM are available. TS requires a special library (libvdwxc). |
 | Abinit | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. vdW-WF1, vdW-WF2, and vdW-QHO-WF) use Wannier functions, so they require the user to check and adjust parameters, such as fitting the Wannier functions, and are not easy to use. |
 | OpenMX | DFT-D2 and DFT-D3 are supported from version 3.9 onwards. OpenMX version 3.9 or later is required. |
@@ -107,18 +107,6 @@ mkdir build && cd build
 cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_MEAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
 make -j$(nproc)
 sudo make install
-```
-- OpenBabel version (GAFF or UFF) (Not recommended: Cells cannot be optimized)
-```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
-### OpenBable
-sudo apt update
-sudo apt install openbabel
-sudo apt install libopenbabel-dev
 ```
 
 ### Semi-empirical quantum chemical calculations
@@ -300,10 +288,6 @@ pyton3 mol2crystal_reaxff.py
 - Lammps version (GAFF): Cells can also be optimized. The prediction accuracy is not too bad either.
 ```
 pyton3 mol2crystal_gaff_pbc.py
-```
-- OpenBabel version (GAFF or UFF): Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. The computational cost is very low. (Not recommended: Cells cannot be optimized)
-```
-pyton3 mol2crystal_gaff.py
 ```
 
 ### Semi-empirical quantum chemical calculations
