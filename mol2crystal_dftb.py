@@ -14,6 +14,7 @@ user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spac
 user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
 user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_skipping_n_molecules) (high priority)
 user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
+user_precursor_energy_per_atom = 0.0 # [eV] The reference energy (precursor alone) when calculating relative energy.
 #---------------------------------------------------------------------------------
 # Note(user_skipping_spacegroups): Since the space group ranges from 1 to 230, specifying 231 means that all are taken into consideration.
 
@@ -806,7 +807,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                         crystal_structure = get_primitive_cell(atoms)
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
-                    dftb_optimize(fname, precursor_energy_per_atom=0.0)
+                    dftb_optimize(fname, precursor_energy_per_atom=user_precursor_energy_per_atom)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
                 else:
                     print("Not adopted because the interatomic distance is too close.")

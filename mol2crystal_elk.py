@@ -13,6 +13,7 @@ user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from conside
 user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority):
 user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
 user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_skipping_n_molecules) (high priority)
+user_precursor_energy_per_atom = 0.0 # [eV] The reference energy (precursor alone) when calculating relative energy.
 #---------------------------------------------------------------------------------
 # Note(user_skipping_spacegroups): Since the space group ranges from 1 to 230, specifying 231 means that all are taken into consideration.
 
@@ -809,7 +810,7 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
                     fname = f"valid_structures/POSCAR_theta_{i}_phi_{j}_sg_{sg}"
                     write(fname, crystal_structure, format='vasp')
                     valid_files.append(fname)
-                    elk_optimize(fname, precursor_energy_per_atom=0.0)
+                    elk_optimize(fname, precursor_energy_per_atom=user_precursor_energy_per_atom)
                     print(f"Success: theta={i}, phi={j}, space group {sg}")
                 else:
                     print("Not adopted because the interatomic distance is too close.")
