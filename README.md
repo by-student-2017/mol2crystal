@@ -4,6 +4,7 @@
 - A crystal structure is created by applying a space group to a single precursor. The output is in VASP's POSCAR format.
 - The system applies related space groups from the point group of a single precursor. A crystal structure with no atomic overlap is proposed for all subgroups related to the user-specified supergroup.
 - The molecule is set as the geometric center, and then the atom position farthest from the geometric center is set to theta 45 degrees and phi 45 degrees. From there, the calculation is performed by dividing theta 0 - 45 and phi 0 - 45.
+- For crystal structures created by ASE, primitive cells are output using spglib, which contributes to reducing computational costs. The output can be expanded using VESTA.
 - The generated crystal structure can then be used to obtain energy using the various quantum chemistry calculation codes listed below to create a density-energy diagram. From the resulting diagram, crystal structures with high density and low energy are selected as candidates.
 
 ## Selection of evaluation method
