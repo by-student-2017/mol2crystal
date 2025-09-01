@@ -71,6 +71,7 @@ from ase.geometry import cellpar_to_cell
 from ase.io.lammpsdata import read_lammps_data
 from ase.geometry import wrap_positions
 
+# Warning settings
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 #---------------------------------------------------------------------------------

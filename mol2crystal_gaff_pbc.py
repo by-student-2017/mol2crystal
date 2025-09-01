@@ -89,6 +89,7 @@ from ase.geometry import wrap_positions
 import spglib
 from ase import Atoms
 
+# Warning settings
 import warnings
 warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 #---------------------------------------------------------------------------------
