@@ -285,7 +285,7 @@ pyton3 mol2crystal.py
 ```
 python3 postprocess_gaff_pbc.py
 ```
-- 計算直後にデータが記載されるため全体が終了しなくても次のコマンドで結果を図示できます。
+- The data is recorded in “structure_vs_energy.txt” immediately after the calculation, so you can plot the results with the following command even if the entire calculation has not yet finished.
 ```
 python3 plot.py
 ```
