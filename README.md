@@ -284,6 +284,9 @@ pyton3 mol2crystal.py
 - Post-processing python3 code is provided, so it is recommended to use it after deleting unnecessary structures using valid_structures. For example, to use Lammp's GAFF, use the following:
 ```
 python3 postprocess_gaff_pbc.py
+```
+- 計算直後にデータが記載されるため全体が終了しなくても次のコマンドで結果を図示できます。
+```
 python3 plot.py
 ```
 
