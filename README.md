@@ -358,6 +358,14 @@ python3 plot.py
 ```
 gnuplot plot.gpl
 ```
+
+---
+
+## Comments on code improvements
+- Adjust unit cell parameters based on space group symmetry: I created this by hand using VESTA as a reference, so there may be errors in my input. If you find any errors, please let me know and I will correct them.
+- Analyze point group and derive candidate space groups: Setting a wider point group using "related_point_groups_physical" reduces the chance of missing structure.
+- It may also be a good idea to calculate user_precursor_energy_per_atom at the precursor.mol stage. This has been omitted because it would complicate the Python3 code. We also attempted calculations for space group 1, but in some cases it made it difficult to understand problems with the crystal structure, so we have decided not to do so here.
+
 ---
 
 ## requirements.txt
