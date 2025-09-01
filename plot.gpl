@@ -5,7 +5,7 @@ set terminal pngcairo size 800,600 font "Times New Roman,12"
 set output "density_vs_energy.png"
 
 set xlabel "Density (g/cm^{3})
-set ylabel "Energy (eV)"
+set ylabel "Total Energy (eV)"
 
 set xrange [0:*]
 #set format y "%.2f"
