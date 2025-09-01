@@ -290,6 +290,11 @@ python3 postprocess_gaff_pbc.py
 ```
 python3 plot.py
 ```
+- It is also possible to plot using Gnuplot. If Gnuplot is installed using "sudo apt -y install gnuplot", you can get a figure with the following command.
+```
+gnuplot plot.gpl
+```
+- For the Windows version, you can also run it by simply double-clicking "plot.gpl".
 
 ### classic MD
 - Lammps version (ReaxFF): Cells can also be optimized. The prediction accuracy is not too bad either. Note that there is no combination of potentials for all elements (https://github.com/by-student-2017/lammps_education_reaxff_win/tree/master/potentials).
