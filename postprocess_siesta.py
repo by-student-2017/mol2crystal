@@ -12,16 +12,38 @@ user_precursor_energy_per_atom = 0.0 # [eV] The reference energy (precursor alon
 # --- Prepare environment and clean previous results ---
 '''
 # Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
 
-# NWChem v7.0.2
+# Siesta Installation
 sudo apt update
-sudo apt -y install nwchem-openmpi
+sudo apt -y install cmake gfortran build-essential libopenmpi-dev libopenblas-dev 
+sudo apt -y install libhdf5-dev pkg-config libreadline-dev
+cd $HOME
+wget https://gitlab.com/siesta-project/siesta/-/releases/5.4.0/downloads/siesta-5.4.0.tar.gz
+tar xvf siesta-5.4.0.tar.gz
+cd siesta-5.4.0
+cmake -S . -B _build -DSIESTA_WITH_FLOOK="OFF"
+cmake --build _build -j 4
+sudo cmake --install _build
+echo 'export SIESTA_PP_PATH=$HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP/nc-sr-05_pbe_standard_psml' >> ~/.bashrc  # path of pseudo-potentials
+source ~/.bashrc
+
+### Pseudo-potantials
+# http://www.icmab.es/siesta
+# 
+# use *.psml (>= Siesta 5.4.0)
+# https://www.pseudo-dojo.org/
+# cd $HOME/siesta-5.4.0/Pseudo/ThirdParty-Tools/ONCVPSP$
+# (set) nc-sr-05_pbe_standard_psml.tgz
+# tar xvf nc-sr-05_pbe_standard_psml.tgz
+# 
+# not use *.psml, then need to convert (< Siesta 5.4.0)
+# psml2psf Si.psml > Si.psf
 
 # Usage
-pyton3 mol2crystal_nwchem.py
+pyton3 mol2crystal_siesta.py
 '''
 #---------------------------------------------------------------------------------
 
@@ -42,10 +64,11 @@ from ase.geometry import cellpar_to_cell
 #from ase.neighborlist import NeighborList
 #from ase.data import vdw_radii, atomic_numbers
 
-# NWChem settings
-from ase.units import Ha, Ry
-from ase.calculators.nwchem import NWChem
+# Siesta settings
+from ase.calculators.siesta import Siesta
+from ase.filters import UnitCellFilter
 from ase.optimize import BFGS, LBFGS, FIRE
+from ase.units import Ry, Ha
 
 # Warning settings
 import warnings
@@ -91,73 +114,74 @@ os.makedirs("valid_structures_postprocess", exist_ok=True)
 
 
 #---------------------------------------------------------------------------------
-# NWChem optimization
-def nwchem_optimize(fname, precursor_energy_per_atom):
+# Siesta optimization using *.psml pseudo-potentials
+def siesta_optimize(fname, precursor_energy_per_atom):
     try:
-        temp_dir = "nwchem_temp"
+        temp_dir = "siesta_temp"
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
         os.makedirs(temp_dir, exist_ok=True)
 
         atoms = read(fname)
-        cwd = os.getcwd()
+        
+        os.environ['SIESTA_COMMAND'] = f'mpirun -np {cpu_count} /usr/local/bin/siesta'
 
-        # ----------------------------------------------------------------------------------------
-        # NWChem calculator settings
-        # ASE, NWChem manual: https://ase-lib.org/ase/calculators/nwchem.html
-        #   Note: tpl = (), lst = [], int = 0, flt = 0.0, str = '' or "", dict = {:}
-        # NWChem: https://nwchemgit.github.io/
-        # ----------------------------------------------------------------------------------------
-        #os.environ["ASE_NWCHEM_COMMAND"] = "/usr/bin/nwchem.openmpi nwchem.nwi > nwchem.nwo"                         # OpenMP  (command is also acceptable)
-        #os.environ["ASE_NWCHEM_COMMAND"] = f"mpirun -np {cpu_count} /usr/bin/nwchem.openmpi nwchem.nwi > nwchem.nwo" # OpenMPI (command is also acceptable)
-        # ----------------------------------------------------------------------------------------
-        calc = NWChem(
-            memory     = str(1024*16)+' mb',   # 1024 * 16 = 16 GB
-            command    = f'mpirun -np {cpu_count} /usr/bin/nwchem.openmpi nwchem.nwi > nwchem.nwo', # NWChem path (ASE_NWCHEM_COMMAND environment variable is also acceptable)
-            label      = 'nwchem',             # Input/output file prefix (Recommend to fix 'nwchem')
-            task       = 'gradient',           # (energy, gradient, optimize, hessian, frequency, dynamics, property, transition)
-            # ----------------------------------------------------------------------------------------
-            #theory     = 'dft',               # (dft, scf, mp2, ccsd, tce, tddft, pspw, band, paw)
-            #basis      = '6-31G*',            # You can change this to another basis set (STO-3G, 3-21G, 6-31G*, cc-pVDZ)
-            # ----------------------------------------------------------------------------------------
-            theory     = 'pspw',               # Ideal for periodic structures. 
-            basis      = 'none',               # Fast and stable with pseudopotential + plane wave.
-            pspw       = {'cutoff': 25.0},     # cutoff energy (Ha unit)
-            # ----------------------------------------------------------------------------------------
-            #theory     = 'paw',               # High accuracy but heavy.
-            #basis      = 'paw',               # 
-            #pspw       = {'cutoff': 25.0},    # cutoff energy (Ha unit)
-            # ----------------------------------------------------------------------------------------
-            xc         = 'PBE',                # Exchange-correlation functional (PBE, B3LYP)
-            dft        = {'convergence': {'energy'  : 1e-3 * len(atoms) / Ha,
-                                          'density' : 1e-5,
-                                          'gradient': 5e-4},
-                          'disp': 'vdw 3',     # DFT-D2:'vdw 2', DFT-D3:'vdw 3'
-                         },                    # NWChem keywords are specified using (potentially nested) dictionaries.
-            #basispar = '',                    # Additional keywords to go in the first line of the basis block.
-            center     = False,                # Do not auto-center geometry
-            autosym    = False,                # Do not auto-symmetrize geometry
-            #symmetry   = '',                  # Leave symmetry unspecified
-            #geompar    = '',                  # Additional keywords to go in the first line of the geometry block.
-            restart_kw = 'start',              # Start a new calculation
-            #set': {'lindep:n_dep': 0}},       # A set of keys and values to be added directly to the NWChem rtdb. 
-            )
+        # Siesta calculator
+        calc = Siesta(
+            label         = os.path.join(temp_dir, 'siesta_calc'),
+            xc            = 'PBE',                # LDA, PBE, revPBE, RPBE, WC, PBEsol, BLYP, (Including vdW: DRSLL, LMKLL, KBM)
+            mesh_cutoff   = 200*Ry,               # Mesh cutoff (affects calculation accuracy, typically 150-300 Ry)
+            energy_shift  = 0.01*Ry,              # Energy shift to avoid overlap between atoms (typically 0.01 Ry)
+            basis_set     = 'DZP',                # Basis function size (SZ, DZ, DZP, TZP, etc.) (typically DZP)
+            kpts          = (1, 1, 1),            # k-point mesh ((1,1,1) for molecules and isolated systems)
+            fdf_arguments = {
+                'SpinPolarized': False,           # Spin depolarization (set to True for magnetic calculations)）
+                'SpinOrbit': False,               # Usually, when using SOI, spin polarization is also enabled.
+                
+                'SCF.ConvergenceTolerance': str(1.0e-3*len(atoms)/Ha), # 1 meV/atom -> Ha unit
+                'DM.Tolerance': '1.d-4',          # Tolerance of Density Matrix. 
+                'DM.MixingWeight': 0.1,           # Density matrix mixing coefficient (affects convergence stability)
+                'MaxSCFIterations': 100,          # Maximum number of SCF iterations
+                'SolutionMethod': 'diagon',       # Diagonalization methods (diagon, OMM, OrderN, CheSS)
+                
+                'VDWCorrection': True,            # wdW correlation: DFT-D2 or DFT-D3
+                'VDWFunctional': 'DFTD3',         # DFTD2, DFTD3
+                'VDWScaling': 1.0,                # 0.75:DFTD2, 1.0:DFTD3
+                
+                'ElectronicTemperature': '300 K', # Electron temperature (K) -> Affects convergence in metallic systems
+                'OccupationFunction': 'FD',       # Fermi Distribution (FD), Methfessel-Paxton (MP), Cold
+                
+                #'WriteForces': True,              # Output force (useful for optimization)
+                #'WriteKpoints': True,             # Output k-point information
+                #'WriteCoorXmol': True,            # output *.xmol file
+                #'SaveHS': True,                   # Save Hamiltonian and overlap matrix
+                
+                #'LatticeConstant': '1.0 Ang',     # Scaling of lattice parameters (if necessary)
+            },
+            pseudo_path   = os.environ.get("SIESTA_PP_PATH", "./psf"), # path of Pseudo-potentials
+        )
 
-        os.chdir(temp_dir)
-        try:
-            atoms.calc = calc
-            #opt = LBFGS(atoms)
-            opt = FIRE(atoms)
-            opt.run(fmax=0.5)
-        finally:
-            os.chdir(cwd)
+        atoms.calc = calc
+
+        ucf = UnitCellFilter(atoms)
+        '''
+        opt = FIRE(ucf,
+            logfile=os.path.join(temp_dir, 'opt.log'),
+            trajectory=os.path.join(temp_dir, 'opt.traj'))
+        '''
+        opt = LBFGS(ucf,
+            logfile=os.path.join(temp_dir, 'opt.log'),
+            trajectory=os.path.join(temp_dir, 'opt.traj'))
+        opt.run(fmax=0.5)
 
         # Save optimized structure
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
         write(opt_fname, atoms, format='vasp')
 
-        # Energy and density calculations
-        energy_per_atom = atoms.get_potential_energy() / len(atoms)
+        # Energy and density
+        energy_value = atoms.get_potential_energy()
+        num_atoms = len(atoms)
+        energy_per_atom = energy_value / num_atoms
         relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
 
         total_mass_amu = sum(atoms.get_masses())
@@ -168,14 +192,16 @@ def nwchem_optimize(fname, precursor_energy_per_atom):
 
         print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
         print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
-        print(f"Number of atoms: {len(atoms)}")
-        print(f"Volume: {volume:.6f} [A^3]")
+        print(f"Number of atoms: {num_atoms}")
+        print(f"Volume: {volume:.6f} [A3]")
         print(f"Density: {density:.3f} [g/cm^3]")
 
         with open("structure_vs_energy.txt", "a") as out:
-            out.write(f"{opt_fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {len(atoms)} {volume:.6f}\n")
+            out.write(f"{opt_fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(f"Error optimizing {fname}: {e}")
 #---------------------------------------------------------------------------------
 
@@ -197,7 +223,7 @@ for fname in os.listdir(directory):
     filepath = os.path.join(directory, fname)
     try:
         print(f"Calculate file: {fname}")
-        nwchem_optimize(filepath, precursor_energy_per_atom=user_precursor_energy_per_atom)
+        siesta_optimize(filepath, precursor_energy_per_atom=user_precursor_energy_per_atom)
         
         opt_fname_path  = f"optimized_structures_vasp/{fname}".replace("POSCAR", "OPT") + ".vasp"
         post_fname_path = f"valid_structures_postprocess/{fname}"
@@ -208,4 +234,4 @@ for fname in os.listdir(directory):
         continue
 #---------------------------------------------------------------------------------
 
-print("Finished space group search and NWChem optimization.")
+print("Finished space group search and Siesta optimization.")

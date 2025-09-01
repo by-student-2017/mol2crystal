@@ -16,11 +16,15 @@ pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
 
-# CP2k ver.9.1
-sudo apt -y install cp2k
+# DFTB+ ver. 24.1
+cd $HOME
+wget https://github.com/dftbplus/dftbplus/releases/download/24.1/dftbplus-24.1.x86_64-linux.tar.xz
+tar -xvf dftbplus-24.1.x86_64-linux.tar.xz
+echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
+source ~/.bashrc
 
 # Usage
-pyton3 mol2crystal_cp2k.py
+pyton3 mol2crystal_dftb.py
 '''
 #---------------------------------------------------------------------------------
 
@@ -85,119 +89,80 @@ os.makedirs("valid_structures_postprocess", exist_ok=True)
 
 
 #---------------------------------------------------------------------------------
-# CP2K optimization using GPW
-def cp2k_optimize(fname, precursor_energy_per_atom):
+# DFTB+ optimization
+def dftb_optimize(fname, precursor_energy_per_atom):
     try:
-        temp_dir = "cp2k_temp"
+        temp_dir = "dftb_temp"
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
         os.makedirs(temp_dir, exist_ok=True)
 
         atoms = read(fname)
-        structure_xyz = os.path.join(temp_dir, "structure.xyz")
-        write(structure_xyz, atoms, format='xyz')
+        vasp_path = os.path.join(temp_dir, "POSCAR")
+        write(vasp_path, atoms, format='vasp')
 
-        atoms.translate(-atoms.get_center_of_mass())
-        cell = atoms.get_cell()
-        a_line = f"      A  {cell[0][0]:.9f}  {cell[0][1]:.9f}  {cell[0][2]:.9f}\n"
-        b_line = f"      B  {cell[1][0]:.9f}  {cell[1][1]:.9f}  {cell[1][2]:.9f}\n"
-        c_line = f"      C  {cell[2][0]:.9f}  {cell[2][1]:.9f}  {cell[2][2]:.9f}\n"
+        # Copy input file
+        shutil.copy("dftb_in.hsd", os.path.join(temp_dir, "dftb_in.hsd"))
 
-        # Pseudopotential map of transition metals (with q values ​​as an example)
-        transition_potentials = {
-            "Sc": "GTH-PBE-q11", "Ti": "GTH-PBE-q12", "V": "GTH-PBE-q13",
-            "Cr": "GTH-PBE-q14", "Mn": "GTH-PBE-q15", "Fe": "GTH-PBE-q16",
-            "Co": "GTH-PBE-q17", "Ni": "GTH-PBE-q18", "Cu": "GTH-PBE-q19",
-            "Zn": "GTH-PBE-q20"
-        }
-
-        kind_sections = ""
-        unique_elements = sorted(set(atoms.get_chemical_symbols()))
-        for elem in unique_elements:
-            basis_set = "DZVP-MOLOPT-GTH"
-            potential = transition_potentials.get(elem, "GTH-PBE")
-
-            # If not present in BASIS_MOLOPT file, fallback to SR-GTH
-            basis_file_path = os.path.join("data", "BASIS_MOLOPT")
-            if os.path.exists(basis_file_path):
-                with open(basis_file_path, "r") as bf:
-                    if basis_set not in bf.read():
-                        basis_set = "DZVP-MOLOPT-SR-GTH"
-
-            kind_sections += f"    &KIND {elem}\n"
-            kind_sections += f"      BASIS_SET {basis_set}\n"
-            kind_sections += f"      POTENTIAL {potential}\n"
-            kind_sections += f"    &END KIND\n"
-
-        input_inp_path = "cp2k.inp"
-        output_inp_path = os.path.join(temp_dir, "cp2k.inp")
-
-        if os.path.exists(input_inp_path):
-            with open(input_inp_path, "r") as f:
-                lines = f.readlines()
-
-            with open(output_inp_path, "w") as f:
-                for line in lines:
-                    if line.strip().startswith("A "):
-                        f.write(a_line)
-                    elif line.strip().startswith("B "):
-                        f.write(b_line)
-                    elif line.strip().startswith("C "):
-                        f.write(c_line)
-                    elif line.strip() == "&END TOPOLOGY":
-                        f.write(line)
-                        f.write(kind_sections)
-                    else:
-                        f.write(line)
-            print("Modified cp2k.inp and saved to cp2k_temp.")
+        # Run DFTB+
+        log_path = os.path.join(temp_dir, "dftb_out.log")
+        err_path = os.path.join(temp_dir, "dftb_err.log")
+        with open(log_path, "w") as out, open(err_path, "w") as err:
+            subprocess.run(["mpirun", "-np", str(cpu_count), "dftb+"], cwd=temp_dir, stdout=out, stderr=err)
+        
+        # Save result regardless of convergence
+        geo_end = os.path.join(temp_dir, "geo_end.gen")
+        geom_out = os.path.join(temp_dir, "geom.out.gen")
+        
+        if os.path.exists(geo_end):
+            optimized = read(geo_end)
+            source = "geo_end.gen"
+            print("Geometry optimization converged")
+        elif os.path.exists(geom_out):
+            optimized = read(geom_out)
+            source = "geom.out.gen"
+            print("Note!!! Geometry optimization is not converged")
         else:
-            print("cp2k.inp does not exist.")
+            print(f"[Error] No structure file found for {fname}")
             return
-
-        if not shutil.which("cp2k.popt"):
-            print("cp2k.popt not found in PATH.")
-            return
-
-        subprocess.run(["mpirun", "-np", str(cpu_count), "cp2k.popt", "-i", "cp2k.inp", "-o", "cp2k.out"], cwd=temp_dir, check=True)
-
-        out_path = os.path.join(temp_dir, "cp2k.out")
-        energy_value = None
-        with open(out_path, "r") as f:
-            for line in reversed(f.readlines()):
-                if "ENERGY| Total FORCE_EVAL" in line:
-                    parts = line.split()
-                    energy_value = float(parts[-1])
-                    break
-
-        optimized_xyz = os.path.join(temp_dir, "cp2k_calc-pos-1.xyz")
-        if os.path.exists(optimized_xyz):
-            atoms = read(optimized_xyz)  # Replace with the optimized structure
-        else:
-            print("Warning: Optimized structure file not found. Using original structure.")
-
+        
         opt_fname = fname.replace("valid_structures", "optimized_structures_vasp").replace("POSCAR", "OPT") + ".vasp"
-        write(opt_fname, atoms, format='vasp')
-
+        write(opt_fname, optimized, format='vasp')
+        
+        # --- Extract only the last energy value ---
+        log_path = os.path.join(temp_dir, "dftb_out.log")
+        energy_value = None
+        
+        if os.path.exists(log_path):
+            with open(log_path, "r") as f:
+                for line in reversed(f.readlines()):
+                    match = re.search(r"total energy\s*(-?\d+\.\d+)", line)
+                    if match:
+                        energy_value = float(match.group(1))
+                        break
+        
         if energy_value is not None:
-            num_atoms = len(atoms)
+            num_atoms = len(atoms) # or num_atoms = atoms.get_global_number_of_atoms()
             energy_per_atom = energy_value / num_atoms * 27.2114
             relative_energy_per_atom = energy_per_atom - precursor_energy_per_atom
             
             # --- density calculation ---
-            total_mass_amu = sum(atoms.get_masses())
+            total_mass_amu = sum(optimized.get_masses())
             total_mass_g = total_mass_amu * 1.66053906660e-24
-            volume = atoms.get_volume()
+            volume = optimized.get_volume()
             volume_cm3 = volume * 1e-24
             density = total_mass_g / volume_cm3 if volume_cm3 > 0 else 0
-
+            
             print(f"Final energy per atom: {energy_per_atom:.6f} [eV/atom]")
             print(f"Final relative energy per atom: {relative_energy_per_atom:.6f} [eV/atom]")
             print(f"Number of atoms: {num_atoms}")
             print(f"Volume: {volume:.6f} [A3]")
             print(f"Density: {density:.3f} [g/cm^3]")
-
+            
             with open("structure_vs_energy.txt", "a") as out:
                 out.write(f"{opt_fname} {relative_energy_per_atom:.6f} {energy_per_atom:.6f} {density:.3f} {num_atoms} {volume:.6f}\n")
+        else:
+            print("Energy value not found in xtbopt.log.")
 
     except Exception as e:
         print(f"Error optimizing {fname}: {e}")
@@ -221,7 +186,7 @@ for fname in os.listdir(directory):
     filepath = os.path.join(directory, fname)
     try:
         print(f"Calculate file: {fname}")
-        cp2k_optimize(filepath, precursor_energy_per_atom=user_precursor_energy_per_atom)
+        dftb_optimize(filepath, precursor_energy_per_atom=user_precursor_energy_per_atom)
         
         opt_fname_path  = f"optimized_structures_vasp/{fname}".replace("POSCAR", "OPT") + ".vasp"
         post_fname_path = f"valid_structures_postprocess/{fname}"
@@ -232,4 +197,4 @@ for fname in os.listdir(directory):
         continue
 #---------------------------------------------------------------------------------
 
-print("Finished space group search and CP2k optimization.")
+print("Finished space group search and DFTB+ optimization.")

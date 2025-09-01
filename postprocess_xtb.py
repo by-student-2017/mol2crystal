@@ -206,4 +206,4 @@ for fname in os.listdir(directory):
         continue
 #---------------------------------------------------------------------------------
 
-print("Finished space group search and Lammps (GAFF) optimization.")
+print("Finished space group search and xTB optimization.")
