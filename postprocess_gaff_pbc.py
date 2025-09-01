@@ -78,6 +78,11 @@ warnings.filterwarnings("ignore", message="scaled_positions .* are equivalent")
 
 #---------------------------------------------------------------------------------
 # --- Clean old outputs and temporary folders ---
+if (os.path.exists('valid_structures_postprocess_old')):
+    shutil.rmtree( 'valid_structures_postprocess_old')
+
+if (os.path.exists('valid_structures_postprocess')):
+    os.rename(     'valid_structures_postprocess','valid_structures_postprocess_old')
 
 if (os.path.exists('optimized_structures_vasp_old')):
     shutil.rmtree( 'optimized_structures_vasp_old')   
@@ -104,6 +109,7 @@ os.environ["OMP_NUM_THREADS"] = '1'             # OpenMPI
 #---------------------------------------------------------------------------------
 # Output directories
 os.makedirs("optimized_structures_vasp", exist_ok=True)
+os.makedirs("valid_structures_postprocess", exist_ok=True)
 #---------------------------------------------------------------------------------
 
 
@@ -261,6 +267,10 @@ for fname in os.listdir(directory):
     try:
         print(f"Calculate file: {fname}")
         gaff_pbc_optimize(filepath, precursor_energy_per_atom=user_precursor_energy_per_atom)
+        
+        opt_fname_path  = f"optimized_structures_vasp/{fname}".replace("POSCAR", "OPT") + ".vasp"
+        post_fname_path = f"valid_structures_postprocess/{fname}"
+        shutil.copy(opt_fname_path, post_fname_path)
         print(f"------------------------------------------------------")
         continue
     except Exception:
