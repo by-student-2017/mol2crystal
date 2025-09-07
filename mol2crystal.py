@@ -536,39 +536,41 @@ related_point_groups_strict = {
 # Dictionary defining physical inclusion relationships between point groups.
 # Each key is a point group, and its value is a list of physically related higher-symmetry point groups (supergroups).
 # These represent one-level physical symmetry extensions, not strict group-theoretical subgroups.
+# "Nearby" groups are also included when they are structurally or physically similar,
+# even if not direct supergroups in the strict group-theoretical sense.
 related_point_groups_physical = {
-     "C1": ["Ci", "Cs", "C2"],          # C1 can be extended to inversion, mirror, or two-fold rotation
-     "Ci": ["C2h", "D2h"],              # Inversion symmetry can be extended to C2h or full orthorhombic D2h
-     "Cs": ["C2v", "D2d"],              # Mirror symmetry can be extended to vertical mirror systems or diagonal D2d
-     "C2": ["C2h", "C2v", "D2"],        # Two-fold rotation can be extended to mirror or dihedral systems
-    "C2h": ["D2h", "C4h"],              # C2h can be extended to full orthorhombic or tetragonal with horizontal mirror
-    "C2v": ["D2", "D2h", "C4v", "D4h"], # C2v can be extended to dihedral or tetragonal systems
-     "D2": ["D2h", "D4"],               # D2 can be extended to full orthorhombic or tetragonal dihedral
-    "D2h": ["D4h"],                     # D2h can be extended to full tetragonal symmetry
-     "C4": ["C4h", "C4v"],              # C4 can be extended to horizontal or vertical mirror systems
-     "S4": ["D2d", "D4h"],              # Improper rotation can be extended to diagonal or full tetragonal
-    "C4h": ["D4h"],                     # C4h can be extended to full tetragonal symmetry
-    "C4v": ["D4h"],                     # C4v can be extended to full tetragonal symmetry
-     "D4": ["D4h"],                     # D4 can be extended to full tetragonal symmetry
-    "D4h": [],                          # D4h is already a full tetragonal group
-    "D2d": ["D4h"],                     # D2d can be extended to full tetragonal symmetry
-     "C3": ["C3i", "C3v", "C3h"],       # C3 can be extended to inversion, vertical or horizontal mirror systems
-    "C3i": ["D3d", "C6h"],              # C3i can be extended to dihedral or hexagonal systems
-    "C3v": ["D3h", "C6v"],              # C3v can be extended to dihedral or hexagonal systems
-    "C3h": ["D3h"],                     # C3h can be extended to full dihedral symmetry
-     "D3": ["D3d", "D3h"],              # D3 can be extended to full dihedral systems
-    "D3d": ["D6h"],                     # D3d can be extended to full hexagonal symmetry
-    "D3h": ["D6h"],                     # D3h can be extended to full hexagonal symmetry
-     "C6": ["C6h", "C6v"],              # C6 can be extended to horizontal or vertical mirror systems
-    "C6h": ["D6h"],                     # C6h can be extended to full hexagonal symmetry
-    "C6v": ["D6h"],                     # C6v can be extended to full hexagonal symmetry
-     "D6": ["D6h"],                     # D6 can be extended to full hexagonal symmetry
-    "D6h": [],                          # D6h is already a full hexagonal group
-      "T": ["Th", "O", "Td"],           # Tetrahedral rotation can be extended to inversion, octahedral, or mirror systems
-     "Th": ["Oh"],                      # Tetrahedral + inversion can be extended to full octahedral symmetry
-      "O": ["Oh"],                      # Octahedral rotation can be extended to full octahedral symmetry
-     "Td": ["Oh"],                      # Tetrahedral + mirror can be extended to full octahedral symmetry
-     "Oh": []                           # Oh is the highest cubic symmetry group
+     "C1": ["Ci", "Cs", "C2"],           # C1 can be extended to inversion, mirror, or two-fold rotation
+     "Ci": ["C2h", "D2h"],               # Inversion symmetry can be extended to C2h or full orthorhombic D2h
+     "Cs": ["C2v", "D2d"],               # Mirror symmetry can be extended to vertical mirror systems or diagonal D2d
+     "C2": ["C2h", "C2v", "D2"],         # Two-fold rotation can be extended to mirror or dihedral systems
+    "C2h": ["D2h", "C4h"],               # C2h can be extended to full orthorhombic or tetragonal with horizontal mirror
+    "C2v": ["D2", "D2h", "C4v", "D4h"],  # C2v can be extended to dihedral or tetragonal systems
+     "D2": ["D2h", "D4"],                # D2 can be extended to full orthorhombic or tetragonal dihedral
+    "D2h": ["D4h"],                      # D2h can be extended to full tetragonal symmetry
+     "C4": ["C4h", "C4v"],               # C4 can be extended to horizontal or vertical mirror systems
+     "S4": ["D2d", "D4h"],               # Improper rotation can be extended to diagonal or full tetragonal
+    "C4h": ["D4h"],                      # C4h can be extended to full tetragonal symmetry
+    "C4v": ["D4h", "Td", "D2d", "C2v"],  # C4v can be extended to full tetragonal symmetry (+ "D2d", "C2v")
+     "D4": ["D4h"],                      # D4 can be extended to full tetragonal symmetry
+    "D4h": ["Oh"],                       # D4h is already a full tetragonal group
+    "D2d": ["D4h", "C4v", "S4", "Cs"],   # D2d can be extended to full tetragonal symmetry (+ "C4v", "S4", "Cs")
+     "C3": ["C3i", "C3v", "C3h", "T", "C2", "C4"],  # C3 can be extended to inversion, vertical or horizontal mirror systems (+ "C2", "C4")
+    "C3i": ["D3d", "C6h"],               # C3i can be extended to dihedral or hexagonal systems
+    "C3v": ["D3h", "C6v", "Td", "C2v", "Cs"], # C3v can be extended to dihedral or hexagonal systems (+ "C2v", "Cs")
+    "C3h": ["D3h"],                      # C3h can be extended to full dihedral symmetry
+     "D3": ["D3d", "D3h", "T", "C3v"],   # D3 can be extended to full dihedral systems (+ "C3v")
+    "D3d": ["D6h"],                      # D3d can be extended to full hexagonal symmetry
+    "D3h": ["D6h"],                      # D3h can be extended to full hexagonal symmetry
+     "C6": ["C6h", "C6v"],               # C6 can be extended to horizontal or vertical mirror systems
+    "C6h": ["D6h"],                      # C6h can be extended to full hexagonal symmetry
+    "C6v": ["D6h", "C3v", "C6h"],        # C6v can be extended to full hexagonal symmetry (+ "C3v", "C6h")
+     "D6": ["D6h"],                      # D6 can be extended to full hexagonal symmetry
+    "D6h": [],                           # D6h is already a full hexagonal group
+      "T": ["Th", "O", "Td"],            # Tetrahedral rotation can be extended to inversion, octahedral, or mirror systems
+     "Th": ["Oh"],                       # Tetrahedral + inversion can be extended to full octahedral symmetry
+      "O": ["Oh"],                       # Octahedral rotation can be extended to full octahedral symmetry
+     "Td": ["Oh"],                       # Tetrahedral + mirror can be extended to full octahedral symmetry
+     "Oh": []                            # Oh is the highest cubic symmetry group
 }
 
 # Recursive function to get all subgroups (strict inclusion)
