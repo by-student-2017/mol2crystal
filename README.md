@@ -409,6 +409,7 @@ pip freeze > requirements.txt
 - [5] spglib: https://github.com/spglib
 - [6] Reaxff potential list: https://github.com/by-student-2017/lammps_education_reaxff_win/tree/master/potentials (When presenting your results, be sure to cite the potential you utilized.)
 - [7] dftd3: https://github.com/loriab/dftd3
+- [8] Point Group Tables: https://www.cryst.ehu.es/rep/point
 
 ---
 
