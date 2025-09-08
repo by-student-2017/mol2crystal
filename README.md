@@ -213,7 +213,9 @@ sed -i 's|^LIB *=.*|LIB = -lfftw3 -llapack -lblas -lgfortran -lscalapack -lmpi_m
 make all
 make install
 
-sudo cp ../work/openmx /usr/local/bin/
+sudo cp ../work/openmx /usr/bin/openmx
+sudo mkdir -p /usr/share/openmx/DFT_DATA13
+sudo cp -r ../DFT_DATA19/* /usr/share/openmx/DFT_DATA13/
 which openmx
 openmx -v
 ```
