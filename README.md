@@ -82,6 +82,11 @@ pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
 ```
+- After the above operation, the following command is required first every time on Ubuntu 24.04 LTS:
+```
+deactivate
+source ~/mol2crystal/venv/bin/activate
+```
 
 ### classic MD
 - Lammps version (ReaxFF)
