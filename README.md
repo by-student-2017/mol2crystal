@@ -207,9 +207,8 @@ tar -zxvf patch3.9.9.tar.gz
 mv kpoint.in ../work/
 
 sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' makefile
-sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp -fallow-argument-mismatch -std=legacy|' makefile
+sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp -fallow-argument-mismatch -std=legacy -fcommon|' makefile
 sed -i 's|^LIB *=.*|LIB = -L/usr/lib/x86_64-linux-gnu -lfftw3 -llapack -lblas -lgfortran -lscalapack-openmpi -lmpi_mpifh|' makefile
-sed -i 's|-lscalapack|-lscalapack-openmpi|' makefile
 
 make all
 make install
