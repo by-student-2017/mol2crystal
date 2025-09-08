@@ -194,7 +194,7 @@ sudo apt -y install openmx
 - OpenMX v3.9 version
 ```
 sudo apt update
-sudo apt install -y build-essential gfortran libblas-dev liblapack-dev libfftw3-dev libopenmpi-dev openmpi-bin
+sudo apt install -y build-essential gfortran libblas-dev liblapack-dev libfftw3-dev libopenmpi-dev openmpi-bin libscalapack-openmpi-dev
 
 cd $HOME
 wget https://www.openmx-square.org/openmx3.9.tar.gz
@@ -207,7 +207,7 @@ tar -zxvf patch3.9.9.tar.gz
 mv kpoint.in ../work/
 
 sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' makefile
-sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp|' makefile
+sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp -fallow-argument-mismatch -std=legacy|' makefile
 sed -i 's|^LIB *=.*|LIB = -lfftw3 -llapack -lblas -lgfortran -lscalapack -lmpi_mpifh|' makefile
 
 make all
