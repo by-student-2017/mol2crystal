@@ -32,6 +32,7 @@ pip install pymsym==0.3.4
 pip install spglib==2.6.0
 
 # moltemplate + antechamber + mol22lt.pl
+cd $HOME
 sudo apt update
 sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
