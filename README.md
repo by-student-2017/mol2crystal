@@ -197,10 +197,10 @@ sudo apt update
 sudo apt install -y build-essential gfortran libblas-dev liblapack-dev libfftw3-dev libopenmpi-dev openmpi-bin
 
 cd $HOME
-wget https://www.openmx-square.org/opensource/openmx3.9.tar.gz
+wget https://www.openmx-square.org/openmx3.9.tar.gz
 tar -xvf openmx3.9.tar.gz
 
-wget https://www.openmx-square.org/opensource/patch3.9.9.tar.gz
+wget https://openmx-square.org/bugfixed/21Oct17/patch3.9.9.tar.gz
 cp patch3.9.9.tar.gz openmx3.9/source/
 cd openmx3.9/source/
 tar -zxvf patch3.9.9.tar.gz
