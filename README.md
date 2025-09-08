@@ -59,7 +59,7 @@ git clone https://github.com/by-student-2017/mol2crystal.git
 cd mol2crystal
 
 sudo apt update
-sudo apt install python3-pip
+sudo apt -y install python3-pip
 ```
 
 ## Install libraries
