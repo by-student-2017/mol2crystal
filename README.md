@@ -52,6 +52,13 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 
 ---
 
+## Insatall main python code
+```
+cd $HOME
+git clone https://github.com/by-student-2017/mol2crystal.git
+cd mol2crystal
+```
+
 ## Install libraries
 - mol2crystal.py
 ```
