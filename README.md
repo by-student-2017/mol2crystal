@@ -364,6 +364,12 @@ python3 plot.py
 gnuplot plot.gpl
 ```
 
+### sort
+- I've also prepared Python code to sort the data. You can get candidates from there. It's a good idea to remove "_top" from valid_structures_top and recalculate it with a more accurate method. For example, try calculating it with DFTB+ or QE from gaff_pbc.
+```
+python3 sort.py
+```
+
 ---
 
 ## Comments on code improvements
