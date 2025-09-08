@@ -114,8 +114,6 @@ wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-
 sh install_moltemplate.sh
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
 sh install_WSLmisc.sh
-echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
 ```
 - On Ubuntu 24.04 LTS, you also need to run the following additional commands:
 ```
@@ -132,6 +130,8 @@ mkdir build && cd build
 cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_MEAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
 make -j$(nproc)
 sudo make install
+echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ### Semi-empirical quantum chemical calculations
@@ -142,6 +142,7 @@ cd $HOME
 wget https://github.com/grimme-lab/xtb/releases/download/v6.7.1/xtb-6.7.1-linux-x86_64.tar.xz
 tar xvf xtb-6.7.1-linux-x86_64.tar.xz
 echo 'export PATH=$PATH:$HOME/xtb-dist/bin' >> ~/.bashrc
+source ~/.bashrc
 ```
 - DFTB+ version
 ```
@@ -150,6 +151,7 @@ cd $HOME
 wget https://github.com/dftbplus/dftbplus/releases/download/24.1/dftbplus-24.1.x86_64-linux.tar.xz
 tar -xvf dftbplus-24.1.x86_64-linux.tar.xz
 echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
+source ~/.bashrc
 ```
 - MOPAC version (Not recommended: Cells cannot be optimized)
 ```
@@ -157,6 +159,7 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
 tar xvf mopac-23.1.2-linux.tar.gz
 echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ### First-principles calculation (band calculation)
