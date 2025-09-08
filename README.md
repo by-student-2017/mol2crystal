@@ -61,6 +61,10 @@ cd mol2crystal
 
 sudo apt update
 sudo apt -y install python3-pip
+
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
 ```
 - For Ubuntu 24.04 LTS
 ```
@@ -73,19 +77,6 @@ sudo apt -y install python3-pip python3-venv
 
 python3 -m venv ~/mol2crystal/venv
 source ~/mol2crystal/venv/bin/activate
-```
-
-## Install libraries
-- mol2crystal.py (Ubuntu 22.04 LTS)
-```
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-```
-- mol2crystal.py (Ubuntu 24.04 LTS)
-```
-deactivate
-source ~/mol2crystal/venv/bin/activate
 
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
@@ -93,13 +84,8 @@ pip install spglib==2.6.0
 ```
 
 ### classic MD
-- Lammps version (ReaxFF, GAFF, MEAM, EAM)
+- Lammps version (ReaxFF)
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 sudo apt update
 sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
@@ -118,13 +104,9 @@ cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE
 make -j$(nproc)
 sudo make install
 ```
+
 - Lammps version (GAFF)
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 sudo apt update
 sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
@@ -147,11 +129,6 @@ sudo make install
 ### Semi-empirical quantum chemical calculations
 - xTB version
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### xTB ver. 6.7.1
 cd $HOME
 wget https://github.com/grimme-lab/xtb/releases/download/v6.7.1/xtb-6.7.1-linux-x86_64.tar.xz
@@ -160,10 +137,6 @@ echo 'export PATH=$PATH:$HOME/xtb-dist/bin' >> ~/.bashrc
 ```
 - DFTB+ version
 ```
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### DFTB+ ver. 24.1
 cd $HOME
 wget https://github.com/dftbplus/dftbplus/releases/download/24.1/dftbplus-24.1.x86_64-linux.tar.xz
@@ -172,11 +145,6 @@ echo 'export PATH=$PATH:$HOME/dftbplus-24.1.x86_64-linux/bin' >> ~/.bashrc
 ```
 - MOPAC version (Not recommended: Cells cannot be optimized)
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### MOPAC ver. 23.1.2
 wget https://github.com/openmopac/mopac/releases/download/v23.1.2/mopac-23.1.2-linux.tar.gz
 tar xvf mopac-23.1.2-linux.tar.gz
@@ -186,12 +154,6 @@ echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
 ### First-principles calculation (band calculation)
 - QE version
 ```
-### Install libraries + GPAW ver. 25.7.0
-pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
-pip install "numpy<2.0"
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 # QE v.6.7MaX
 sudo apt update
 sudo apt -y install quantum-espresso
@@ -206,22 +168,12 @@ sudo apt -y install quantum-espresso
 ```
 - Abinit
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### Abinit v.9.6.2
 sudo apt update
 sudo apt -y install abinit
 ```
 - OpenMX version
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### OpenMX v3.8.5
 sudo apt update
 sudo apt -y install openmx
@@ -229,10 +181,8 @@ sudo apt -y install openmx
 - GPAW version
 ```
 ### Install libraries + GPAW ver. 25.7.0
-pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
+pip install gpaw==25.7.0
 pip install "numpy<2.0"
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
 
 ### DFTD-D3
 pip install dftd3==1.2.1
@@ -244,11 +194,6 @@ sudo cp dftd3 /usr/local/bin/
 ```
 - SIESTA version
 ```
-### Install libraries
-pip install ase==3.26.0 scipy==1.13.0 psutil==7.0.0 gpaw==25.7.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### Siesta Installation
 sudo apt update
 sudo apt -y install cmake gfortran build-essential libopenmpi-dev libopenblas-dev 
@@ -271,32 +216,17 @@ tar xvf nc-sr-05_pbe_standard_psml.tgz
 ```
 - CP2k version
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### CP2k ver.9.1
 sudo apt -y install cp2k
 ```
 - NWChem version
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### NWChem v7.0.2
 sudo apt update
 sudo apt -y install nwchem-openmpi
 ```
 - Elk
 ```
-### Install libraries
-pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
-pip install pymsym==0.3.4
-pip install spglib==2.6.0
-
 ### Elk v7.2.42
 sudo apt update
 sudo apt -y install elk-lapw
