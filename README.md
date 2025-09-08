@@ -209,6 +209,7 @@ mv kpoint.in ../work/
 sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' makefile
 sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp -fallow-argument-mismatch -std=legacy|' makefile
 sed -i 's|^LIB *=.*|LIB = -lfftw3 -llapack -lblas -lgfortran -lscalapack -lmpi_mpifh|' makefile
+sed -i 's|-lscalapack|-lscalapack-openmpi|' makefile
 
 make all
 make install
