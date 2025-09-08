@@ -154,7 +154,7 @@ echo 'export PATH=$PATH:$HOME/mopac-23.1.2-linux/bin' >> ~/.bashrc
 ### First-principles calculation (band calculation)
 - QE version
 ```
-# QE v.6.7MaX
+# QE v.6.7MaX (Ubuntu 22.04 LTS), 6.7 (Ubuntu 24.04 LTS)　
 sudo apt update
 sudo apt -y install quantum-espresso
 
@@ -168,13 +168,13 @@ sudo apt -y install quantum-espresso
 ```
 - Abinit
 ```
-### Abinit v.9.6.2
+### Abinit v.9.6.2 (Ubuntu 22.04 LTS), 9.10.4 (Ubuntu 24.04 LTS)
 sudo apt update
 sudo apt -y install abinit
 ```
 - OpenMX version
 ```
-### OpenMX v3.8.5
+### OpenMX v3.8.5 (Ubuntu 22.04 LTS)
 sudo apt update
 sudo apt -y install openmx
 ```
@@ -216,18 +216,18 @@ tar xvf nc-sr-05_pbe_standard_psml.tgz
 ```
 - CP2k version
 ```
-### CP2k ver.9.1
+### CP2k ver.9.1 (Ubuntu 22.04 LTS)
 sudo apt -y install cp2k
 ```
 - NWChem version
 ```
-### NWChem v7.0.2
+### NWChem v7.0.2 (Ubuntu 22.04 LTS), 7.2.2 (Ubuntu 24.04 LTS)
 sudo apt update
 sudo apt -y install nwchem-openmpi
 ```
 - Elk
 ```
-### Elk v7.2.42
+### Elk v7.2.42 (Ubuntu 22.04 LTS), 9.2.12 (Ubuntu 24.04 LTS)
 sudo apt update
 sudo apt -y install elk-lapw
 ```
