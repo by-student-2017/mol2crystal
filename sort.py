@@ -3,6 +3,8 @@
 # user settings top %
 top_percent = 30
 
+import os
+import shutil
 import pandas as pd
 
 # Read the file
@@ -39,3 +41,18 @@ print(sorted_by_energy[['POSCAR', 'Total_Energy', 'Density']])
 
 #print("\nSorted by Density (descending):")
 #print(sorted_by_density[['POSCAR', 'Total_Energy', 'Density']])
+
+# Create output directory
+output_dir = "valid_structures_top"
+os.makedirs(output_dir, exist_ok=True)
+
+# Copy corresponding files to valid_structures_top directory
+for poscar_file in top_percent_df['POSCAR']:
+    src_path = os.path.join("optimized_structures_vasp", poscar_file)
+    dst_path = os.path.join(output_dir, poscar_file)
+    if os.path.exists(src_path):
+        shutil.copy(src_path, dst_path)
+    else:
+        print(f"Warning: {src_path} not found.")
+
+print(f"\nCopied {len(top_percent_df)} files to '{output_dir}' directory.")
