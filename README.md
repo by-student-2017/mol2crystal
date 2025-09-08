@@ -191,7 +191,7 @@ sudo apt -y install abinit
 sudo apt update
 sudo apt -y install openmx
 ```
-- OpenMXv v3.9 version
+- OpenMX v3.9 version
 ```
 sudo apt update
 sudo apt install -y build-essential gfortran libblas-dev liblapack-dev libfftw3-dev libopenmpi-dev openmpi-bin
