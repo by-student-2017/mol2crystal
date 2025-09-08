@@ -206,9 +206,9 @@ cd openmx3.9/source/
 tar -zxvf patch3.9.9.tar.gz
 mv kpoint.in ../work/
 
-sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' Makefile
-sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp|' Makefile
-sed -i 's|^LIB *=.*|LIB = -lfftw3 -llapack -lblas -lgfortran -lscalapack -lmpi_mpifh|' Makefile
+sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' makefile
+sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp|' makefile
+sed -i 's|^LIB *=.*|LIB = -lfftw3 -llapack -lblas -lgfortran -lscalapack -lmpi_mpifh|' makefile
 
 make all
 make install
