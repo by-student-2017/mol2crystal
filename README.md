@@ -57,6 +57,9 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 cd $HOME
 git clone https://github.com/by-student-2017/mol2crystal.git
 cd mol2crystal
+
+sudo apt update
+sudo apt install python3-pip
 ```
 
 ## Install libraries
