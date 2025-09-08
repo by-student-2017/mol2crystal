@@ -195,6 +195,7 @@ sudo apt -y install openmx
 ```
 sudo apt update
 sudo apt install -y build-essential gfortran intel-mkl
+# Use libmkl_rt.so as the default alternative to BLAS/LAPACK? <No>
 
 cd $HOME
 wget https://www.openmx-square.org/openmx3.9.tar.gz
