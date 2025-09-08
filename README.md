@@ -191,44 +191,6 @@ sudo apt -y install abinit
 sudo apt update
 sudo apt -y install openmx
 ```
-- OpenMX v3.9 version
-```
-sudo apt update
-sudo apt install -y build-essential gfortran libopenmpi-dev intel-mkl-full
-# Use libmkl_rt.so as the default alternative to BLAS/LAPACK? <No>
-
-cd $HOME
-wget https://www.openmx-square.org/openmx3.9.tar.gz
-tar -xvf openmx3.9.tar.gz
-
-wget https://openmx-square.org/bugfixed/21Oct17/patch3.9.9.tar.gz
-cp patch3.9.9.tar.gz openmx3.9/source/
-cd openmx3.9/source/
-tar -zxvf patch3.9.9.tar.gz
-mv kpoint.in ../work/
-
-sed -i 's|^MKLROOT *=.*|MKLROOT = /usr/lib/x86_64-linux-gnu/mkl|' makefile
-sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp -I/usr/include/mkl/fftw|' makefile
-sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp -fallow-argument-mismatch -std=legacy -fcommon|' makefile
-sed -i 's|^LIB *=.*|LIB= -L${MKLROOT} -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lmkl_blacs_openmpi_lp64 -lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lgomp -lpthread -lm -ldl|' makefile
-
-make openmx
-#make DosMain
-#make cube2xsf
-#make bandgnu13
-#make bin2txt
-#make md2axsf
-#make FermiLoop
-#make GridCalc
-#make BandDispersion
-make install
-
-sudo cp ../work/openmx /usr/bin/openmx
-sudo mkdir -p /usr/share/openmx/DFT_DATA13
-sudo cp -r ../DFT_DATA19/* /usr/share/openmx/DFT_DATA13/
-which openmx
-openmx -v
-```
 - GPAW version
 ```
 ### Install libraries + GPAW ver. 25.7.0
