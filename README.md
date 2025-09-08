@@ -63,6 +63,7 @@ sudo apt update
 sudo apt -y install python3-pip
 
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install "numpy<2.0"
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
 ```
@@ -79,6 +80,7 @@ python3 -m venv ~/mol2crystal/venv
 source ~/mol2crystal/venv/bin/activate
 
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install "numpy<2.0"
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
 ```
@@ -193,7 +195,6 @@ sudo apt -y install openmx
 ```
 ### Install libraries + GPAW ver. 25.7.0
 pip install gpaw==25.7.0
-pip install "numpy<2.0"
 
 ### DFTD-D3
 pip install dftd3==1.2.1
