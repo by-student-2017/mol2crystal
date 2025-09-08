@@ -115,7 +115,7 @@ sh install_WSLmisc.sh
 ```
 - On Ubuntu 24.04 LTS, you also need to run the following additional commands:
 ```
-pip install moltemplate
+pip install moltemplate==2.22.4
 ```
 - Lammps version (GAFF): The procedure is the same as for the Lammps version (ReaxFF), so it is not necessary if it is already installed.
 ```
