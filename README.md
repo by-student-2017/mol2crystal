@@ -113,6 +113,10 @@ sh install_moltemplate.sh
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
 sh install_WSLmisc.sh
 ```
+- On Ubuntu 24.04 LTS, you also need to run the following additional commands:
+```
+pip install moltemplate
+```
 - Lammps version (GAFF): The procedure is the same as for the Lammps version (ReaxFF), so it is not necessary if it is already installed.
 ```
 # lammps (Installation: 2025/Aug/22)
