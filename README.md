@@ -52,7 +52,17 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 
 ---
 
-## Insatall main python code
+## Insatall main python code 
+- For Ubuntu 22.04 LTS
+```
+cd $HOME
+git clone https://github.com/by-student-2017/mol2crystal.git
+cd mol2crystal
+
+sudo apt update
+sudo apt -y install python3-pip
+```
+- For Ubuntu 24.04 LTS
 ```
 cd $HOME
 git clone https://github.com/by-student-2017/mol2crystal.git
@@ -60,11 +70,23 @@ cd mol2crystal
 
 sudo apt update
 sudo apt -y install python3-pip python3-venv
+
+python3 -m venv ~/mol2crystal/venv
+source ~/mol2crystal/venv/bin/activate
 ```
 
 ## Install libraries
-- mol2crystal.py
+- mol2crystal.py (Ubuntu 22.04 LTS)
 ```
+pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+pip install pymsym==0.3.4
+pip install spglib==2.6.0
+```
+- mol2crystal.py (Ubuntu 24.04 LTS)
+```
+python3 -m venv ~/mol2crystal/venv
+source ~/mol2crystal/venv/bin/activate
+
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
