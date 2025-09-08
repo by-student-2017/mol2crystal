@@ -50,7 +50,7 @@ from ase.geometry import cellpar_to_cell
 #from ase.data import vdw_radii, atomic_numbers
 
 # QE settings
-from ase.calculators.espresso import Espresso, EspressoProfile
+from ase.calculators.espresso import Espresso
 from ase.optimize import BFGS, LBFGS, FIRE
 
 # Warning settings
@@ -172,13 +172,9 @@ def qe_optimize(fname, precursor_energy_per_atom):
             }
         }
         
-        profile = EspressoProfile(
+        calc = Espresso(
             command=f'mpirun -n {cpu_count} /usr/bin/pw.x',
             pseudo_dir=pseudo_dir,
-        )
-        
-        calc = Espresso(
-            profile=profile,
             pseudopotentials=pseudo_dict,
             input_data=input_data,
         )
