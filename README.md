@@ -113,8 +113,9 @@ sh install_moltemplate.sh
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
 sh install_WSLmisc.sh
 ```
+- Lammps version (GAFF): The procedure is the same as for the Lammps version (ReaxFF), so it is not necessary if it is already installed.
 ```
-# lammps (Installation: 2025/Aug/22): The procedure is the same as for the Lammps version (ReaxFF), so it is not necessary if it is already installed.
+# lammps (Installation: 2025/Aug/22)
 cd $HOME
 sudo apt -y install cmake gfortran gcc libopenmpi-dev
 git clone -b stable https://github.com/lammps/lammps.git
