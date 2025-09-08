@@ -194,7 +194,7 @@ sudo apt -y install openmx
 - OpenMX v3.9 version
 ```
 sudo apt update
-sudo apt install -y build-essential gfortran intel-mkl
+sudo apt install -y build-essential gfortran libopenmpi-dev intel-mkl-full
 # Use libmkl_rt.so as the default alternative to BLAS/LAPACK? <No>
 
 cd $HOME
@@ -207,9 +207,10 @@ cd openmx3.9/source/
 tar -zxvf patch3.9.9.tar.gz
 mv kpoint.in ../work/
 
-sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' makefile
+sed -i 's|^MKLROOT *=.*|MKLROOT = /usr/lib/x86_64-linux-gnu/mkl|' makefile
+sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp -I/usr/include/mkl/fftw|' makefile
 sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp -fallow-argument-mismatch -std=legacy -fcommon|' makefile
-sed -i 's|^LIB *=.*|LIB = -lscalapack-openmpi -lfftw3 -llapack -lblas -lgfortran -lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lpthread -lm -ldl|' makefile
+sed -i 's|^LIB *=.*|LIB= -L${MKLROOT} -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lmkl_blacs_openmpi_lp64 -lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lgomp -lpthread -lm -ldl|' makefile
 
 make openmx
 #make DosMain
