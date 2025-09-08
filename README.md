@@ -194,7 +194,7 @@ sudo apt -y install openmx
 - OpenMX v3.9 version
 ```
 sudo apt update
-sudo apt install -y build-essential gfortran libblas-dev liblapack-dev libfftw3-dev libopenmpi-dev openmpi-bin libscalapack-openmpi-dev
+sudo apt install -y build-essential gfortran intel-mkl
 
 cd $HOME
 wget https://www.openmx-square.org/openmx3.9.tar.gz
@@ -208,9 +208,17 @@ mv kpoint.in ../work/
 
 sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' makefile
 sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp -fallow-argument-mismatch -std=legacy -fcommon|' makefile
-sed -i 's|^LIB *=.*|LIB = -L/usr/lib/x86_64-linux-gnu -lfftw3 -llapack -lblas -lgfortran -lscalapack-openmpi -lmpi_mpifh|' makefile
+sed -i 's|^LIB *=.*|LIB = -lscalapack-openmpi -lfftw3 -llapack -lblas -lgfortran -lmpi_usempif08 -lmpi_usempi_ignore_tkr -lmpi_mpifh -lpthread -lm -ldl|' makefile
 
-make all
+make openmx
+#make DosMain
+#make cube2xsf
+#make bandgnu13
+#make bin2txt
+#make md2axsf
+#make FermiLoop
+#make GridCalc
+#make BandDispersion
 make install
 
 sudo cp ../work/openmx /usr/bin/openmx
