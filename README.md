@@ -86,14 +86,6 @@ pip install spglib==2.6.0
 ### classic MD
 - Lammps version (ReaxFF)
 ```
-# lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
-sudo apt update
-sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
-wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
-sh install_moltemplate.sh
-wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
-sh install_WSLmisc.sh
-
 # lammps (Installation: 2025/Aug/22)
 cd $HOME
 sudo apt -y install cmake gfortran gcc libopenmpi-dev
