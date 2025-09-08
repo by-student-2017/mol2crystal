@@ -69,11 +69,11 @@ pip install spglib==2.6.0
 - For Ubuntu 24.04 LTS
 ```
 cd $HOME
-git clone https://github.com/by-student-2017/mol2crystal.git
-cd mol2crystal
-
 sudo apt update
 sudo apt -y install python3-pip python3-venv
+
+git clone https://github.com/by-student-2017/mol2crystal.git
+cd mol2crystal
 
 python3 -m venv ~/mol2crystal/venv
 source ~/mol2crystal/venv/bin/activate
