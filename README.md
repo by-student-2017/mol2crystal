@@ -231,6 +231,19 @@ tar xvf nc-sr-05_pbe_standard_psml.tgz
 ### CP2k ver.9.1 (Ubuntu 22.04 LTS)
 sudo apt -y install cp2k
 ```
+- CP2k ver.2025.2 version (Ubuntu 24.04 LTS)
+```
+sudo apt update
+sudo apt install -y cmake gfortran mpich libopenblas-dev liblapack-dev libscalapack-openmpi-dev libfftw3-dev libxc-dev libint-dev
+
+$HOME
+git clone https://github.com/spack/spack.git
+source spack/share/spack/setup-env.sh
+spack install cp2k@2025.2 ^libint ^libxc ^fftw ^scalapack
+spack load cp2k
+
+cp2k.popt --version
+```
 - NWChem version
 ```
 ### NWChem v7.0.2 (Ubuntu 22.04 LTS), 7.2.2 (Ubuntu 24.04 LTS)
