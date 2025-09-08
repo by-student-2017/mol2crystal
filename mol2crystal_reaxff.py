@@ -40,6 +40,8 @@ mkdir build && cd build
 cmake -D BUILD_MPI=yes -D BUILD_SHARED_LIBS=no -D PKG_KSPACE=yes -D PKG_MOLECULE=yes -D PKG_EXTRA-MOLECULE=yes -D PKG_USER-MISC=yes -D PKG_EXTRA-DUMP=yes -D PKG_REAXFF=yes -D PKG_QEQ=yes -D PKG_MC=yes -D PKG_EAM=yes -D PKG_MEAM=yes -D PKG_RIGID=yes -D PKG_USER-CG-CMM=yes ../cmake
 make -j$(nproc)
 sudo make install
+echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
 
 # Usage
 pyton3 mol2crystal_reaxff.py
