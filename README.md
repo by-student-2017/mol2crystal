@@ -84,7 +84,7 @@ pip install spglib==2.6.0
 ```
 - mol2crystal.py (Ubuntu 24.04 LTS)
 ```
-python3 -m venv ~/mol2crystal/venv
+deactivate
 source ~/mol2crystal/venv/bin/activate
 
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
