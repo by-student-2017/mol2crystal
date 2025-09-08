@@ -105,6 +105,7 @@ sudo make install
 - Lammps version (GAFF)
 ```
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
+cd $HOME
 sudo apt update
 sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
