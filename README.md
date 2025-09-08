@@ -364,10 +364,10 @@ python3 plot.py
 gnuplot plot.gpl
 ```
 
-### sort
-- I've also prepared Python code to sort the data. You can get candidates from there. It's a good idea to remove "_top" from valid_structures_top and recalculate it with a more accurate method. For example, try calculating it with DFTB+ or QE from gaff_pbc.
+### select output data
+- I've also provided Python code for selecting data, from which you can get candidates. I recommend removing "_selected" from valid_structures_top and recalculating with a more accurate method. For example, try using DFTB+ or gaff_pbc QE.
 ```
-python3 sort.py
+python3 select_data.py
 ```
 
 ---
