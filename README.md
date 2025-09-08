@@ -191,6 +191,32 @@ sudo apt -y install abinit
 sudo apt update
 sudo apt -y install openmx
 ```
+- OpenMXv v3.9 version
+```
+sudo apt update
+sudo apt install -y build-essential gfortran libblas-dev liblapack-dev libfftw3-dev libopenmpi-dev openmpi-bin
+
+cd $HOME
+wget https://www.openmx-square.org/opensource/openmx3.9.tar.gz
+tar -xvf openmx3.9.tar.gz
+
+wget https://www.openmx-square.org/opensource/patch3.9.9.tar.gz
+cp patch3.9.9.tar.gz openmx3.9/source/
+cd openmx3.9/source/
+tar -zxvf patch3.9.9.tar.gz
+mv kpoint.in ../work/
+
+sed -i 's|^CC *=.*|CC = mpicc -O3 -fopenmp|' Makefile
+sed -i 's|^FC *=.*|FC = mpif90 -O3 -fopenmp|' Makefile
+sed -i 's|^LIB *=.*|LIB = -lfftw3 -llapack -lblas -lgfortran -lscalapack -lmpi_mpifh|' Makefile
+
+make all
+make install
+
+sudo cp ../work/openmx /usr/local/bin/
+which openmx
+openmx -v
+```
 - GPAW version
 ```
 ### Install libraries + GPAW ver. 25.7.0
