@@ -4,13 +4,17 @@
 #---------------------------------------------------------------------------------
 # User setting parameters
 #------------------------------------
+#   Important parameters for light users: 
+#     user_nmesh
+#     user_max_depthsss
+#------------------------------------
 user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
 user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
 user_nmesh = 2                       # 0 - 45 degrees divided into nmesh
 user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
-user_included_spacegroups = [34,230] # Include certain space groups from consideration  (high priority)
-user_excluded_spacegroups = [1,2,70] # Exclude certain space groups from consideration  (low  priority)
-user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority):
+user_included_spacegroups = [3,230]  # Include certain space groups from consideration  (high priority)
+user_excluded_spacegroups = [1,2]    # Exclude certain space groups from consideration  (low  priority)
+user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority)
 user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
 user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_skipping_n_molecules) (high priority)
 user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
@@ -570,6 +574,7 @@ print("------------------------------------------------------")
 print("# Applicable space groups (based on point group symmetry)")
 
 # Groups and corresponding space groups (with international numbers)
+# Point Group Tables: https://www.cryst.ehu.es/rep/point
 point_group_to_space_groups = {
      "C1": list(range(1, 2)),     #     1:  P1
      "Ci": list(range(2, 3)),     #    -1: P-1
@@ -608,22 +613,23 @@ point_group_to_space_groups = {
 # Dictionary defining strict inclusion relationships between point groups.
 # Each key is a point group, and its value is a list of point groups that are strictly included (i.e., subgroups).
 # The list includes the group itself and all of its subgroups in descending symmetry.
+# Point Group Tables: https://www.cryst.ehu.es/rep/point
 related_point_groups_strict = {
      "C1": ["C1"],                       # Identity only (no symmetry) (C1)
      "Ci": ["Ci",  "C1"],                # Inversion symmetry (Ci, C1)
-     "C2": ["C2",  "C1",   "Cs",  "Ci"], # Two-fold rotation axis (C2, C1) (+ "Cs", "Ci")
+     "C2": ["C2",  "C1"],                # Two-fold rotation axis (C2, C1)
      "Cs": ["Cs",  "C1"],                # Mirror plane symmetry (Cs, C1)
-    "C2h": ["C2h", "C2"],                # C2 + horizontal mirror plane (C2h, C2, Cs, Ci, C1)
-     "D2": ["D2",  "C2h", "C2v"],        # Three perpendicular C2 axes (D2, C2, C1) (+ "C2h", "C2v") 
+    "C2h": ["C2h", "C2" ,  "Cs", "Ci"],  # C2 + horizontal mirror plane (C2h, C2, Cs, Ci, C1)
+     "D2": ["D2",  "C2"],                # Three perpendicular C2 axes (D2, C2, C1)
     "C2v": ["C2v", "C2",   "Cs"],        # C2 + vertical mirror planes (C2v, C2, Cs, C1)
-    "D2h": ["D2h", "C2v",  "D2"],        # D2 + inversion + mirror planes (D2h, C2v, D2, C2h, C2, Cs, Ci, C1)
+    "D2h": ["D2h", "C2v",  "D2", "C2h"], # D2 + inversion + mirror planes (D2h, C2v, D2, C2h, C2, Cs, Ci, C1)
      "C4": ["C4",  "C2"],                # Four-fold rotation axis (C4, C2, C1)
-     "S4": ["S4",  "C2",   "Ci"],        # Four-fold improper rotation (S4, C2, C1)
+     "S4": ["S4",  "C2"],                # Four-fold improper rotation (S4, C2, C1)
     "C4h": ["C4h", "C4",   "S4", "C2h"], # C4 + horizontal mirror plane (C4h, C4, S4, C2h, C2, Cs, Ci, C1)
      "D4": ["D4",  "C4",   "D2"],        # D2 + C4 axis (D4, C4, D2, C2, C1)
     "C4v": ["C4v", "C4",  "C2v"],        # C4 + vertical mirror planes (C4v, C4, C2v, C2, Cs, C1)
     "D2d": ["D2d", "S4",  "C2v",  "D2"], # D2 + diagonal mirror planes (D2d, S4, C2v, D2, C2, Cs, C1)
-    "D4h": ["D4h", "D2d", "C4v",  "D4",  "D2h", "C2h"], # D4 + mirror planes + inversion (D4h, D2d, C4v, D4, C4, S4, D2h, C2v, D2, C2h, Cs, Cs, Ci, C1)
+    "D4h": ["D4h", "D2d", "C4v",  "D4",  "D2h"], # D4 + mirror planes + inversion (D4h, D2d, C4v, D4, C4, S4, D2h, C2v, D2, C2h, Cs, Cs, Ci, C1)
      "C3": ["C3",  "C1"],                # Three-fold rotation axis (C3, C1)
     "C3i": ["C3i", "C3",   "Ci"],        # C3 + inversion (C3i, C3, Ci, C1)
      "D3": ["D3",  "C3",   "C2"],        # Three C2 axes perpendicular to C3 (D3, C3, C2, C1)
@@ -634,13 +640,13 @@ related_point_groups_strict = {
     "C6h": ["C6h", "C3h",  "C6",  "C3i", "C2h"], # C6 + horizontal mirror plane (C6h, C3h, C6, C3i, C3, C2h, Cs, C2, Ci, C1)
      "D6": ["D6",  "C6",   "D3",  "D2"], # D3 + C6 axis (D6, C6, D3, C3, D2, C2, C1)
     "C6v": ["C6v", "C6",  "C3v", "C2v"], # C6 + vertical mirror planes (C6v, C6, C3v, C3, C2v, C2, Cs, C1)
-    "D3h": ["D3h", "C3h", "C3v",  "D3",  "C2v"], # D3 + horizontal mirror plane (D3h, C3h, C3v, D3, C3, C2v, C2, Cs, C1)
-    "D6h": ["D6h", "D3h", "C6v",  "D6",  "C6h", "D3d", "C3h"], # D6 + mirror planes + inversion (D6h, D3h, C6v, D6, C6h, D3d, C3h, C6, C3v, D3, C3i, C3, D2h, C2v, D2, C2h, C2, Cs, Ci, C1)
+    "D3h": ["D3h", "C3h", "C3v",  "D3",  "D2h"], # D3 + horizontal mirror plane (D3h, C3h, C3v, D3, C3, C2v, C2, Cs, C1)
+    "D6h": ["D6h", "D3h", "C6v",  "D6",  "C6h", "D3d"], # D6 + mirror planes + inversion (D6h, D3h, C6v, D6, C6h, D3d, C3h, C6, C3v, D3, C3i, C3, D2h, C2v, D2, C2h, C2, Cs, Ci, C1)
       "T": ["T",    "C3",  "D2"],        # Tetrahedral rotation symmetry (T, C3, D2, C2, C1)
      "Th": ["Th",   "T",  "C3i", "D2h"], # Tetrahedral + inversion (Th, T, C3i, C3, D2h, C2v, D2, C2h, C2, Cs, Ci, C1)
       "O": ["O",    "T",   "D3",  "D4"], # Octahedral rotation symmetry (O, T, D3, D4, C4, C3, D2, C2, C1)
      "Td": ["Td",   "T",  "C3v", "D2h",  "S4"],  # Tetrahedral + mirror planes (Td, T, C3v, C3, D2h, S4, C2v, D2, C2, Cs, C1)
-     "Oh": ["Oh",   "O",   "Th", "D3d", "D4h", "C4h"] # Full octahedral symmetry (Oh, Td, O, Th, T, D3d, C3v, D3, C3i, C3, D4h, D2d, C4v, D4, C4h, S4, D2h, C2v, D2, C2h, C2, Cs, Ci, C1)
+     "Oh": ["Oh",  "Td",    "O",  "Th", "D3d", "D4h", "C4h"] # Full octahedral symmetry (Oh, Td, O, Th, T, D3d, C3v, D3, C3i, C3, D4h, D2d, C4v, D4, C4h, S4, D2h, C2v, D2, C2h, C2, Cs, Ci, C1)
 }
 
 # Dictionary defining physical inclusion relationships between point groups.
@@ -648,38 +654,49 @@ related_point_groups_strict = {
 # These represent one-level physical symmetry extensions, not strict group-theoretical subgroups.
 # "Nearby" groups are also included when they are structurally or physically similar,
 # even if not direct supergroups in the strict group-theoretical sense.
+#----------------------------------------
+# Flowchart for molecular point group assignment (https://www.chem-station.com/chemglossary/2022/10/group2.html (Japanese))
+# In point cloud operations, "yes" is the displayed symbol. If "No", proceed to the next step (->).
+# Cn (n >= 1)            -> Cs  -> Ci  -> C1
+# Cn (n = 1, 2, 3, 4, 6) -> S2n -> Cnh -> Cnv -> Cn
+# Cn (n = 2, 3, 4, 6)    -> Dh  -> Dnd -> Dn
+# Cn (n = 3)             -> Th  -> Td  -> T
+# Cn (n = 4)             ->  O  -> Oh
+# Cn (n = 5)             -> Ih, I  (quasicrystals)
+# C3i = S6, nv -> nh, nd -> nh
+#----------------------------------------
 related_point_groups_physical = {
-     "C1": ["Ci",   "Cs",  "C2"],        # C1 can be extended to inversion, mirror, or two-fold rotation
-     "Ci": ["C2h", "D2h"],               # Inversion symmetry can be extended to C2h or full orthorhombic D2h
-     "C2": ["C2h", "C2v",  "D2"],        # Two-fold rotation can be extended to mirror or dihedral systems
-     "Cs": ["C2v", "D2d"],               # Mirror symmetry can be extended to vertical mirror systems or diagonal D2d
-    "C2h": ["D2h", "C4h"],               # C2h can be extended to full orthorhombic or tetragonal with horizontal mirror
-     "D2": ["D2h",  "D4"],               # D2 can be extended to full orthorhombic or tetragonal dihedral
-    "C2v": ["D2",  "D2h", "C4v", "D4h"], # C2v can be extended to dihedral or tetragonal systems
-    "D2h": ["D4h"],                      # D2h can be extended to full tetragonal symmetry
-     "C4": ["C4h", "C4v"],               # C4 can be extended to horizontal or vertical mirror systems
-     "S4": ["D2d", "D4h"],               # Improper rotation can be extended to diagonal or full tetragonal
-    "C4h": ["D4h",  "Oh"],               # C4h can be extended to full tetragonal symmetry
-     "D4": ["D4h"],                      # D4 can be extended to full tetragonal symmetry
-    "C4v": ["D4h",  "Td", "D2d", "C2v"], # C4v can be extended to full tetragonal symmetry (+ "D2d", "C2v")
-    "D2d": ["D4h", "C4v",  "S4",  "Cs"], # D2d can be extended to full tetragonal symmetry (+ "C4v", "S4", "Cs")
-    "D4h": ["Oh"],                       # D4h is already a full tetragonal group
-     "C3": ["C3i", "C3v", "C3h", "T", "C2", "C4"], # C3 can be extended to inversion, vertical or horizontal mirror systems (+ "C2", "C4")
-    "C3i": ["D3d", "C6h"],               # C3i can be extended to dihedral or hexagonal systems
-     "D3": ["D3d", "D3h",  "T", "C3v"],  # D3 can be extended to full dihedral systems (+ "C3v")
-    "C3v": ["D3h", "C6v", "Td", "C2v", "Cs"], # C3v can be extended to dihedral or hexagonal systems (+ "C2v", "Cs")
-    "D3d": ["D6h",  "Oh"],               # D3d can be extended to full hexagonal symmetry
-     "C6": ["C6h", "C6v"],               # C6 can be extended to horizontal or vertical mirror systems
-    "C3h": ["D3h"],                      # C3h can be extended to full dihedral symmetry
-    "C6h": ["D6h"],                      # C6h can be extended to full hexagonal symmetry
-     "D6": ["D6h"],                      # D6 can be extended to full hexagonal symmetry
-    "C6v": ["D6h", "C3v", "C6h"],        # C6v can be extended to full hexagonal symmetry (+ "C3v", "C6h")
-    "D3h": ["D6h"],                      # D3h can be extended to full hexagonal symmetry
-    "D6h": [],                           # D6h is already a full hexagonal group
-      "T": ["Th", "O", "Td"],            # Tetrahedral rotation can be extended to inversion, octahedral, or mirror systems
+     "C1": ["Ci"],                       # C1 can be extended to inversion, mirror, or two-fold rotation
+     "Ci": ["Cs"],                       # Inversion symmetry can be extended to C2h or full orthorhombic D2h
+     "C2": ["C2v"],                      # Two-fold rotation can be extended to mirror or dihedral systems
+     "Cs": ["C2",  "D2",    "T",   "O"], # Mirror symmetry can be extended to vertical mirror systems or diagonal D2d
+    "C2h": ["S4"],                       # C2h can be extended to full orthorhombic or tetragonal with horizontal mirror
+     "D2": ["D2h"],                      # D2 can be extended to full orthorhombic or tetragonal dihedral
+    "C2v": ["C2h"],                      # C2v can be extended to dihedral or tetragonal systems
+    "D2h": ["O"],                        # D2h can be extended to full tetragonal symmetry
+     "C4": ["C4v"],                      # C4 can be extended to horizontal or vertical mirror systems
+     "S4": ["O"],                        # Improper rotation can be extended to diagonal or full tetragonal
+    "C4h": ["S4"],                       # C4h can be extended to full tetragonal symmetry
+     "D4": ["D4d"],                      # D4 can be extended to full tetragonal symmetry
+    "C4v": ["D4h"],                      # C4v can be extended to full tetragonal symmetry
+    "D2d": ["D2h"],                      # D2d can be extended to full tetragonal symmetry
+    "D4h": ["O"],                        # D4h is already a full tetragonal group
+     "C3": ["C3i"],                      # C3 can be extended to inversion, vertical or horizontal mirror systems
+    "C3i": ["T"],                        # C3i can be extended to dihedral or hexagonal systems
+     "D3": ["D3d"],                      # D3 can be extended to full dihedral systems
+    "C3v": ["D3h"],                      # C3v can be extended to dihedral or hexagonal systems
+    "D3d": ["D6h"],                      # D3d can be extended to full hexagonal symmetry
+     "C6": ["C6h"],                      # C6 can be extended to horizontal or vertical mirror systems
+    "C3h": ["T"],                        # C3h can be extended to full dihedral symmetry
+    "C6h": ["C3i"],                      # C6h can be extended to full hexagonal symmetry
+     "D6": ["D6d"],                      # D6 can be extended to full hexagonal symmetry
+    "C6v": ["C6h"],                      # C6v can be extended to full hexagonal symmetry
+    "D3h": ["T"],                        # D3h can be extended to full hexagonal symmetry
+    "D6h": ["T"],                        # D6h is already a full hexagonal group
+      "T": ["Td"],                       # Tetrahedral rotation can be extended to inversion, octahedral, or mirror systems
      "Th": ["Oh"],                       # Tetrahedral + inversion can be extended to full octahedral symmetry
       "O": ["Oh"],                       # Octahedral rotation can be extended to full octahedral symmetry
-     "Td": ["Oh"],                       # Tetrahedral + mirror can be extended to full octahedral symmetry
+     "Td": ["Th"],                       # Tetrahedral + mirror can be extended to full octahedral symmetry
      "Oh": []                            # Oh is the highest cubic symmetry group
 }
 
