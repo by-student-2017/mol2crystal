@@ -3,6 +3,9 @@
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Cursor
 
+import matplotlib
+matplotlib.use('TkAgg')
+
 # Read data from structure_vs_energy.txt
 x_density = []
 y_energy = []
