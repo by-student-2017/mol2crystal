@@ -234,7 +234,7 @@ sudo apt -y install cp2k
 - CP2k ver.2025.2 version (Ubuntu 24.04 LTS)
 ```
 sudo apt update
-sudo apt install -y cmake gfortran mpich libopenblas-dev liblapack-dev libscalapack-openmpi-dev libfftw3-dev libxc-dev libint-dev
+sudo apt install -y cmake gfortran mpich libopenblas-dev liblapack-dev libscalapack-openmpi-dev libfftw3-dev libxc-dev libint-dev unzip
 
 $HOME
 git clone https://github.com/spack/spack.git
