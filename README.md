@@ -108,7 +108,7 @@ echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-- Lammps version (GAFF) (Ubuntu 22.04 LTS)
+- Lammps version (GAFF) (Ubuntu 22.04 LTS) (More robust than Ubuntu 24.04)
 ```
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 cd $HOME
