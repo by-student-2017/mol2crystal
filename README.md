@@ -241,16 +241,15 @@ git clone https://github.com/spack/spack.git
 source spack/share/spack/setup-env.sh
 #spack install cp2k@2025.2 +mpi ^libint ^libxc ^fftw ^scalapack
 spack install cp2k@2025.2 +mpi ^libint ^libxc ^fftw
-
 spack location -i cp2k
 spack load cp2k
-
-cp2k.popt --version
+cp2k.psmp --version
 
 git clone https://github.com/cp2k/cp2k-data.git
 sudo mkdir -p /usr/share/cp2k
 sudo cp -r cp2k-data/* /usr/share/cp2k/
-export CP2K_DATA_DIR=/usr/share/cp2k
+
+echo 'export CP2K_DATA_DIR=/usr/share/cp2k' >> ~/.bashrc
 source ~/.bashrc
 ```
 - NWChem version
