@@ -126,9 +126,11 @@ chmod +x ~/bin/mol22lt.pl
 
 source ~/mol2crystal/venv/bin/activate
 cd ~/opt/moltemplate
-pip install .
-export PATH=$HOME/opt/moltemplate/moltemplate/scripts:$PATH
-moltemplate.sh -v
+pip install ./
+sudo cp ~/opt/moltemplate/moltemplate/scripts/moltemplate.sh ~/.local/bin/
+sudo chmod +x ~/.local/bin/moltemplate.sh
+echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
 ```
 - Lammps version (GAFF): The procedure is the same as for the Lammps version (ReaxFF), so it is not necessary if it is already installed.
 ```
