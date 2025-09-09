@@ -113,7 +113,7 @@ source ~/.bashrc
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 cd $HOME
 sudo apt update
-sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3
+sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3 libtext-template-perl
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
 sh install_moltemplate.sh
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
@@ -121,7 +121,6 @@ sh install_WSLmisc.sh
 ```
 - On Ubuntu 24.04 LTS, you also need to run the following additional commands:
 ```
-sudo apt -y install libtext-template-perl
 pip install moltemplate==2.22.4
 chmod +x ~/bin/mol22lt.pl
 
