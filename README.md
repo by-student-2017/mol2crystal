@@ -108,7 +108,7 @@ echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-- Lammps version (GAFF)
+- Lammps version (GAFF) (Ubuntu 22.04 LTS)
 ```
 # lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
 cd $HOME
@@ -119,12 +119,24 @@ sh install_moltemplate.sh
 wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
 sh install_WSLmisc.sh
 ```
-- On Ubuntu 24.04 LTS, you also need to run the following additional commands:
+- Lammps version (GAFF) (Ubuntu 24.04 LTS)
 ```
+sudo apt install libtext-template-perl
+python3 -m pip install --upgrade pip
+python3 -m venv ~/mol2crystal/venv
+source ~/mol2crystal/venv/bin/activate
+
+# lammps + moltemplate + antechamber + mol22lt.pl (Ref. [2])
+cd $HOME
+sudo apt update
+sudo apt -y install dos2unix python3-pip libgfortran5 liblapack3 libtext-template-perl
+wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_moltemplate.sh
+sh install_moltemplate.sh
+wget https://github.com/makoto-yoneya/makoto-yoneya.github.io/raw/master/LAMMPS-organics/install_WSLmisc.sh
+sh install_WSLmisc.sh
+
 pip install moltemplate==2.22.4
 chmod +x ~/bin/mol22lt.pl
-
-source ~/mol2crystal/venv/bin/activate
 cd ~/opt/moltemplate
 pip install ./
 sudo cp ~/opt/moltemplate/moltemplate/scripts/moltemplate.sh ~/.local/bin/
