@@ -66,6 +66,7 @@ pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install "numpy<2.0"
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
+pip install pandas==1.3.5
 ```
 - For Ubuntu 24.04 LTS
 ```
