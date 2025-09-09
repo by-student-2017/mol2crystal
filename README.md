@@ -129,8 +129,6 @@ cd ~/opt/moltemplate
 pip install ./
 sudo cp ~/opt/moltemplate/moltemplate/scripts/moltemplate.sh ~/.local/bin/
 sudo chmod +x ~/.local/bin/moltemplate.sh
-echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
 ```
 - Lammps version (GAFF): The procedure is the same as for the Lammps version (ReaxFF), so it is not necessary if it is already installed.
 ```
