@@ -53,7 +53,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 ---
 
 ## Insatall main python code 
-- For Ubuntu 22.04 LTS
+- For Ubuntu 22.04 LTS (pandas==1.3.5)
 ```
 cd $HOME
 git clone https://github.com/by-student-2017/mol2crystal.git
@@ -66,9 +66,9 @@ pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install "numpy<2.0"
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
-pip install pandas==1.3.5
+pip install pandas
 ```
-- For Ubuntu 24.04 LTS
+- For Ubuntu 24.04 LTS (pandas==2.3.2)
 ```
 cd $HOME
 sudo apt update
@@ -84,6 +84,7 @@ pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install "numpy<2.0"
 pip install pymsym==0.3.4
 pip install spglib==2.6.0
+pip install pandas
 ```
 - After the above operation, the following command is required first every time on Ubuntu 24.04 LTS:
 ```
