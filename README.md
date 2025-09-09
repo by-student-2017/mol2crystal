@@ -47,7 +47,7 @@ Table 2. vdW correation (This is necessary to consider intermolecular interactio
 | OpenMX | DFT-D2 and DFT-D3 are supported from version 3.9 onwards. OpenMX version 3.9 or later is required. |
 | GPAW   | DFT-D2, and DFT-D3 are available. Use the dftd3 code. |
 | Siesta | DFT-D2, and DFT-D3 are available. |
-| CP2k   | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. Edit cp2k.inp to select the method you want. |
+|    | DFT-D2, DFT-D3, and DFT-D3(BJ) are available. Edit cp2k.inp to select the method you want. |
 | NWChem | DFT-D2, and DFT-D3 are available. |
 
 ---
@@ -245,9 +245,14 @@ spack location -i cp2k
 spack load cp2k
 cp2k.psmp --version
 
-git clone https://github.com/cp2k/cp2k-data.git
+mkdir -p $HOME/cp2k-data
+cd $HOME/cp2k-data
+wget https://raw.githubusercontent.com/cp2k/cp2k/master/data/BASIS_MOLOPT
+wget https://raw.githubusercontent.com/cp2k/cp2k/master/data/GTH_POTENTIALS
+wget https://raw.githubusercontent.com/cp2k/cp2k/master/data/dftd3.dat
+
 sudo mkdir -p /usr/share/cp2k
-sudo cp -r cp2k-data/* /usr/share/cp2k/
+sudo cp dftd3.dat BASIS_MOLOPT GTH_POTENTIALS /usr/share/cp2k/
 
 echo 'export CP2K_DATA_DIR=/usr/share/cp2k' >> ~/.bashrc
 source ~/.bashrc
