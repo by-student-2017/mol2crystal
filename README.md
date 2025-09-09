@@ -121,9 +121,15 @@ sh install_WSLmisc.sh
 ```
 - On Ubuntu 24.04 LTS, you also need to run the following additional commands:
 ```
-pip install moltemplate==2.22.4
 sudo apt -y install libtext-template-perl
+pip install moltemplate==2.22.4
 chmod +x ~/bin/mol22lt.pl
+
+source ~/mol2crystal/venv/bin/activate
+cd ~/opt/moltemplate
+pip install .
+export PATH=$HOME/opt/moltemplate/moltemplate/scripts:$PATH
+moltemplate.sh -v
 ```
 - Lammps version (GAFF): The procedure is the same as for the Lammps version (ReaxFF), so it is not necessary if it is already installed.
 ```
