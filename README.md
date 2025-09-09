@@ -239,7 +239,10 @@ sudo apt install -y cmake gfortran mpich libopenblas-dev liblapack-dev libscalap
 $HOME
 git clone https://github.com/spack/spack.git
 source spack/share/spack/setup-env.sh
-spack install cp2k@2025.2 ^libint ^libxc ^fftw ^scalapack
+#spack install cp2k@2025.2 +mpi ^libint ^libxc ^fftw ^scalapack
+spack install cp2k@2025.2 +mpi ^libint ^libxc ^fftw
+
+spack location -i cp2k
 spack load cp2k
 
 cp2k.popt --version
