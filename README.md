@@ -60,7 +60,7 @@ git clone https://github.com/by-student-2017/mol2crystal.git
 cd mol2crystal
 
 sudo apt update
-sudo apt -y install python3-pip
+sudo apt -y install python3-pip python3-tk
 
 pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
 pip install "numpy<2.0"
@@ -72,7 +72,7 @@ pip install pandas
 ```
 cd $HOME
 sudo apt update
-sudo apt -y install python3-pip python3-venv
+sudo apt -y install python3-pip python3-venv python3-tk
 
 git clone https://github.com/by-student-2017/mol2crystal.git
 cd mol2crystal
