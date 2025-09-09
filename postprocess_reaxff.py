@@ -181,7 +181,6 @@ def reaxff_optimize(fname, precursor_energy_per_atom):
             energy = float(matches[-1]) * 0.043361254529175 # kcal/mol -> eV
         else:
             print(f"Warning: Energy not found for {filename}. Skipping this entry.")
-            continue
 
         # Defining a file path
         md_npt_path = os.path.join(temp_dir, "md_npt.data")
