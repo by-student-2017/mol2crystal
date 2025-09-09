@@ -297,7 +297,8 @@ def cp2k_optimize(fname, precursor_energy_per_atom):
             print("cp2k.popt not found in PATH.")
             return
 
-        subprocess.run(["mpirun", "-np", str(cpu_count), "cp2k.popt", "-i", "cp2k.inp", "-o", "cp2k.out"], cwd=temp_dir, check=True)
+        #subprocess.run(["cp2k.popt", "-i", "cp2k.inp", "-o", "cp2k.out"], cwd=temp_dir, check=True)
+        subprocess.run(["mpirun", "-np", str(cpu_count), "cp2k.psmp", "-i", "cp2k.inp", "-o", "cp2k.out"], cwd=temp_dir, check=True)
 
         out_path = os.path.join(temp_dir, "cp2k.out")
         energy_value = None
