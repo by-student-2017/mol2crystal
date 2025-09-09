@@ -293,8 +293,8 @@ def cp2k_optimize(fname, precursor_energy_per_atom):
             print("cp2k.inp does not exist.")
             return
 
-        if not shutil.which("cp2k.popt"):
-            print("cp2k.popt not found in PATH.")
+        if not shutil.which("cp2k.psmp"):
+            print("cp2k.psmp not found in PATH.")
             return
 
         #subprocess.run(["cp2k.popt", "-i", "cp2k.inp", "-o", "cp2k.out"], cwd=temp_dir, check=True)
