@@ -1,34 +1,27 @@
 #!/bin/bash
 
-python3 mol2crystal_gaff_pbc.py
+LOGFILE="mol2crystal_run.log"
+exec > >(tee -a "$LOGFILE") 2>&1
 
-cp -r optimized_structures_vasp optimized_structures_vasp_gaff_pbc
+echo "=== Script started at $(date) ==="
 
-python3 mol2crystal_reaxff.py
+run_step() {
+    echo ""
+    echo "=== Starting $1 at $(date) ==="
+    python3 "$2"
+    cp -r optimized_structures_vasp "optimized_structures_vasp_$1"
+    cp structure_vs_energy.txt "structure_vs_energy_$1.txt"
+    echo "=== Finished $1 at $(date) ==="
+}
 
-cp -r optimized_structures_vasp optimized_structures_vasp_reaxff
+run_step "gaff_pbc" "mol2crystal_gaff_pbc.py"
+run_step "reaxff" "mol2crystal_reaxff.py"
+run_step "dftb" "mol2crystal_dftb.py"
+run_step "xtb" "mol2crystal_xtb.py"
+run_step "qe" "mol2crystal_qe.py"
+run_step "siesta" "mol2crystal_siesta.py"
+run_step "cp2k" "mol2crystal_cp2k.py"
+run_step "nwchem" "mol2crystal_nwchem.py"
 
-python3 mol2crystal_dftb.py
-
-cp -r optimized_structures_vasp optimized_structures_vasp_dftb
-
-python3 mol2crystal_xtb.py
-
-cp -r optimized_structures_vasp optimized_structures_vasp_xtb
-
-python3 mol2crystal_qe.py
-
-cp -r optimized_structures_vasp optimized_structures_vasp_qe
-
-python3 mol2crystal_siesta.py
-
-cp -r optimized_structures_vasp optimized_structures_vasp_siesta
-
-python3 mol2crystal_cp2k.py
-
-cp -r optimized_structures_vasp optimized_structures_vasp_cp2k
-
-python3 mol2crystal_nwchem.py
-
-cp -r optimized_structures_vasp optimized_structures_vasp_nwchem
-
+echo ""
+echo "=== Script finished at $(date) ==="
