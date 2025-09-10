@@ -395,6 +395,23 @@ gnuplot plot.gpl
 python3 select_data.py
 ```
 
+## How to change the calculation conditions
+- The calculation conditions can be easily changed at the beginning of the Python code. The corresponding part is as follows.
+```
+user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
+user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
+user_nmesh = 2                       # 0 - 45 degrees divided into nmesh
+user_overlap_scale = 0.90            # threshold = scale * (r_i + r_j), covalent_radii: r_i and r_j
+user_included_spacegroups = [3,230]  # Include certain space groups from consideration  (high priority)
+user_excluded_spacegroups = [1,2]    # Exclude certain space groups from consideration  (low  priority)
+user_skipping_spacegroups = 231      # Omit if space group >= user_skipping_spacegroups (low priority)
+user_max_depth = 1                   # Neighborhood and top-level search. Number of recursions to find candidates.
+user_skipping_n_molecules = 100      # Skip large molecular systems (>= user_skipping_n_molecules) (high priority)
+user_primitive_cell_output = 1       # 0:No, 1:Yes (using spglib==2.6.0)
+user_precursor_energy_per_atom = 0.0 # [eV] The reference energy (precursor alone) when calculating relative energy.
+```
+- The parameters that you need to change in particular are "user_nmesh" and "user_max_depth". You can change the other parameters as you get used to it.
+
 ---
 
 ## Comments on code improvements
