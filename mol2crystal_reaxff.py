@@ -324,16 +324,27 @@ def reaxff_optimize(fname, precursor_energy_per_atom):
         # Defining a file path
         md_npt_path = os.path.join(temp_dir, "md_npt.data")
         md_nvt_path = os.path.join(temp_dir, "md_nvt.data")
-        
+
         # Loading the Structure
+        type_to_symbol = {i + 1: sym for i, sym in enumerate(unique_symbols)}
         if os.path.exists(md_npt_path):
             print("Using NPT-optimized structure.")
-            atoms = read_lammps_data(md_npt_path, atom_style="charge")
-            atoms.wrap()
+            cell_atoms = read_lammps_data(md_npt_path, style="charge")
+            cell = cell_atoms.get_cell()
+            dst = os.path.join(temp_dir, "md_npt.xyz")
+            mol_atoms = read(dst)
+            mol_atoms.set_cell(cell)
+            mol_atoms.set_pbc([True, True, True])
+            mol_atoms.wrap()
         elif os.path.exists(md_nvt_path):
             print("Warning: NPT structure not found. Using NVT-optimized structure.")
-            atoms = read_lammps_data(md_nvt_path, atom_style="charge")
-            atoms.wrap()
+            cell_atoms = read_lammps_data(md_nvt_path, style="charge")
+            cell = cell_atoms.get_cell()
+            dst = os.path.join(temp_dir, "md_nvt.xyz")
+            mol_atoms = read(dst)
+            mol_atoms.set_cell(cell)
+            mol_atoms.set_pbc([True, True, True])
+            mol_atoms.wrap()
         else:
             print("Warning: Neither NPT nor NVT structure found. Using original structure.")
             atoms = read(fname)

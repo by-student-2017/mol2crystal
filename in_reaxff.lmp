@@ -89,6 +89,13 @@ fix q0 all qeq/reaxff 1 0.0 10.0 1.0e-6 reaxff
 fix fxnvt all nvt temp ${Tinit} ${Tobject} 500.0 tchain 1
 run 4000 # 0.4 ps
 
+# -------------------------------------------------------------
+dump 1 all xyz 1 md_nvt.xyz
+dump_modify 1 element ${elem}
+run 2
+undump 1
+# -------------------------------------------------------------
+
 write_data md_nvt.data
 
 unfix q0
@@ -140,6 +147,10 @@ run 8000 # 8 fs
 # -------------------------------------------------------------
 #dump 1 all dcd 100 md_npt.dcd
 #dump_modify 1 unwrap yes
+dump 2 all xyz 1 md_npt.xyz
+dump_modify 2 element ${elem}
+run 2
+undump 2
 # -------------------------------------------------------------
 
 write_data md_npt.data
