@@ -6,7 +6,7 @@
 #------------------------------------
 #   Important parameters for light users: 
 #     user_nmesh
-#     user_max_depthsss
+#     user_max_depth
 #------------------------------------
 user_margin = 1.70                   # >= vdW radius (H:1.20 - Cs:3.43)
 user_margin_scale = 1.2              # Intermolecular arrangement: 1.2 - 1.5, Sparse placement (e.g., porous materials): 1.6 - 2.0
