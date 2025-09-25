@@ -466,7 +466,7 @@ pip freeze > requirements.txt
 - The prefixes ‘semi-’ and ‘quasi-’ are fundamentally different in meaning, and it is difficult to confuse them—even from the perspective of conditional probability in Bayesian inference or attention mechanisms in machine learning. It would be advisable to investigate thoroughly why such a mistranslation has occurred."
 
 ---
-# Fig.4 Results and computational time of crystal structure searches (Ref: https://doi.org/10.5940/jcrsj.62.260)
+## Fig.4 Results and computational time of crystal structure searches (Ref: https://doi.org/10.5940/jcrsj.62.260)
 
 | Crystal Structure | Rank on MMFF94s | Crystal Energy Difference ΔEcrystal (kcal/mol) | Heavy Atom RMSD (Angstrom) | Computation Time (h) |
 |----------------|--------------------|------------------------|--------------|--------------------|
