@@ -15,13 +15,13 @@ run_step() {
 }
 
 run_step "gaff_pbc" "mol2crystal_gaff_pbc.py"
-run_step "reaxff" "mol2crystal_reaxff.py"
+#run_step "reaxff" "mol2crystal_reaxff.py"
 run_step "dftb" "mol2crystal_dftb.py"
 run_step "xtb" "mol2crystal_xtb.py"
-run_step "qe" "mol2crystal_qe.py"
-run_step "siesta" "mol2crystal_siesta.py"
-run_step "cp2k" "mol2crystal_cp2k.py"
-run_step "nwchem" "mol2crystal_nwchem.py"
+#run_step "qe" "mol2crystal_qe.py"
+#run_step "siesta" "mol2crystal_siesta.py"
+#run_step "cp2k" "mol2crystal_cp2k.py"
+#run_step "nwchem" "mol2crystal_nwchem.py"
 
 echo ""
 echo "=== Script finished at $(date) ==="
