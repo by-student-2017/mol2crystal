@@ -466,3 +466,32 @@ pip freeze > requirements.txt
 - The prefixes ‘semi-’ and ‘quasi-’ are fundamentally different in meaning, and it is difficult to confuse them—even from the perspective of conditional probability in Bayesian inference or attention mechanisms in machine learning. It would be advisable to investigate thoroughly why such a mistranslation has occurred."
 
 ---
+# Fig.4 Results and computational time of crystal structure searches (Ref: https://doi.org/10.5940/jcrsj.62.260)
+
+| Crystal Structure | Rank on MMFF94s | Crystal Energy Difference ΔEcrystal (kcal/mol) | Heavy Atom RMSD20 (Å) | Computation Time (h) |
+|----------------|--------------------|------------------------|--------------|--------------------|
+| Target         |   Rank on MMFF94s  |   ΔEcrystal (kcal/mol) |   RMSD20 (A) |   Elapsed time (h) |
+| 1（Orth.）     |                  3 |                  0.262 |        0.347 |               3.97 |
+| 1（Mono.）     |                269 |                  1.913 |        0.601 |               3.97 |
+| II             |                  1 |                  0     |        0.393 |               4.21 |
+| IV（Form I）   |                 55 |                  1.014 |        0.299 |               9.43 |
+| V              |                 56 |                  1.637 |        0.617 |              15.03 |
+| VI（Form I）   |                 70 |                  3.084 |        0.401 |               24.4 |
+| VI（Form III） |                107 |                  3.606 |        0.674 |               24.4 |
+| VII            |                 22 |                  0.164 |        0.155 |               1.94 |
+| VIII           |                  9 |                  0.965 |        0.398 |               4.34 |
+| IX             |                 54 |                  1.875 |        0.507 |              21.34 |
+| X              |               2350 |                  6.053 |        0.442 |               19.9 |
+| XII            |                  8 |                  0.254 |        0.302 |               2.66 |
+| XIII           |                104 |                  1.232 |        0.673 |               3.55 |
+| XIV            |                216 |                  1.801 |        1.245 |              15.93 |
+| XVI            |                454 |                  2.292 |        0.51  |               6.61 |
+| XVII           |                 83 |                  2.464 |        0.559 |               7.39 |
+| XX             |                 39 |                  2.387 |        0.361 |             154.31 |
+| XXVI           |                  2 |                  0.862 |        0.55  |              91.17 |
+
+**Footnotes:**
+- a: Crystal energy ranking using the MMFF94s force field.
+- b: Crystal energy difference from the most stable structure.
+- c: Root mean square difference of heavy atom positions when superimposing the experimental structure with 20 molecules.
+- d: Computation time when performing MPI/OpenMP hybrid parallel calculations using an Intel Xeon Gold 6154 3.00 GHz CPU with 64 cores.
