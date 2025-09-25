@@ -468,9 +468,8 @@ pip freeze > requirements.txt
 ---
 # Fig.4 Results and computational time of crystal structure searches (Ref: https://doi.org/10.5940/jcrsj.62.260)
 
-| Crystal Structure | Rank on MMFF94s | Crystal Energy Difference ΔEcrystal (kcal/mol) | Heavy Atom RMSD20 (Å) | Computation Time (h) |
+| Crystal Structure | Rank on MMFF94s | Crystal Energy Difference ΔEcrystal (kcal/mol) | Heavy Atom RMSD (Angstrom) | Computation Time (h) |
 |----------------|--------------------|------------------------|--------------|--------------------|
-| Target         |   Rank on MMFF94s  |   ΔEcrystal (kcal/mol) |   RMSD20 (A) |   Elapsed time (h) |
 | 1（Orth.）     |                  3 |                  0.262 |        0.347 |               3.97 |
 | 1（Mono.）     |                269 |                  1.913 |        0.601 |               3.97 |
 | 2              |                  1 |                  0     |        0.393 |               4.21 |
