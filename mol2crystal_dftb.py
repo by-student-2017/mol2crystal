@@ -773,17 +773,17 @@ for i, theta in enumerate(np.linspace(0, np.pi/4, nmesh)):
         print(f"------------------------------------------------------")
         
         # Loop through all space groups (1–230) to check applicability
+        excluded_spacegroups = user_excluded_spacegroups
         for sg in range(1, 231):
-            if sg not in space_groups:
+            if sg not in space_groups and sg not in user_included_spacegroups:
                 #print(f"Skipping space group {sg} (incompatible with point group '{pg}')")
                 continue
             # Space group filter (high symmetry/known problem exclusion)
-            excluded_spacegroups = user_excluded_spacegroups
-            if sg in excluded_spacegroups:
+            elif sg in excluded_spacegroups:
                 print(f"Skipping space group {sg} (known issue or too symmetric for molecules)")
                 print(f"------------------------------------------------------")
                 continue
-            if sg >= user_skipping_spacegroups:
+            elif sg >= user_skipping_spacegroups:
                 print(f"Skipping space group {sg} (too symmetric for molecular crystals)")
                 print(f"------------------------------------------------------")
                 continue
