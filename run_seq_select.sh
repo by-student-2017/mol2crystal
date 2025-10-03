@@ -14,7 +14,7 @@ run_step() {
     echo "=== Finished $1 at $(date) ==="
     python3 select_data.py
     mv valid_structures "valid_structures_$1"
-    cp -r valid_structures_selected/optimized_structures_vasp valid_structures
+    cp -r valid_structures_selected valid_structures
     cp -r valid_structures_selected "valid_structures_selected_$1"
 }
 
