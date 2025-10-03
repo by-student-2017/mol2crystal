@@ -316,7 +316,7 @@ python3 plot.py
 gnuplot plot.gpl
 ```
 - For the Windows version, you can also run it by simply double-clicking "plot.gpl".
-- I've also provided Python code for selecting data, from which you can get candidates. I recommend removing "_selected" from valid_structures_top and recalculating with a more accurate method. For example, try using DFTB+ or gaff_pbc QE.
+- I've also provided Python code for selecting data, from which you can get candidates. I recommend removing "_selected" from valid_structures_selected and recalculating with a more accurate method. For example, try using DFTB+ or gaff_pbc QE.
 ```
 python3 select_data.py
 ```
