@@ -1,0 +1,117 @@
+
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\geometry{margin=1in}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\title{mol2crystal: Automatic Crystal Structure Generation Tool from Molecular Input}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Overview}
+mol2crystal is a Python-based software tool that automatically generates and evaluates candidate molecular crystal structures using space group symmetry. It takes a single molecular structure (in MOL format, specifically named \texttt{precursor.mol}) as input and performs the following tasks:
+\begin{itemize}
+    \item Exhaustive generation of crystal structures using space groups (1--230)
+    \item Automatic detection of atomic overlaps
+    \item Support for high-accuracy post-processing tools such as DFTB+, xtb, and DFT-D3
+    \item Fully automated structure selection and density evaluation
+\end{itemize}
+
+\section{Environment Requirements}
+\begin{itemize}
+    \item Python 3.8 or higher
+    \item Recommended packages (verified versions):
+    \begin{verbatim}
+    pip install ase==3.22.1 scipy==1.13.0 psutil==7.0.0
+    pip install pymsym==0.3.4 spglib==2.6.0
+    \end{verbatim}
+\end{itemize}
+
+\section{Directory Structure (Post Execution)}
+\begin{itemize}
+    \item \texttt{molecular\_files/} : Place input molecular file (e.g., \texttt{precursor.mol})
+    \item \texttt{valid\_structures/} : Accepted structures (VASP format)
+    \item \texttt{optimized\_structures\_vasp/} : Post-processed optimized structures
+    \item \texttt{structure\_vs\_energy.txt} : Records of density, volume, atom count, etc.
+\end{itemize}
+
+\section{Usage Instructions}
+\begin{enumerate}
+    \item Place the molecular structure in \texttt{molecular\_files/precursor.mol}
+    \item Run the command:
+    \begin{verbatim}
+    python3 mol2crystal.py
+    \end{verbatim}
+    \item Results are saved in \texttt{valid\_structures/} and density information is recorded in \texttt{structure\_vs\_energy.txt}
+\end{enumerate}
+
+\section{User Settings (Configurable at Script Start)}
+\begin{itemize}
+    \item \texttt{user\_margin} : Margin around molecule (Å), e.g., 1.70
+    \item \texttt{user\_nmesh} : Number of rotation angle divisions, e.g., 3
+    \item \texttt{user\_overlap\_scale} : Threshold scale for atomic overlap, e.g., 0.80
+    \item \texttt{user\_max\_depth} : Depth of space group expansion (physical similarity), e.g., 1
+    \item \texttt{user\_skipping\_n\_molecules} : Skip structures with too many molecules, e.g., 100
+\end{itemize}
+
+\section{Post-processing Options}
+High-accuracy optimization can be performed using the following scripts:
+\begin{verbatim}
+python3 postprocess_dftb.py
+python3 postprocess_xtb.py
+python3 postprocess_siesta.py
+\end{verbatim}
+
+\section{Output Example}
+\begin{verbatim}
+valid_structures/POSCAR_theta_0_phi_0_sg_62 0.000000 1.234 48 1234.56
+\end{verbatim}
+
+\section{Background and Significance}
+mol2crystal aims to automate and ensure reproducibility in molecular crystal structure prediction. It contributes to education, research, and industrial applications as a fully open and reproducible tool, in contrast to many commercial or proprietary codes.
+
+\section{Code Structure and Key Scripts}
+\begin{itemize}
+    \item \texttt{mol2crystal.py} : Main script for automatic crystal structure generation
+    \item \texttt{select\_data.py} : Structure selection based on energy and density
+    \item \texttt{postprocess\_*.py} : High-accuracy optimization using DFTB+, xtb, SIESTA
+    \item \texttt{run.sh} : Bash script for orchestrating execution with logging
+\end{itemize}
+
+\section{Processing Flow}
+\begin{enumerate}
+    \item Read and center molecular structure
+    \item Analyze point group symmetry and extract space group candidates
+    \item Rotate molecule and define unit cell
+    \item Apply space group and generate crystal structures
+    \item Check for atomic overlaps
+    \item Save structure and evaluate density
+\end{enumerate}
+
+\section{Key Functions}
+\begin{itemize}
+    \item \texttt{rotate\_molecule()} : Rotate molecule by angles $\theta$, $\phi$
+    \item \texttt{has\_overlap\_neighborlist()} : Fast detection of atomic overlaps
+    \item \texttt{adjust\_cellpar\_by\_spacegroup()} : Adjust unit cell parameters based on space group
+    \item \texttt{get\_primitive\_cell()} : Convert to primitive cell using spglib
+    \item \texttt{density\_calc()} : Calculate density from mass and volume
+    \item \texttt{get\_all\_subgroups()} : Recursively obtain strict subgroups of point group
+    \item \texttt{expand\_physical\_supergroups()} : Expand physically similar supergroups to specified depth
+\end{itemize}
+
+\section{Design Philosophy}
+\begin{itemize}
+    \item Strict yet flexible handling of point group and space group correspondence
+    \item Emphasis on automation and reproducibility in structure generation
+    \item Designed for seamless integration with post-processing tools
+\end{itemize}
+
+\end{document}
