@@ -13,7 +13,9 @@ run_step() {
     cp structure_vs_energy.txt "structure_vs_energy_$1.txt"
     echo "=== Finished $1 at $(date) ==="
     python3 select_data.py
-    cp -r "valid_structures_selected_$1"
+    rm -fr valid_structures
+    cp -r valid_structures_selected/optimized_structures_vasp valid_structures
+    cp -r valid_structures_selected "valid_structures_selected_$1"
 }
 
 run_step "gaff_pbc" "mol2crystal_gaff_pbc.py"
