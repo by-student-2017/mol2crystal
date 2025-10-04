@@ -15,7 +15,7 @@ run_step() {
     
     if [ -d "valid_structures_postprocess" ]; then
       cp -r valid_structures_postprocess "valid_structures_postprocess_$1"
-      mv valid_structures_postprocess cp -r valid_structures
+      mv valid_structures_postprocess valid_structures
     fi
     
     python3 select_data.py
