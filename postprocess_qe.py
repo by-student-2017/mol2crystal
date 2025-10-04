@@ -172,8 +172,14 @@ def qe_optimize(fname, precursor_energy_per_atom):
             }
         }
         
+        possible_paths = ['/usr/bin/pw.x', '/usr/local/bin/pw.x']
+        pw_path = next((path for path in possible_paths if os.path.exists(path)), None)
+        if pw_path is None:
+            raise FileNotFoundError("pw.x not found, please check your installation.")
+        
         calc = Espresso(
-            command=f'mpirun -n {cpu_count} /usr/bin/pw.x',
+            #command=f'mpirun -n {cpu_count} /usr/bin/pw.x',
+            command=f'mpirun -n {cpu_count} {pw_path} < espresso.pwi > espresso.pwo',
             pseudo_dir=pseudo_dir,
             pseudopotentials=pseudo_dict,
             input_data=input_data,
