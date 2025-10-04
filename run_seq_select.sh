@@ -12,10 +12,22 @@ run_step() {
     cp -r optimized_structures_vasp "optimized_structures_vasp_$1"
     cp structure_vs_energy.txt "structure_vs_energy_$1.txt"
     echo "=== Finished $1 at $(date) ==="
+    
+    if [ -d "valid_structures_postprocess" ]; then
+      cp -r valid_structures_postprocess "valid_structures_postprocess_$1"
+      mv valid_structures_postprocess cp -r valid_structures
+    fi
+    
     python3 select_data.py
-    mv valid_structures "valid_structures_$1"
-    cp -r valid_structures_selected valid_structures
-    cp -r valid_structures_selected "valid_structures_selected_$1"
+    
+    if [ -d "valid_structures" ]; then
+      mv valid_structures "valid_structures_$1"
+    fi
+    
+    if [ -d "valid_structures_selected" ]; then
+      cp -r valid_structures_selected valid_structures
+      cp -r valid_structures_selected "valid_structures_selected_$1"
+    fi
 }
 
 run_step "gaff_pbc" "mol2crystal_gaff_pbc.py"
