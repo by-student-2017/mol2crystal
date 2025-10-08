@@ -447,6 +447,7 @@ pip freeze > requirements.txt
 ## How can we obtain results that are closer to experimental results?
 - A good method is to use the replica exchange method, but it is only implemented in Gromacs and other programs. Therefore, it is necessary to manually change the temperature and perform multiple calculations to find the crystal with the lowest energy.
 - If you are having trouble with GAFF, try DFTB+.
+- To change calculation conditions such as temperature, calculation time, and strictness of structural optimization, change the input file or Python code directly.
 ### Input file
 - GAFF: in_gaff_pbc.lmp
 - ReaxFF: in_reaxff.lmp
