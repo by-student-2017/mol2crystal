@@ -302,7 +302,7 @@ sudo apt -y install elk-lapw
 5. Execute the following command:
 - mol2crystal.py: Apply space group to molecule. Since no other calculations are performed, interatomic and cell optimizations are not performed. A separate code is required for geometry optimization.
 ```
-pyton3 mol2crystal.py
+python3 mol2crystal.py
 ```
 - Post-processing python3 code is provided, so it is recommended to use it after deleting unnecessary structures using valid_structures. For example, to use Lammp's GAFF, use the following:
 ```
@@ -325,47 +325,47 @@ python3 select_data.py
 ### classic MD
 - Lammps version (ReaxFF): Cells can also be optimized. The prediction accuracy is not too bad either. Note that there is no combination of potentials for all elements (https://github.com/by-student-2017/lammps_education_reaxff_win/tree/master/potentials).
 ```
-pyton3 mol2crystal_reaxff.py
+python3 mol2crystal_reaxff.py
 ```
 - Lammps version (GAFF): Cells can also be optimized. The prediction accuracy is not too bad either.
 ```
-pyton3 mol2crystal_gaff_pbc.py
+python3 mol2crystal_gaff_pbc.py
 ```
 
 ### Semi-empirical quantum chemical calculations
 - xTB version: Intermediate accuracy and computational cost between classical MD and first-principles calculations.
 ```
-pyton3 mol2crystal_xtb.py
+python3 mol2crystal_xtb.py
 ```
 - DFTB+ version: Intermediate accuracy and computational cost between classical MD and first-principles calculations.
 ```
-pyton3 mol2crystal_dftb.py
+python3 mol2crystal_dftb.py
 ```
 - MOPAC version: Geometry optimization was not performed. Note that this code outputs energies relative to the precursor energy. Cell optimization is not possible. (Not recommended: Cells cannot be optimized)
 ```
-pyton3 mol2crystal_mopac.py
+python3 mol2crystal_mopac.py
 ```
 
 ### First-principles calculation (band calculation)
 - QE version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
-pyton3 mol2crystal_qe.py
+python3 mol2crystal_qe.py
 ```
 - Abinit
 ```
-pyton3 mol2crystal_abinit.py
+python3 mol2crystal_abinit.py
 ```
 - OpenMX version
 ```
-pyton3 mol2crystal_openmx.py
+python3 mol2crystal_openmx.py
 ```
 - GPAW version: High accuracy due to first-principles calculation, but high calculation cost.
 ```
-pyton3 mol2crystal_gpaw.py
+python3 mol2crystal_gpaw.py
 ```
 - SIESTA version
 ```
-pyton3 mol2crystal_siesta.py
+python3 mol2crystal_siesta.py
 ```
 - CP2k version
 ```
@@ -373,11 +373,11 @@ pyton3 mol2crystal_cp2k.py
 ```
 - NWChem version
 ```
-pyton3 mol2crystal_nwchem.py
+python3 mol2crystal_nwchem.py
 ```
 - Elk version: This method provides very high accuracy, but it is computationally expensive and requires a lot of memory. (I do not recommend this method for calculations.)
 ```
-pyton3 mol2crystal_elk.py
+python3 mol2crystal_elk.py
 ```
 
 ### plot
